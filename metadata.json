@@ -1,0 +1,6 @@
+{
+  "name": "E-SAKIP - Sistem Akuntabilitas Kinerja",
+  "description": "Sistem Akuntabilitas Kinerja Instansi Pemerintah (SAKIP) berbasis web dengan 4 role pengguna, manajemen Renstra, Perjanjian Kinerja, capaian bulanan & triwulanan indikator warna, dan modul LHE penilaian 1/0 dengan catatan & rekomendasi.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
