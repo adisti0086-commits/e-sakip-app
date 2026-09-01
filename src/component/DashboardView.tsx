@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Award,
   TrendingUp,
@@ -14,10 +14,6 @@ import {
   Layers,
   ChevronRight,
   Info,
-  FolderArchive,
-  Download,
-  Check,
-  Code2,
   KeyRound,
   LogIn,
 } from 'lucide-react';
@@ -30,7 +26,6 @@ import {
   BobotSakip,
 } from '../types';
 import { ActiveTab } from './Sidebar';
-import { downloadSampZip } from '../utils/downloadZip';
 
 interface DashboardViewProps {
   currentUser: User;
@@ -42,7 +37,6 @@ interface DashboardViewProps {
   lheList: LHEEvaluation[];
   bobotSakip: BobotSakip;
   onNavigate: (tab: ActiveTab) => void;
-  onOpenPhpModal?: () => void;
   onOpenLoginModal?: () => void;
 }
 
@@ -56,27 +50,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   lheList = [],
   bobotSakip,
   onNavigate,
-  onOpenPhpModal,
   onOpenLoginModal,
 }) => {
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [downloadSuccess, setDownloadSuccess] = useState(false);
-
-  const handleDownload = async () => {
-    setIsDownloading(true);
-    setDownloadSuccess(false);
-    try {
-      await downloadSampZip();
-      setDownloadSuccess(true);
-      setTimeout(() => setDownloadSuccess(false), 4000);
-    } catch (e) {
-      console.error(e);
-      alert('Gagal mendownload ZIP. Silakan coba kembali.');
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
   // Filter by selected OPD & Year
   const filteredIndikator = (indikatorList || []).filter(
     (i) => (selectedOpdId === 'all' || i.opdId === selectedOpdId) && i.tahun === selectedYear
@@ -222,63 +197,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </button>
             )}
           </div>
-        </div>
-      </div>
-
-      {/* PROMINENT QUICK DOWNLOAD XAMPP PACKAGE BANNER */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 border-2 border-blue-500/50 shadow-xl text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-xl bg-blue-600/30 border border-blue-400/40 flex items-center justify-center shrink-0 shadow-inner">
-            <FolderArchive className="w-6 h-6 text-blue-300 animate-pulse" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="font-bold text-sm sm:text-base text-white">File Paket XAMPP (sakip-xampp-package.zip)</h3>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-500 text-white uppercase tracking-wider">
-                ZIP Siap Pakai
-              </span>
-            </div>
-            <p className="text-xs text-blue-200 mt-0.5">
-              Berisi 16 file PHP Native, koneksi database PDO, skrip SQL (<code className="text-white bg-blue-950 px-1 py-0.5 rounded font-mono">db_sakip_pemda.sql</code>), dan panduan instalasi.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2.5 w-full md:w-auto">
-          {onOpenPhpModal && (
-            <button
-              type="button"
-              onClick={onOpenPhpModal}
-              className="flex-1 md:flex-none px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-600 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <Code2 className="w-4 h-4 text-blue-300" />
-              <span>Lihat Struktur File</span>
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={handleDownload}
-            disabled={isDownloading}
-            className="flex-1 md:flex-none px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 active:scale-95 text-white font-extrabold text-xs shadow-lg shadow-blue-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-          >
-            {isDownloading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Mengunduh ZIP...</span>
-              </>
-            ) : downloadSuccess ? (
-              <>
-                <Check className="w-4 h-4 text-emerald-200" />
-                <span>ZIP Berhasil Diunduh!</span>
-              </>
-            ) : (
-              <>
-                <Download className="w-4 h-4" />
-                <span>Download sakip-xampp-package.zip</span>
-              </>
-            )}
-          </button>
         </div>
       </div>
 

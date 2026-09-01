@@ -8,20 +8,16 @@ import {
   CalendarDays,
   PieChart,
   FileCheck2,
-  Code2,
   Building2,
   Users,
   ShieldCheck,
   Award,
   ChevronRight,
   ChevronDown,
-  Download,
-  Check,
   LogIn,
   KeyRound,
 } from 'lucide-react';
 import { User, UserRole } from '../types';
-import { downloadSampZip } from '../utils/downloadZip';
 
 export type ActiveTab =
   | 'dashboard'
@@ -32,8 +28,7 @@ export type ActiveTab =
   | 'input-kinerja'
   | 'capaian-bulanan'
   | 'capaian-triwulan'
-  | 'lhe'
-  | 'php-source';
+  | 'lhe';
 
 interface SidebarProps {
   activeTab: ActiveTab;
@@ -43,7 +38,6 @@ interface SidebarProps {
   isOpenMobile: boolean;
   setIsOpenMobile: (open: boolean) => void;
   pendingValidationCount: number;
-  onOpenPhpCode?: () => void;
   onOpenLoginModal?: () => void;
 }
 
@@ -55,7 +49,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isOpenMobile,
   setIsOpenMobile,
   pendingValidationCount,
-  onOpenPhpCode,
   onOpenLoginModal,
 }) => {
   const [masterExpanded, setMasterExpanded] = React.useState(
@@ -152,22 +145,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
       badge: 'Penilaian 1/0',
       badgeColor: 'bg-indigo-600 text-white',
     },
-    {
-      id: 'php-source' as ActiveTab,
-      label: 'Paket XAMPP (PHP & MySQL)',
-      icon: Code2,
-      roles: ['administrator', 'operator_unit', 'validator', 'verifikator'],
-      badge: 'Download ZIP',
-      badgeColor: 'bg-blue-600 text-white',
-    },
   ];
 
   const handleNavClick = (tabId: ActiveTab) => {
-    if (tabId === 'php-source' && onOpenPhpCode) {
-      onOpenPhpCode();
-      setIsOpenMobile(false);
-      return;
-    }
     setActiveTab(tabId);
     setIsOpenMobile(false);
   };
@@ -394,42 +374,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </button>
             );
           })}
-        </div>
-
-        {/* Direct Download ZIP Box in Sidebar */}
-        <div className="p-3 mx-3 mb-2 rounded-xl bg-gradient-to-br from-blue-950/90 to-indigo-950/90 border border-blue-800/80 shadow-lg">
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping"></span>
-            <span className="text-[11px] font-bold text-blue-200">Paket XAMPP Siap Pakai</span>
-          </div>
-          <p className="text-[10px] text-slate-300 leading-tight mb-2.5">
-            PHP Native, PDO, & MySQL DB siap diekstrak ke <code className="text-blue-300 font-mono">htdocs/sakip</code>.
-          </p>
-          <div className="flex flex-col gap-1.5">
-            <button
-              type="button"
-              onClick={async () => {
-                try {
-                  await downloadSampZip();
-                } catch (e) {
-                  console.error(e);
-                  if (onOpenPhpCode) onOpenPhpCode();
-                }
-              }}
-              className="w-full py-1.5 px-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-blue-600/30 transition-all cursor-pointer"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Download ZIP Sekarang</span>
-            </button>
-            <button
-              type="button"
-              onClick={onOpenPhpCode}
-              className="w-full py-1 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium flex items-center justify-center gap-1 transition-colors cursor-pointer"
-            >
-              <Code2 className="w-3 h-3 text-blue-300" />
-              <span>Lihat Detail File PHP/SQL</span>
-            </button>
-          </div>
         </div>
 
         {/* Footer info */}

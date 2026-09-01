@@ -32,7 +32,6 @@ import { InputKinerjaView } from './component/InputKinerjaView';
 import { CapaianBulananView } from './component/CapaianBulananView';
 import { CapaianTriwulanView } from './component/CapaianTriwulanView';
 import { LHEView } from './component/LHEView';
-import { PhpArchitectureModal } from './component/PhpArchitectureModal';
 import { LoginModal } from './component/LoginModal';
 
 export default function App() {
@@ -43,7 +42,6 @@ export default function App() {
   const [selectedYear, setSelectedYear] = useState<number>(2025);
   const [selectedOpdId, setSelectedOpdId] = useState<string>('all');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isPhpModalOpen, setIsPhpModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   // Core Data State
@@ -92,7 +90,6 @@ export default function App() {
         isOpenMobile={isMobileMenuOpen}
         setIsOpenMobile={setIsMobileMenuOpen}
         pendingValidationCount={pendingValidationCount}
-        onOpenPhpCode={() => setIsPhpModalOpen(true)}
         onOpenLoginModal={() => setIsLoginModalOpen(true)}
       />
 
@@ -110,7 +107,6 @@ export default function App() {
           selectedOpdId={selectedOpdId}
           setSelectedOpdId={setSelectedOpdId}
           onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          onOpenPhpSource={() => setIsPhpModalOpen(true)}
           pendingValidationCount={pendingValidationCount}
           onOpenLoginModal={() => setIsLoginModalOpen(true)}
         />
@@ -129,7 +125,6 @@ export default function App() {
                 selectedOpdId={selectedOpdId}
                 currentUser={currentUser}
                 onNavigate={setActiveTab}
-                onOpenPhpModal={() => setIsPhpModalOpen(true)}
                 onOpenLoginModal={() => setIsLoginModalOpen(true)}
               />
             )}
@@ -238,11 +233,6 @@ export default function App() {
         users={userList}
         opdList={opdList}
       />
-
-      {/* PHP Backend Source Code & MySQL Architecture Modal */}
-      {isPhpModalOpen && (
-        <PhpArchitectureModal onClose={() => setIsPhpModalOpen(false)} />
-      )}
     </div>
   );
 }

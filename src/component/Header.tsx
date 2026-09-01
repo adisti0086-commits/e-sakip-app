@@ -4,20 +4,15 @@ import {
   Building2,
   Calendar,
   UserCheck,
-  Code2,
   Bell,
   CheckCircle2,
   AlertCircle,
   FileSpreadsheet,
-  Download,
-  FolderArchive,
-  Check,
   KeyRound,
   LogIn,
 } from 'lucide-react';
 import { User, OPD, UserRole } from '../types';
 import { ActiveTab } from './Sidebar';
-import { downloadSampZip } from '../utils/downloadZip';
 
 interface HeaderProps {
   activeTab: ActiveTab;
@@ -30,7 +25,6 @@ interface HeaderProps {
   selectedYear: number;
   setSelectedYear: (year: number) => void;
   onToggleMobileMenu: () => void;
-  onOpenPhpSource: () => void;
   pendingValidationCount: number;
   onOpenLoginModal?: () => void;
 }
@@ -46,29 +40,11 @@ export const Header: React.FC<HeaderProps> = ({
   selectedYear,
   setSelectedYear,
   onToggleMobileMenu,
-  onOpenPhpSource,
   pendingValidationCount,
   onOpenLoginModal,
 }) => {
   const [showRoleDropdown, setShowRoleDropdown] = React.useState(false);
   const [showNotification, setShowNotification] = React.useState(false);
-  const [isDownloadingZip, setIsDownloadingZip] = useState(false);
-  const [zipDownloaded, setZipDownloaded] = useState(false);
-
-  const handleDirectDownload = async () => {
-    setIsDownloadingZip(true);
-    setZipDownloaded(false);
-    try {
-      await downloadSampZip();
-      setZipDownloaded(true);
-      setTimeout(() => setZipDownloaded(false), 4000);
-    } catch (err) {
-      console.error(err);
-      alert('Gagal mendownload ZIP.');
-    } finally {
-      setIsDownloadingZip(false);
-    }
-  };
 
   const getPageTitle = (tab: ActiveTab) => {
     switch (tab) {
@@ -116,11 +92,6 @@ export const Header: React.FC<HeaderProps> = ({
         return {
           title: 'Laporan Hasil Evaluasi (LHE) SAKIP',
           subtitle: 'Modul Evaluasi AKIP, Penilaian Lembar Kerja 1/0, Catatan & Rekomendasi',
-        };
-      case 'php-source':
-        return {
-          title: 'Source Code PHP & Database Schema SAKIP',
-          subtitle: 'Arsitektur PHP MVC, MySQL Script & REST API Backend',
         };
     }
   };
@@ -192,24 +163,6 @@ export const Header: React.FC<HeaderProps> = ({
             </select>
           </div>
 
-          {/* Direct ZIP Download Button */}
-          <button
-            type="button"
-            onClick={handleDirectDownload}
-            disabled={isDownloadingZip}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 active:scale-95 text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-50"
-            title="Download langsung sakip-xampp-package.zip"
-          >
-            {isDownloadingZip ? (
-              <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : zipDownloaded ? (
-              <Check className="w-3.5 h-3.5 text-emerald-200" />
-            ) : (
-              <Download className="w-3.5 h-3.5 text-emerald-200" />
-            )}
-            <span>{zipDownloaded ? 'ZIP Terunduh!' : 'Download ZIP'}</span>
-          </button>
-
           {/* Menu Login 4 User Button */}
           {onOpenLoginModal && (
             <button
@@ -223,17 +176,6 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="md:hidden">Login</span>
             </button>
           )}
-
-          {/* XAMPP & PHP Code Button */}
-          <button
-            type="button"
-            onClick={onOpenPhpSource}
-            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-600 hover:to-indigo-600 text-white text-xs font-bold shadow-sm transition-all"
-            title="Lihat Detail Struktur File XAMPP & Skrip Database MySQL"
-          >
-            <Code2 className="w-3.5 h-3.5 text-blue-200" />
-            <span>Paket XAMPP</span>
-          </button>
 
           {/* Notification Button */}
           <div className="relative">
