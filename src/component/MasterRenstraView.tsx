@@ -15,24 +15,24 @@ import {
   ChevronRight,
   TrendingUp,
 } from 'lucide-react';
-import { RenstraTujuan, RenstraSasaran, OPD, User } from '../../utils/types';
+import { RenstraTujuan, RenstraSasaran, OPD, User } from '../types';
 
 interface MasterRenstraViewProps {
-  tujuanList: RenstraTujuan[];
-  setTujuanList: React.Dispatch<React.SetStateAction<RenstraTujuan[]>>;
-  sasaranList: RenstraSasaran[];
-  setSasaranList: React.Dispatch<React.SetStateAction<RenstraSasaran[]>>;
+  tujuanList?: RenstraTujuan[];
+  setTujuanList?: React.Dispatch<React.SetStateAction<RenstraTujuan[]>>;
+  sasaranList?: RenstraSasaran[];
+  setSasaranList?: React.Dispatch<React.SetStateAction<RenstraSasaran[]>>;
   opdList: OPD[];
   selectedOpdId: string;
   currentUser: User;
 }
 
 export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
-  tujuanList,
+  tujuanList = [],
   setTujuanList,
-  sasaranList,
+  sasaranList = [],
   setSasaranList,
-  opdList,
+  opdList = [],
   selectedOpdId,
   currentUser,
 }) => {
@@ -45,8 +45,8 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
 
   const [formData, setFormData] = useState<Partial<RenstraSasaran>>({
     kode: '',
-    opdId: opdList[0]?.id || '',
-    tujuanId: tujuanList[0]?.id || '',
+    opdId: opdList?.[0]?.id || '',
+    tujuanId: tujuanList?.[0]?.id || '',
     sasaranStrategis: '',
     indikatorKinerja: '',
     satuan: '%',
@@ -60,19 +60,21 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
 
   const canEdit = currentUser.role === 'administrator' || currentUser.role === 'operator_unit';
 
-  const filteredSasaran = sasaranList.filter((s) => {
+  const filteredSasaran = (sasaranList || []).filter((s) => {
     if (currentUser.role === 'operator_unit') {
       return s.opdId === currentUser.opdId;
     }
     return filterOpd === 'all' || s.opdId === filterOpd;
   });
 
-  const getOpdName = (id: string) => opdList.find((o) => o.id === id)?.nama || id;
-  const getTujuanName = (id: string) => tujuanList.find((t) => t.id === id)?.pernyataan || id;
+  const getOpdName = (id: string) => opdList?.find((o) => o.id === id)?.nama || id;
+  const getTujuanName = (id: string) => (tujuanList || []).find((t) => t.id === id)?.pernyataan || id;
 
   const handleSaveSasaran = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.sasaranStrategis || !formData.indikatorKinerja) return;
+
+    if (!setSasaranList) return;
 
     if (editingSasaran) {
       setSasaranList((prev) =>
@@ -82,8 +84,8 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
       const newSasaran: RenstraSasaran = {
         id: `sasaran-${Date.now()}`,
         kode: formData.kode || `SS.${Date.now().toString().slice(-4)}`,
-        opdId: formData.opdId || opdList[0]?.id || '',
-        tujuanId: formData.tujuanId || tujuanList[0]?.id || '',
+        opdId: formData.opdId || opdList?.[0]?.id || '',
+        tujuanId: formData.tujuanId || (tujuanList && tujuanList[0]?.id) || '',
         sasaranStrategis: formData.sasaranStrategis || '',
         indikatorKinerja: formData.indikatorKinerja || '',
         satuan: formData.satuan || '%',
@@ -102,7 +104,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
 
   const handleDeleteSasaran = (id: string) => {
     if (confirm('Apakah Anda yakin ingin menghapus Sasaran Renstra ini?')) {
-      setSasaranList((prev) => prev.filter((s) => s.id !== id));
+      setSasaranList?.((prev) => prev.filter((s) => s.id !== id));
     }
   };
 
@@ -176,8 +178,8 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                 setEditingSasaran(null);
                 setFormData({
                   kode: '',
-                  opdId: currentUser.role === 'operator_unit' ? currentUser.opdId : opdList[0]?.id,
-                  tujuanId: tujuanList[0]?.id,
+                  opdId: currentUser.role === 'operator_unit' ? currentUser.opdId : opdList?.[0]?.id || '',
+                  tujuanId: tujuanList?.[0]?.id || '',
                   sasaranStrategis: '',
                   indikatorKinerja: '',
                   satuan: '%',

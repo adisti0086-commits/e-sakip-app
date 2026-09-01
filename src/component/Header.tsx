@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Menu,
   Building2,
@@ -9,9 +9,15 @@ import {
   CheckCircle2,
   AlertCircle,
   FileSpreadsheet,
+  Download,
+  FolderArchive,
+  Check,
+  KeyRound,
+  LogIn,
 } from 'lucide-react';
-import { User, OPD, UserRole } from '../../utils/types'
+import { User, OPD, UserRole } from '../types';
 import { ActiveTab } from './Sidebar';
+import { downloadSampZip } from '../utils/downloadZip';
 
 interface HeaderProps {
   activeTab: ActiveTab;
@@ -26,6 +32,7 @@ interface HeaderProps {
   onToggleMobileMenu: () => void;
   onOpenPhpSource: () => void;
   pendingValidationCount: number;
+  onOpenLoginModal?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -41,9 +48,27 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleMobileMenu,
   onOpenPhpSource,
   pendingValidationCount,
+  onOpenLoginModal,
 }) => {
   const [showRoleDropdown, setShowRoleDropdown] = React.useState(false);
   const [showNotification, setShowNotification] = React.useState(false);
+  const [isDownloadingZip, setIsDownloadingZip] = useState(false);
+  const [zipDownloaded, setZipDownloaded] = useState(false);
+
+  const handleDirectDownload = async () => {
+    setIsDownloadingZip(true);
+    setZipDownloaded(false);
+    try {
+      await downloadSampZip();
+      setZipDownloaded(true);
+      setTimeout(() => setZipDownloaded(false), 4000);
+    } catch (err) {
+      console.error(err);
+      alert('Gagal mendownload ZIP.');
+    } finally {
+      setIsDownloadingZip(false);
+    }
+  };
 
   const getPageTitle = (tab: ActiveTab) => {
     switch (tab) {
@@ -74,8 +99,8 @@ export const Header: React.FC<HeaderProps> = ({
         };
       case 'input-kinerja':
         return {
-          title: 'Input Indikator Perjanjian Kinerja (PK)',
-          subtitle: 'Penetapan Indikator Kinerja Utama (IKU), Target Tahunan & Triwulanan',
+          title: 'Input Kinerja PK (SAKIP KEMENKES)',
+          subtitle: 'Tabel 3.1 Hasil Pengukuran Kinerja 18 Indikator & 11 Sasaran Strategis SAKIP Kemenkes',
         };
       case 'capaian-bulanan':
         return {
@@ -167,15 +192,47 @@ export const Header: React.FC<HeaderProps> = ({
             </select>
           </div>
 
-          {/* PHP Code Button */}
+          {/* Direct ZIP Download Button */}
+          <button
+            type="button"
+            onClick={handleDirectDownload}
+            disabled={isDownloadingZip}
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 active:scale-95 text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-50"
+            title="Download langsung sakip-xampp-package.zip"
+          >
+            {isDownloadingZip ? (
+              <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : zipDownloaded ? (
+              <Check className="w-3.5 h-3.5 text-emerald-200" />
+            ) : (
+              <Download className="w-3.5 h-3.5 text-emerald-200" />
+            )}
+            <span>{zipDownloaded ? 'ZIP Terunduh!' : 'Download ZIP'}</span>
+          </button>
+
+          {/* Menu Login 4 User Button */}
+          {onOpenLoginModal && (
+            <button
+              type="button"
+              onClick={onOpenLoginModal}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs font-bold border border-slate-700 shadow-sm transition-all cursor-pointer"
+              title="Buka Menu Login 4 User SAKIP"
+            >
+              <KeyRound className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden md:inline">Menu Login (4 User)</span>
+              <span className="md:hidden">Login</span>
+            </button>
+          )}
+
+          {/* XAMPP & PHP Code Button */}
           <button
             type="button"
             onClick={onOpenPhpSource}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-slate-100 text-xs font-semibold shadow-xs transition-colors"
-            title="Lihat Arsitektur PHP & Skrip Database MySQL"
+            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-600 hover:to-indigo-600 text-white text-xs font-bold shadow-sm transition-all"
+            title="Lihat Detail Struktur File XAMPP & Skrip Database MySQL"
           >
-            <Code2 className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Arsitektur PHP</span>
+            <Code2 className="w-3.5 h-3.5 text-blue-200" />
+            <span>Paket XAMPP</span>
           </button>
 
           {/* Notification Button */}
@@ -283,6 +340,20 @@ export const Header: React.FC<HeaderProps> = ({
                       </button>
                     ))}
                   </div>
+
+                  {onOpenLoginModal && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowRoleDropdown(false);
+                        onOpenLoginModal();
+                      }}
+                      className="mt-2.5 w-full py-2 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <KeyRound className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Buka Menu Login & Matriks Izin</span>
+                    </button>
+                  )}
                 </div>
               </div>
             )}

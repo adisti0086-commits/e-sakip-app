@@ -1,6 +1,6 @@
 import React from 'react';
 import { Printer, X, Award, Check, FileText } from 'lucide-react';
-import { LHEEvaluation, BobotSakip } from '../../utils/types';
+import { LHEEvaluation, BobotSakip } from '../types';
 import { hitungNilaiLHE } from '../../data/initialData';
 
 interface PrintLHEModalProps {

@@ -1,6 +1,6 @@
 {
-  "name": "E-SAKIP - Sistem Akuntabilitas Kinerja",
-  "description": "Sistem Akuntabilitas Kinerja Instansi Pemerintah (SAKIP) berbasis web dengan 4 role pengguna, manajemen Renstra, Perjanjian Kinerja, capaian bulanan & triwulanan indikator warna, dan modul LHE penilaian 1/0 dengan catatan & rekomendasi.",
+  "name": "E-SAKIP KEMENKES - RSUP Dr. M Djamil",
+  "description": "Sistem Akuntabilitas Kinerja Instansi Pemerintah (SAKIP) Kementerian Kesehatan RI - RSUP Dr. M Djamil dengan 18 Indikator Kinerja PK, 11 Sasaran Strategis, Pengukuran Capaian Semester & Triwulan, serta Evaluasi LHE AKIP.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

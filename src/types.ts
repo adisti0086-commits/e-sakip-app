@@ -1,4 +1,3 @@
-
 export type UserRole = 'administrator' | 'operator_unit' | 'validator' | 'verifikator';
 
 export type ActiveMenu =
@@ -77,12 +76,18 @@ export interface IndikatorPK {
   id: string;
   opdId: string;
   tahun: number;
+  noUrut?: number;
   sasaranStrategis: string;
   namaIndikator: string;
   formula: string;
   satuan: string;
   polarisasi: Polarisasi;
   targetTahunan: number;
+  targetRenstra?: string;
+  targetPKText?: string;
+  realisasi2025Text?: string;
+  realisasiSem1Text?: string;
+  capaianSem1Text?: string;
   targetT1: number;
   targetT2: number;
   targetT3: number;

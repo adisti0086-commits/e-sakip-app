@@ -28,7 +28,7 @@ import {
   OPD,
   User,
   BobotSakip,
-} from '../../utils/types';
+} from '../types';
 import { DEFAULT_LHE_KRITERIA, hitungNilaiLHE } from '../../data/initialData';
 import { PrintLHEModal } from './PrintLHEModal';
 
@@ -43,9 +43,9 @@ interface LHEViewProps {
 }
 
 export const LHEView: React.FC<LHEViewProps> = ({
-  lheList,
+  lheList = [],
   setLheList,
-  opdList,
+  opdList = [],
   selectedOpdId,
   selectedYear,
   currentUser,
@@ -58,7 +58,7 @@ export const LHEView: React.FC<LHEViewProps> = ({
 
   // Active LHE for detailed evaluation / viewing
   const [selectedLheId, setSelectedLheId] = useState<string>(
-    lheList[0]?.id || ''
+    lheList?.[0]?.id || ''
   );
 
   // Modals
@@ -71,7 +71,7 @@ export const LHEView: React.FC<LHEViewProps> = ({
   const [editingLhe, setEditingLhe] = useState<LHEEvaluation | null>(null);
   const [lheForm, setLheForm] = useState<Partial<LHEEvaluation>>({
     nomorSuratLHE: '',
-    opdId: opdList[0]?.id || '',
+    opdId: opdList?.[0]?.id || '',
     tahun: selectedYear,
     tanggalEvaluasi: new Date().toISOString().split('T')[0],
     evaluatorNama: currentUser.name,
@@ -93,10 +93,10 @@ export const LHEView: React.FC<LHEViewProps> = ({
   const canEvaluate =
     currentUser.role === 'verifikator' || currentUser.role === 'administrator';
 
-  const getOpdName = (id: string) => opdList.find((o) => o.id === id)?.nama || id;
+  const getOpdName = (id: string) => opdList?.find((o) => o.id === id)?.nama || id;
 
   // Filtered LHE List
-  const filteredLheList = lheList.filter((lhe) => {
+  const filteredLheList = (lheList || []).filter((lhe) => {
     const matchYear = lhe.tahun === selectedYear;
     let matchOpd = true;
     if (currentUser.role === 'operator_unit') {
@@ -111,16 +111,16 @@ export const LHEView: React.FC<LHEViewProps> = ({
   });
 
   const activeLhe =
-    lheList.find((l) => l.id === selectedLheId) || filteredLheList[0] || lheList[0];
+    (lheList || []).find((l) => l.id === selectedLheId) || filteredLheList?.[0] || lheList?.[0];
 
   // Handlers
   const handleOpenCreate = () => {
     setEditingLhe(null);
     const targetOpd =
-      currentUser.role === 'operator_unit' ? currentUser.opdId : opdList[0]?.id || '';
+      currentUser.role === 'operator_unit' ? currentUser.opdId : opdList?.[0]?.id || '';
 
     setLheForm({
-      nomorSuratLHE: `LHE.700/${String(lheList.length + 41).padStart(3, '0')}/INSP/SAKIP/${selectedYear}`,
+      nomorSuratLHE: `LHE.700/${String((lheList || []).length + 41).padStart(3, '0')}/INSP/SAKIP/${selectedYear}`,
       opdId: targetOpd,
       tahun: selectedYear,
       tanggalEvaluasi: new Date().toISOString().split('T')[0],
@@ -209,7 +209,7 @@ export const LHEView: React.FC<LHEViewProps> = ({
       const newLhe: LHEEvaluation = {
         id: `lhe-${Date.now()}`,
         nomorSuratLHE: lheForm.nomorSuratLHE || '',
-        opdId: lheForm.opdId || opdList[0]?.id || '',
+        opdId: lheForm.opdId || opdList?.[0]?.id || '',
         tahun: selectedYear,
         tanggalEvaluasi: lheForm.tanggalEvaluasi || new Date().toISOString().split('T')[0],
         evaluatorId: currentUser.id,

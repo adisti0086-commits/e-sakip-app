@@ -24,7 +24,7 @@ import {
   OPD,
   User,
   StatusValidasi,
-} from '../../utils/types'
+} from '../types';
 
 interface CapaianTriwulanViewProps {
   indikatorList: IndikatorPK[];
@@ -37,10 +37,10 @@ interface CapaianTriwulanViewProps {
 }
 
 export const CapaianTriwulanView: React.FC<CapaianTriwulanViewProps> = ({
-  indikatorList,
-  capaianTriwulanList,
+  indikatorList = [],
+  capaianTriwulanList = [],
   setCapaianTriwulanList,
-  opdList,
+  opdList = [],
   selectedOpdId,
   selectedYear,
   currentUser,
@@ -64,12 +64,12 @@ export const CapaianTriwulanView: React.FC<CapaianTriwulanViewProps> = ({
     evidensFile: '',
   });
 
-  const getOpdName = (id: string) => opdList.find((o) => o.id === id)?.nama || id;
+  const getOpdName = (id: string) => opdList?.find((o) => o.id === id)?.nama || id;
 
   const canEdit = currentUser.role === 'operator_unit' || currentUser.role === 'administrator';
 
   // Filtered Indikator
-  const filteredIndikator = indikatorList.filter((i) => {
+  const filteredIndikator = (indikatorList || []).filter((i) => {
     const matchYear = i.tahun === selectedYear;
     if (currentUser.role === 'operator_unit') {
       return matchYear && i.opdId === currentUser.opdId;

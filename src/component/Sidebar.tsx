@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   LayoutDashboard,
   Database,
@@ -15,8 +15,13 @@ import {
   Award,
   ChevronRight,
   ChevronDown,
+  Download,
+  Check,
+  LogIn,
+  KeyRound,
 } from 'lucide-react';
-import { User, UserRole } from '../../utils/types';
+import { User, UserRole } from '../types';
+import { downloadSampZip } from '../utils/downloadZip';
 
 export type ActiveTab =
   | 'dashboard'
@@ -38,6 +43,8 @@ interface SidebarProps {
   isOpenMobile: boolean;
   setIsOpenMobile: (open: boolean) => void;
   pendingValidationCount: number;
+  onOpenPhpCode?: () => void;
+  onOpenLoginModal?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -48,6 +55,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isOpenMobile,
   setIsOpenMobile,
   pendingValidationCount,
+  onOpenPhpCode,
+  onOpenLoginModal,
 }) => {
   const [masterExpanded, setMasterExpanded] = React.useState(
     activeTab === 'master-opd' || activeTab === 'master-users'
@@ -56,13 +65,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const getRoleBadge = (role: UserRole) => {
     switch (role) {
       case 'administrator':
-        return { label: 'Administrator', bg: 'bg-rose-100 text-rose-800 border-rose-200' };
+        return {
+          label: 'Administrator',
+          bg: 'bg-[#ffe4e6] text-[#e11d48] font-bold',
+        };
       case 'operator_unit':
-        return { label: 'Operator Unit', bg: 'bg-sky-100 text-sky-800 border-sky-200' };
+        return {
+          label: 'Operator Unit',
+          bg: 'bg-[#e0f2fe] text-[#0284c7] font-bold',
+        };
       case 'validator':
-        return { label: 'Validator', bg: 'bg-amber-100 text-amber-800 border-amber-200' };
+        return {
+          label: 'Validator',
+          bg: 'bg-[#fef3c7] text-[#d97706] font-bold',
+        };
       case 'verifikator':
-        return { label: 'Verifikator', bg: 'bg-emerald-100 text-emerald-800 border-emerald-200' };
+        return {
+          label: 'Verifikator',
+          bg: 'bg-[#d1fae5] text-[#059669] font-bold',
+        };
     }
   };
 
@@ -104,7 +125,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: 'Input Kinerja (PK)',
       icon: FilePlus2,
       roles: ['administrator', 'operator_unit'],
-      badge: 'Target & IKU',
+      badge: '18 Indikator (Kemenkes)',
+      badgeColor: 'bg-emerald-600 text-white font-bold',
     },
     {
       id: 'capaian-bulanan' as ActiveTab,
@@ -132,15 +154,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'php-source' as ActiveTab,
-      label: 'Source Code PHP & DB',
+      label: 'Paket XAMPP (PHP & MySQL)',
       icon: Code2,
       roles: ['administrator', 'operator_unit', 'validator', 'verifikator'],
-      badge: 'PHP + SQL',
-      badgeColor: 'bg-slate-700 text-white',
+      badge: 'Download ZIP',
+      badgeColor: 'bg-blue-600 text-white',
     },
   ];
 
   const handleNavClick = (tabId: ActiveTab) => {
+    if (tabId === 'php-source' && onOpenPhpCode) {
+      onOpenPhpCode();
+      setIsOpenMobile(false);
+      return;
+    }
     setActiveTab(tabId);
     setIsOpenMobile(false);
   };
@@ -182,76 +209,94 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* User Active Card */}
-        <div className="p-4 mx-3 my-3 rounded-xl bg-slate-800/80 border border-slate-700/60 shadow-xs">
+        <div className="p-4 mx-3 my-3 rounded-2xl bg-[#131c2e] border border-slate-800 shadow-md">
           <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 mb-1">
+            <div className="min-w-0 flex-1">
+              <div className="mb-1.5">
                 <span
-                  className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${currentBadge.bg}`}
+                  className={`text-[11px] font-bold px-3 py-0.5 rounded-full inline-block ${currentBadge.bg}`}
                 >
                   {currentBadge.label}
                 </span>
               </div>
-              <p className="text-sm font-semibold text-white truncate">{currentUser.name}</p>
-              <p className="text-xs text-slate-400 truncate">{currentUser.opdName}</p>
+              <p className="text-[13px] font-bold text-white leading-tight truncate">
+                {currentUser.name}
+              </p>
+              <p className="text-[11px] text-slate-400 truncate mt-0.5 font-normal">
+                {currentUser.opdName}
+              </p>
             </div>
           </div>
 
           {/* Quick Role Switcher Buttons */}
-          <div className="mt-3 pt-2.5 border-t border-slate-700/60">
-            <label className="text-[10px] uppercase tracking-wider font-bold text-slate-400 block mb-1.5">
-              Simulasi Ganti Role (4 User):
-            </label>
+          <div className="mt-3.5 pt-3 border-t border-slate-800/80">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400 block">
+                SIMULASI GANTI ROLE (4 USER):
+              </label>
+            </div>
             <div className="grid grid-cols-2 gap-1.5">
               <button
                 type="button"
                 onClick={() => onSwitchUser('administrator')}
-                className={`text-[11px] px-2 py-1 rounded font-medium text-left truncate transition-colors ${
+                className={`text-xs px-2.5 py-1.5 rounded-lg font-bold text-left truncate transition-all cursor-pointer ${
                   currentUser.role === 'administrator'
-                    ? 'bg-rose-600 text-white font-bold'
-                    : 'bg-slate-700/80 text-slate-300 hover:bg-slate-700'
+                    ? 'bg-[#ff003b] hover:bg-[#e60035] text-white shadow-md shadow-rose-600/30'
+                    : 'bg-[#1e293b] text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700/50'
                 }`}
-                title="Administrator"
+                title="1. Administrator SAKIP"
               >
                 1. Admin
               </button>
               <button
                 type="button"
                 onClick={() => onSwitchUser('operator_unit')}
-                className={`text-[11px] px-2 py-1 rounded font-medium text-left truncate transition-colors ${
+                className={`text-xs px-2.5 py-1.5 rounded-lg font-bold text-left truncate transition-all cursor-pointer ${
                   currentUser.role === 'operator_unit'
-                    ? 'bg-sky-600 text-white font-bold'
-                    : 'bg-slate-700/80 text-slate-300 hover:bg-slate-700'
+                    ? 'bg-sky-600 hover:bg-sky-500 text-white shadow-md shadow-sky-600/30'
+                    : 'bg-[#1e293b] text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700/50'
                 }`}
-                title="Operator Unit OPD"
+                title="2. Operator Unit OPD"
               >
                 2. Operator
               </button>
               <button
                 type="button"
                 onClick={() => onSwitchUser('validator')}
-                className={`text-[11px] px-2 py-1 rounded font-medium text-left truncate transition-colors ${
+                className={`text-xs px-2.5 py-1.5 rounded-lg font-bold text-left truncate transition-all cursor-pointer ${
                   currentUser.role === 'validator'
-                    ? 'bg-amber-600 text-white font-bold'
-                    : 'bg-slate-700/80 text-slate-300 hover:bg-slate-700'
+                    ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-md shadow-amber-600/30'
+                    : 'bg-[#1e293b] text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700/50'
                 }`}
-                title="Validator Kinerja"
+                title="3. Validator Kinerja"
               >
                 3. Validator
               </button>
               <button
                 type="button"
                 onClick={() => onSwitchUser('verifikator')}
-                className={`text-[11px] px-2 py-1 rounded font-medium text-left truncate transition-colors ${
+                className={`text-xs px-2.5 py-1.5 rounded-lg font-bold text-left truncate transition-all cursor-pointer ${
                   currentUser.role === 'verifikator'
-                    ? 'bg-emerald-600 text-white font-bold'
-                    : 'bg-slate-700/80 text-slate-300 hover:bg-slate-700'
+                    ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/30'
+                    : 'bg-[#1e293b] text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700/50'
                 }`}
-                title="Verifikator / Evaluator LHE"
+                title="4. Verifikator / Evaluator LHE"
               >
                 4. Verifikator
               </button>
             </div>
+
+            {/* Open Full Login Modal Button */}
+            {onOpenLoginModal && (
+              <button
+                type="button"
+                onClick={onOpenLoginModal}
+                className="mt-2.5 w-full py-1.5 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700/90 text-slate-300 hover:text-white text-[11px] font-semibold flex items-center justify-center gap-1.5 border border-slate-700/60 transition-colors cursor-pointer"
+              >
+                <KeyRound className="w-3.5 h-3.5 text-amber-400" />
+                <span>Buka Menu Login 4 User</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -349,6 +394,42 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </button>
             );
           })}
+        </div>
+
+        {/* Direct Download ZIP Box in Sidebar */}
+        <div className="p-3 mx-3 mb-2 rounded-xl bg-gradient-to-br from-blue-950/90 to-indigo-950/90 border border-blue-800/80 shadow-lg">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping"></span>
+            <span className="text-[11px] font-bold text-blue-200">Paket XAMPP Siap Pakai</span>
+          </div>
+          <p className="text-[10px] text-slate-300 leading-tight mb-2.5">
+            PHP Native, PDO, & MySQL DB siap diekstrak ke <code className="text-blue-300 font-mono">htdocs/sakip</code>.
+          </p>
+          <div className="flex flex-col gap-1.5">
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  await downloadSampZip();
+                } catch (e) {
+                  console.error(e);
+                  if (onOpenPhpCode) onOpenPhpCode();
+                }
+              }}
+              className="w-full py-1.5 px-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-blue-600/30 transition-all cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Download ZIP Sekarang</span>
+            </button>
+            <button
+              type="button"
+              onClick={onOpenPhpCode}
+              className="w-full py-1 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium flex items-center justify-center gap-1 transition-colors cursor-pointer"
+            >
+              <Code2 className="w-3 h-3 text-blue-300" />
+              <span>Lihat Detail File PHP/SQL</span>
+            </button>
+          </div>
         </div>
 
         {/* Footer info */}

@@ -14,7 +14,7 @@ import {
   X,
   FileSpreadsheet,
 } from 'lucide-react';
-import { OPD, User, UserRole } from '../../utils/types';
+import { OPD, User, UserRole } from '../types';
 
 interface MasterDataViewProps {
   viewType: 'opd' | 'users';
@@ -27,9 +27,9 @@ interface MasterDataViewProps {
 
 export const MasterDataView: React.FC<MasterDataViewProps> = ({
   viewType,
-  opdList,
+  opdList = [],
   setOpdList,
-  usersList,
+  usersList = [],
   setUsersList,
   currentUser,
 }) => {
@@ -55,8 +55,8 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
     email: '',
     role: 'operator_unit',
     roleTitle: '',
-    opdId: opdList[0]?.id || '',
-    opdName: opdList[0]?.nama || '',
+    opdId: opdList?.[0]?.id || '',
+    opdName: opdList?.[0]?.nama || '',
   });
 
   const canModify = currentUser.role === 'administrator';
@@ -134,7 +134,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
         email: userForm.email || '',
         role: (userForm.role as UserRole) || 'operator_unit',
         roleTitle: userForm.roleTitle || getRoleTitle(userForm.role as UserRole),
-        opdId: userForm.opdId || opdList[0]?.id || '',
+        opdId: userForm.opdId || opdList?.[0]?.id || '',
         opdName: assignedOpd ? assignedOpd.nama : 'Perangkat Daerah',
       };
       setUsersList((prev) => [...prev, newUser]);
@@ -186,7 +186,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                   email: '',
                   role: 'operator_unit',
                   roleTitle: '',
-                  opdId: opdList[0]?.id || '',
+                  opdId: opdList?.[0]?.id || '',
                 });
               }
               setIsAddModalOpen(true);
@@ -207,7 +207,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
               <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider">
                 <tr>
                   <th className="px-4 py-3">Kode OPD</th>
-                  <th className="px-4 py-3">Nama Unit Kerja</th>
+                  <th className="px-4 py-3">Nama Unit Kerja (OPD)</th>
                   <th className="px-4 py-3">Kepala OPD & NIP</th>
                   <th className="px-4 py-3">Kategori</th>
                   <th className="px-4 py-3">Kontak & Email</th>
@@ -304,7 +304,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                 <tr>
                   <th className="px-4 py-3">Nama Pegawai & NIP</th>
                   <th className="px-4 py-3">Role / Peran SAKIP</th>
-                  <th className="px-4 py-3">Unit Kerja)</th>
+                  <th className="px-4 py-3">Unit Kerja (OPD)</th>
                   <th className="px-4 py-3">Email Akun</th>
                   {canModify && <th className="px-4 py-3 text-right">Aksi</th>}
                 </tr>
@@ -437,7 +437,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                 </div>
                 <div>
                   <label className="font-semibold text-slate-700 block mb-1">
-                    Nama Unit Kerja 
+                    Nama Unit Kerja (OPD)
                   </label>
                   <input
                     type="text"
@@ -564,7 +564,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                     </select>
                   </div>
                   <div>
-                    <label className="font-semibold text-slate-700 block mb-1">Unit Kerja</label>
+                    <label className="font-semibold text-slate-700 block mb-1">Unit Kerja (OPD)</label>
                     <select
                       value={userForm.opdId}
                       onChange={(e) => setUserForm({ ...userForm, opdId: e.target.value })}

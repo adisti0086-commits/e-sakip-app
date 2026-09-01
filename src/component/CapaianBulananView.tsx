@@ -24,7 +24,7 @@ import {
   User,
   StatusValidasi,
   RealisasiBulan,
-} from '../../utils/types'
+} from '../types';
 
 interface CapaianBulananViewProps {
   indikatorList: IndikatorPK[];
@@ -42,10 +42,10 @@ const BULAN_NAMES = [
 ];
 
 export const CapaianBulananView: React.FC<CapaianBulananViewProps> = ({
-  indikatorList,
-  capaianBulanList,
+  indikatorList = [],
+  capaianBulanList = [],
   setCapaianBulanList,
-  opdList,
+  opdList = [],
   selectedOpdId,
   selectedYear,
   currentUser,
@@ -54,7 +54,7 @@ export const CapaianBulananView: React.FC<CapaianBulananViewProps> = ({
     currentUser.role === 'operator_unit' ? currentUser.opdId : selectedOpdId
   );
   const [selectedIndikatorId, setSelectedIndikatorId] = useState<string>(
-    indikatorList[0]?.id || ''
+    indikatorList?.[0]?.id || ''
   );
   const [selectedBulan, setSelectedBulan] = useState<number>(8); // August default
 
@@ -73,7 +73,7 @@ export const CapaianBulananView: React.FC<CapaianBulananViewProps> = ({
   const [validatorCatatan, setValidatorCatatan] = useState('');
 
   // Filtered Indikator
-  const filteredIndikator = indikatorList.filter((i) => {
+  const filteredIndikator = (indikatorList || []).filter((i) => {
     const matchYear = i.tahun === selectedYear;
     if (currentUser.role === 'operator_unit') {
       return matchYear && i.opdId === currentUser.opdId;
@@ -82,15 +82,15 @@ export const CapaianBulananView: React.FC<CapaianBulananViewProps> = ({
   });
 
   const activeIndikator =
-    indikatorList.find((i) => i.id === selectedIndikatorId) || filteredIndikator[0];
+    (indikatorList || []).find((i) => i.id === selectedIndikatorId) || filteredIndikator?.[0];
 
   const activeCapaian = activeIndikator
-    ? capaianBulanList.find(
+    ? (capaianBulanList || []).find(
         (c) => c.indikatorId === activeIndikator.id && c.tahun === selectedYear
       )
     : null;
 
-  const getOpdName = (id: string) => opdList.find((o) => o.id === id)?.nama || id;
+  const getOpdName = (id: string) => opdList?.find((o) => o.id === id)?.nama || id;
 
   const getStatusBadge = (status: StatusValidasi) => {
     switch (status) {

@@ -11,7 +11,7 @@ import {
   ShieldCheck,
   Info,
 } from 'lucide-react';
-import { BobotSakip, User } from '../../utils/types';
+import { BobotSakip, User } from '../types';
 
 interface PengaturanKinerjaViewProps {
   bobotSakip: BobotSakip;

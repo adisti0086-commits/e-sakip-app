@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
-
 import {
   INITIAL_USERS,
   INITIAL_OPD,
+  INITIAL_RENSTRA_TUJUAN,
   INITIAL_RENSTRA_SASARAN,
-   INITIAL_RENSTRA_TUJUAN,
   INITIAL_BOBOT_SAKIP,
   INITIAL_INDIKATOR_PK,
   INITIAL_CAPAIAN_BULAN,
   INITIAL_CAPAIAN_TRIWULAN,
   INITIAL_LHE,
 } from '../data/initialData';
-
 import {
   User,
-  UserRole,
   OPD,
   RenstraTujuan,
   RenstraSasaran,
@@ -23,11 +20,10 @@ import {
   CapaianIndikatorBulan,
   CapaianIndikatorTriwulan,
   LHEEvaluation,
-} from '../utils/types';
-
+  UserRole,
+} from './types';
 import { Sidebar, ActiveTab } from './component/Sidebar';
 import { Header } from './component/Header';
-
 import { DashboardView } from './component/DashboardView';
 import { MasterDataView } from './component/MasterDataView';
 import { MasterRenstraView } from './component/MasterRenstraView';
@@ -37,188 +33,91 @@ import { CapaianBulananView } from './component/CapaianBulananView';
 import { CapaianTriwulanView } from './component/CapaianTriwulanView';
 import { LHEView } from './component/LHEView';
 import { PhpArchitectureModal } from './component/PhpArchitectureModal';
+import { LoginModal } from './component/LoginModal';
 
 export default function App() {
+  // Navigation & User State
+  const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
+  const [userList, setUserList] = useState<User[]>(INITIAL_USERS);
+  const [currentUser, setCurrentUser] = useState<User>(INITIAL_USERS[0]); // Default: Administrator
+  const [selectedYear, setSelectedYear] = useState<number>(2025);
+  const [selectedOpdId, setSelectedOpdId] = useState<string>('all');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isPhpModalOpen, setIsPhpModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  // =====================================================
-  // NAVIGATION
-  // =====================================================
+  // Core Data State
+  const [opdList, setOpdList] = useState<OPD[]>(INITIAL_OPD);
+  const [tujuanList, setTujuanList] = useState<RenstraTujuan[]>(INITIAL_RENSTRA_TUJUAN);
+  const [renstraList, setRenstraList] = useState<RenstraSasaran[]>(INITIAL_RENSTRA_SASARAN);
+  const [bobotSakip, setBobotSakip] = useState<BobotSakip>(INITIAL_BOBOT_SAKIP);
+  const [indikatorList, setIndikatorList] = useState<IndikatorPK[]>(INITIAL_INDIKATOR_PK);
+  const [capaianBulanList, setCapaianBulanList] = useState<CapaianIndikatorBulan[]>(INITIAL_CAPAIAN_BULAN);
+  const [capaianTriwulanList, setCapaianTriwulanList] = useState<CapaianIndikatorTriwulan[]>(INITIAL_CAPAIAN_TRIWULAN);
+  const [lheList, setLheList] = useState<LHEEvaluation[]>(INITIAL_LHE);
 
-  const [activeTab, setActiveTab] =
-    useState<ActiveTab>('dashboard');
+  // Count pending validation for validator
+  const pendingValidationCount = capaianTriwulanList.reduce(
+  (total, capaian) =>
+    total +
+    capaian.realisasiPerTriwulan.filter(
+      (r) => r.statusValidasi === 'Menunggu Validasi'
+    ).length,
+  0
+);
 
-  // =====================================================
-  // USER
-  // =====================================================
-
-  const [userList, setUserList] =
-    useState<User[]>(INITIAL_USERS);
-
-  const [currentUser, setCurrentUser] =
-    useState<User>(INITIAL_USERS[0]);
-
-  // =====================================================
-  // FILTER
-  // =====================================================
-
-  const [selectedYear, setSelectedYear] =
-    useState<number>(2025);
-
-  const [selectedOpdId, setSelectedOpdId] =
-    useState<string>('all');
-
-  // =====================================================
-  // MOBILE SIDEBAR
-  // =====================================================
-
-  const [isOpenMobile, setIsOpenMobile] =
-    useState(false);
-
-  // =====================================================
-  // PHP MODAL
-  // =====================================================
-
-  const [isPhpModalOpen, setIsPhpModalOpen] =
-    useState(false);
-
-  // =====================================================
-  // CORE DATA
-  // =====================================================
-
-  const [opdList, setOpdList] =
-    useState<OPD[]>(INITIAL_OPD);
-
-  const [renstraList, setRenstraList] =
-    useState<RenstraSasaran[]>(INITIAL_RENSTRA_SASARAN);
-  const [tujuanList, setTujuanList] = useState<RenstraTujuan[]>(
-  INITIAL_RENSTRA_TUJUAN);
-
-  const [bobotSakip, setBobotSakip] =
-    useState<BobotSakip>(INITIAL_BOBOT_SAKIP);
-
-  const [indikatorList, setIndikatorList] =
-    useState<IndikatorPK[]>(INITIAL_INDIKATOR_PK);
-
-  const [capaianBulanList, setCapaianBulanList] =
-    useState<CapaianIndikatorBulan[]>(INITIAL_CAPAIAN_BULAN);
-
-  const [capaianTriwulanList, setCapaianTriwulanList] =
-    useState<CapaianIndikatorTriwulan[]>(
-      INITIAL_CAPAIAN_TRIWULAN
-    );
-
-  const [lheList, setLheList] =
-    useState<LHEEvaluation[]>(INITIAL_LHE);
-
-  // =====================================================
-  // PENDING VALIDATION
-  // =====================================================
-
-  const pendingValidationCount = capaianBulanList.filter(
-    (item: any) =>
-      item.status === 'menunggu_validasi' ||
-      item.status === 'pending' ||
-      item.status === 'Menunggu Validasi'
-  ).length;
-
-  // =====================================================
-  // SWITCH USER / ROLE
-  // =====================================================
-
-  const handleUserChange = (role: UserRole) => {
-
-    const selectedUser = userList.find(
-      (user) => user.role === role
-    );
-
-    if (!selectedUser) return;
-
-    setCurrentUser(selectedUser);
-
-    // Operator hanya boleh melihat OPD miliknya
-    if (
-      selectedUser.role === 'operator_unit' &&
-      selectedUser.opdId
-    ) {
-      setSelectedOpdId(selectedUser.opdId);
-    } else {
-      setSelectedOpdId('all');
+  // Handle switching active user role directly or from modal
+  const handleUserChange = (user: User) => {
+    setCurrentUser(user);
+    if (user.role === 'operator_unit' && user.opdId) {
+      setSelectedOpdId(user.opdId);
     }
   };
 
-  // =====================================================
-  // RENDER
-  // =====================================================
+  const handleSwitchRole = (role: UserRole) => {
+    const targetUser = userList.find((u) => u.role === role) || INITIAL_USERS.find((u) => u.role === role);
+    if (targetUser) {
+      handleUserChange(targetUser);
+    }
+  };
 
   return (
     <div className="flex h-screen bg-slate-100 text-slate-900 font-sans antialiased overflow-hidden">
-
-      {/* =================================================
-          SIDEBAR
-      ================================================= */}
-
+      {/* 1. Left Sidebar with Role Switching and Navigation */}
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-
         currentUser={currentUser}
-
-        onSwitchUser={handleUserChange}
-
-        isOpenMobile={isOpenMobile}
-        setIsOpenMobile={setIsOpenMobile}
-
+        onSwitchUser={handleSwitchRole}
+        isOpenMobile={isMobileMenuOpen}
+        setIsOpenMobile={setIsMobileMenuOpen}
         pendingValidationCount={pendingValidationCount}
+        onOpenPhpCode={() => setIsPhpModalOpen(true)}
+        onOpenLoginModal={() => setIsLoginModalOpen(true)}
       />
 
-      {/* =================================================
-          MAIN CONTENT
-      ================================================= */}
-
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden lg:ml-72">
-
-        {/* =================================================
-            HEADER
-        ================================================= */}
-
+      {/* 2. Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden lg:pl-72">
+        {/* Header */}
         <Header
           activeTab={activeTab}
-
           currentUser={currentUser}
-
-          onSwitchUser={handleUserChange}
-
+          onSwitchUser={handleSwitchRole}
           users={userList}
-
           opdList={opdList}
-
-          selectedOpdId={selectedOpdId}
-          setSelectedOpdId={setSelectedOpdId}
-
           selectedYear={selectedYear}
           setSelectedYear={setSelectedYear}
-
-          onToggleMobileMenu={() =>
-            setIsOpenMobile(!isOpenMobile)
-          }
-
-          onOpenPhpSource={() =>
-            setIsPhpModalOpen(true)
-          }
-
+          selectedOpdId={selectedOpdId}
+          setSelectedOpdId={setSelectedOpdId}
+          onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          onOpenPhpSource={() => setIsPhpModalOpen(true)}
           pendingValidationCount={pendingValidationCount}
+          onOpenLoginModal={() => setIsLoginModalOpen(true)}
         />
 
-        {/* =================================================
-            CONTENT
-        ================================================= */}
-
+        {/* Content Body */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
-
           <div className="max-w-7xl mx-auto space-y-6">
-
-            {/* DASHBOARD */}
-
             {activeTab === 'dashboard' && (
               <DashboardView
                 indikatorList={indikatorList}
@@ -230,150 +129,120 @@ export default function App() {
                 selectedOpdId={selectedOpdId}
                 currentUser={currentUser}
                 onNavigate={setActiveTab}
+                onOpenPhpModal={() => setIsPhpModalOpen(true)}
+                onOpenLoginModal={() => setIsLoginModalOpen(true)}
               />
             )}
 
-            {/* MASTER OPD */}
-
             {activeTab === 'master-opd' && (
-  <MasterDataView
-    viewType="opd"
-    opdList={opdList}
-    setOpdList={setOpdList}
-    usersList={userList}
-    setUsersList={setUserList}
-    currentUser={currentUser}
-  />
-)}
-
-            {/* MASTER USERS */}
+              <MasterDataView
+                viewType="opd"
+                opdList={opdList}
+                setOpdList={setOpdList}
+                usersList={userList}
+                setUsersList={setUserList}
+                currentUser={currentUser}
+              />
+            )}
 
             {activeTab === 'master-users' && (
               <MasterDataView
-  viewType="users"
-    opdList={opdList}
-    setOpdList={setOpdList}
-    usersList={userList}
-    setUsersList={setUserList}
-    currentUser={currentUser}
-/>
+                viewType="users"
+                opdList={opdList}
+                setOpdList={setOpdList}
+                usersList={userList}
+                setUsersList={setUserList}
+                currentUser={currentUser}
+              />
             )}
 
-            {/* MASTER RENSTRA */}
-
             {activeTab === 'master-renstra' && (
-  <MasterRenstraView
-   tujuanList={tujuanList}
-    setTujuanList={setTujuanList}
-    sasaranList={renstraList}
-    setSasaranList={setRenstraList}
-    opdList={opdList}
-    selectedOpdId={selectedOpdId}
-    currentUser={currentUser}
-  />
-)}
-
-            {/* PENGATURAN KINERJA */}
+              <MasterRenstraView
+                tujuanList={tujuanList}
+                setTujuanList={setTujuanList}
+                sasaranList={renstraList}
+                setSasaranList={setRenstraList}
+                opdList={opdList}
+                selectedOpdId={selectedOpdId}
+                currentUser={currentUser}
+              />
+            )}
 
             {activeTab === 'pengaturan-kinerja' && (
               <PengaturanKinerjaView
                 bobotSakip={bobotSakip}
                 setBobotSakip={setBobotSakip}
-
                 selectedYear={selectedYear}
                 setSelectedYear={setSelectedYear}
-
                 currentUser={currentUser}
               />
             )}
-
-            {/* INPUT KINERJA */}
 
             {activeTab === 'input-kinerja' && (
               <InputKinerjaView
                 indikatorList={indikatorList}
                 setIndikatorList={setIndikatorList}
-
                 opdList={opdList}
                 sasaranList={renstraList}
-
                 selectedOpdId={selectedOpdId}
                 selectedYear={selectedYear}
-
                 currentUser={currentUser}
               />
             )}
-
-            {/* CAPAIAN BULANAN */}
 
             {activeTab === 'capaian-bulanan' && (
               <CapaianBulananView
                 indikatorList={indikatorList}
-
                 capaianBulanList={capaianBulanList}
                 setCapaianBulanList={setCapaianBulanList}
-
                 opdList={opdList}
-
                 selectedOpdId={selectedOpdId}
                 selectedYear={selectedYear}
-
                 currentUser={currentUser}
               />
             )}
-
-            {/* CAPAIAN TRIWULAN */}
 
             {activeTab === 'capaian-triwulan' && (
               <CapaianTriwulanView
                 indikatorList={indikatorList}
-
                 capaianTriwulanList={capaianTriwulanList}
-                setCapaianTriwulanList={
-                  setCapaianTriwulanList
-                }
-
+                setCapaianTriwulanList={setCapaianTriwulanList}
                 opdList={opdList}
-
                 selectedOpdId={selectedOpdId}
                 selectedYear={selectedYear}
-
                 currentUser={currentUser}
               />
             )}
-
-            {/* LHE */}
 
             {activeTab === 'lhe' && (
               <LHEView
                 lheList={lheList}
                 setLheList={setLheList}
-
                 opdList={opdList}
-
                 selectedOpdId={selectedOpdId}
                 selectedYear={selectedYear}
-
                 currentUser={currentUser}
-
                 bobotSakip={bobotSakip}
               />
             )}
-
           </div>
         </main>
       </div>
 
-      {/* =================================================
-          PHP MODAL
-      ================================================= */}
+      {/* Login & 4 User Simulation Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        currentUser={currentUser}
+        onSelectUser={handleUserChange}
+        users={userList}
+        opdList={opdList}
+      />
 
+      {/* PHP Backend Source Code & MySQL Architecture Modal */}
       {isPhpModalOpen && (
-        <PhpArchitectureModal
-          onClose={() => setIsPhpModalOpen(false)}
-        />
+        <PhpArchitectureModal onClose={() => setIsPhpModalOpen(false)} />
       )}
-
     </div>
   );
 }
