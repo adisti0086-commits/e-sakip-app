@@ -156,7 +156,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center gap-1.5"
               >
                 <CheckCircle2 className="w-4 h-4" />
-                <span>Validasi Capaian Bulanan & Evidens</span>
+                <span>Validasi Capaian Bulanan</span>
               </button>
             )}
 
@@ -224,7 +224,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-            <span className="text-slate-600">IKU & IKP Perangkat Daerah</span>
+            <span className="text-slate-600">IKU</span>
             <button
               type="button"
               onClick={() => onNavigate('input-kinerja')}
@@ -296,7 +296,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h3 className="font-bold text-slate-900 text-sm">
-                5 Komponen Evaluasi SAKIP (PermenPAN-RB No. 88/2021)
+                5 Komponen Evaluasi SAKIP
               </h3>
               <p className="text-xs text-slate-500">
                 Struktur bobot penilaian akuntabilitas kinerja instansi pemerintah
@@ -321,7 +321,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <div className="h-full bg-emerald-600 rounded-full" style={{ width: '92%' }} />
               </div>
               <p className="text-[11px] text-slate-500 mt-1">
-                Renstra, IKU OPD, Rencana Kerja Tahunan, dan Perjanjian Kinerja berjenjang.
+                Renstra, IKU OPD, Rencana Kerja Tahunan, dan Perjanjian Kinerja.
               </p>
             </div>
 
