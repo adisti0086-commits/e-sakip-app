@@ -88,7 +88,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
   };
 
   const handleDeleteOpd = (id: string) => {
-    if (confirm('Apakah Anda yakin ingin menghapus OPD ini?')) {
+    if (confirm('Apakah Anda yakin ingin menghapus Unit Kerja ini?')) {
       setOpdList((prev) => prev.filter((o) => o.id !== id));
     }
   };
@@ -105,11 +105,11 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
         case 'administrator':
           return 'Administrator Utama SAKIP';
         case 'operator_unit':
-          return 'Operator Unit / Perencana OPD';
+          return 'Operator Unit';
         case 'validator':
           return 'Tim Validator Kinerja Organisasi';
         case 'verifikator':
-          return 'Auditor Madya / Tim Evaluator LHE';
+          return ' Tim Evaluator LHE';
       }
     };
 
