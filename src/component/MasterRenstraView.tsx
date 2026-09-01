@@ -50,11 +50,9 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
     sasaranStrategis: '',
     indikatorKinerja: '',
     satuan: '%',
-    targetTahun1: 85,
-    targetTahun2: 88,
-    targetTahun3: 90,
-    targetTahun4: 92,
-    targetTahun5: 95,
+    target: 90,
+    realisasi: 90,
+    capaian: 100,
     cascadingLevel: 'Eselon II',
   });
 
@@ -76,9 +74,28 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
 
     if (!setSasaranList) return;
 
+    const targetVal = Number(formData.target) || 0;
+    const realisasiVal = Number(formData.realisasi) || 0;
+    const calculatedCapaian =
+      formData.capaian !== undefined && formData.capaian !== null
+        ? Number(formData.capaian)
+        : targetVal > 0
+        ? Math.round((realisasiVal / targetVal) * 10000) / 100
+        : 0;
+
     if (editingSasaran) {
       setSasaranList((prev) =>
-        prev.map((s) => (s.id === editingSasaran.id ? ({ ...s, ...formData } as RenstraSasaran) : s))
+        prev.map((s) =>
+          s.id === editingSasaran.id
+            ? ({
+                ...s,
+                ...formData,
+                target: targetVal,
+                realisasi: realisasiVal,
+                capaian: calculatedCapaian,
+              } as RenstraSasaran)
+            : s
+        )
       );
     } else {
       const newSasaran: RenstraSasaran = {
@@ -89,11 +106,9 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
         sasaranStrategis: formData.sasaranStrategis || '',
         indikatorKinerja: formData.indikatorKinerja || '',
         satuan: formData.satuan || '%',
-        targetTahun1: Number(formData.targetTahun1) || 0,
-        targetTahun2: Number(formData.targetTahun2) || 0,
-        targetTahun3: Number(formData.targetTahun3) || 0,
-        targetTahun4: Number(formData.targetTahun4) || 0,
-        targetTahun5: Number(formData.targetTahun5) || 0,
+        target: targetVal,
+        realisasi: realisasiVal,
+        capaian: calculatedCapaian,
         cascadingLevel: formData.cascadingLevel || 'Eselon II',
       };
       setSasaranList((prev) => [...prev, newSasaran]);
@@ -123,7 +138,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
             }`}
           >
             <Target className="w-3.5 h-3.5" />
-            <span>Sasaran & Target 5 Tahun</span>
+            <span>Sasaran, Target & Capaian</span>
           </button>
           <button
             type="button"
@@ -183,11 +198,9 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                   sasaranStrategis: '',
                   indikatorKinerja: '',
                   satuan: '%',
-                  targetTahun1: 85,
-                  targetTahun2: 88,
-                  targetTahun3: 90,
-                  targetTahun4: 92,
-                  targetTahun5: 95,
+                  target: 90,
+                  realisasi: 90,
+                  capaian: 100,
                   cascadingLevel: 'Eselon II',
                 });
                 setIsModalOpen(true);
@@ -201,13 +214,13 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
         </div>
       </div>
 
-      {/* Subtab 1: Sasaran & Target 5 Tahun Table */}
+      {/* Subtab 1: Sasaran, Target, Realisasi & Capaian Table */}
       {activeTabSub === 'sasaran' && (
         <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
           <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
             <div>
               <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                Matriks Sasaran Strategis & Target 5 Tahunan Renstra (2024 - 2029)
+                Matriks Sasaran Strategis, Target & Capaian Renstra
               </h3>
               <p className="text-[11px] text-slate-500">
                 Landasan utama penyusunan Perjanjian Kinerja (PK) tahunan dan IKU Perangkat Daerah
@@ -226,78 +239,95 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                   <th className="px-3 py-3">Unit Kerja (OPD)</th>
                   <th className="px-3 py-3">Sasaran Strategis</th>
                   <th className="px-3 py-3">Indikator Kinerja & Satuan</th>
-                  <th className="px-2 py-3 text-center bg-slate-200/50">Th. 1</th>
-                  <th className="px-2 py-3 text-center bg-slate-200/50">Th. 2</th>
-                  <th className="px-2 py-3 text-center bg-slate-200/50">Th. 3</th>
-                  <th className="px-2 py-3 text-center bg-slate-200/50">Th. 4</th>
-                  <th className="px-2 py-3 text-center bg-slate-200/50">Th. 5</th>
+                  <th className="px-3 py-3 text-center bg-slate-200/60 text-slate-800">Target</th>
+                  <th className="px-3 py-3 text-center bg-blue-100/70 text-blue-900">Realisasi</th>
+                  <th className="px-3 py-3 text-center bg-emerald-100/70 text-emerald-900">Capaian</th>
                   {canEdit && <th className="px-3 py-3 text-right">Aksi</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filteredSasaran.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-3 py-3.5">
-                      <span className="font-mono font-bold text-slate-900 block">{item.kode}</span>
-                      <span className="inline-block mt-0.5 text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        {item.cascadingLevel}
-                      </span>
-                    </td>
-                    <td className="px-3 py-3.5 font-medium text-slate-800 max-w-[150px]">
-                      {getOpdName(item.opdId)}
-                    </td>
-                    <td className="px-3 py-3.5 font-semibold text-slate-900 max-w-xs">
-                      {item.sasaranStrategis}
-                    </td>
-                    <td className="px-3 py-3.5 text-slate-700 max-w-xs">
-                      <p className="font-medium">{item.indikatorKinerja}</p>
-                      <span className="text-[11px] text-slate-500 font-mono">
-                        Satuan: {item.satuan}
-                      </span>
-                    </td>
-                    <td className="px-2 py-3.5 text-center font-bold text-slate-800 bg-slate-50/50">
-                      {item.targetTahun1}
-                    </td>
-                    <td className="px-2 py-3.5 text-center font-bold text-slate-800 bg-slate-50/50">
-                      {item.targetTahun2}
-                    </td>
-                    <td className="px-2 py-3.5 text-center font-bold text-slate-800 bg-slate-50/50">
-                      {item.targetTahun3}
-                    </td>
-                    <td className="px-2 py-3.5 text-center font-bold text-slate-800 bg-slate-50/50">
-                      {item.targetTahun4}
-                    </td>
-                    <td className="px-2 py-3.5 text-center font-bold text-slate-800 bg-slate-50/50">
-                      {item.targetTahun5}
-                    </td>
-                    {canEdit && (
-                      <td className="px-3 py-3.5 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setEditingSasaran(item);
-                              setFormData(item);
-                              setIsModalOpen(true);
-                            }}
-                            className="p-1.5 text-slate-600 hover:text-emerald-600 hover:bg-slate-100 rounded-md transition-colors"
-                            title="Edit Sasaran Renstra"
-                          >
-                            <Edit2 className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteSasaran(item.id)}
-                            className="p-1.5 text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
-                            title="Hapus Sasaran"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
+                {filteredSasaran.map((item) => {
+                  const targetVal = item.target ?? item.targetTahun3 ?? 0;
+                  const realisasiVal = item.realisasi ?? item.targetTahun3 ?? 0;
+                  const capaianVal =
+                    item.capaian !== undefined
+                      ? item.capaian
+                      : targetVal > 0
+                      ? Math.round((realisasiVal / targetVal) * 10000) / 100
+                      : 100;
+                  const isGood = capaianVal >= 100;
+
+                  return (
+                    <tr key={item.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-3 py-3.5">
+                        <span className="font-mono font-bold text-slate-900 block">{item.kode}</span>
+                        <span className="inline-block mt-0.5 text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          {item.cascadingLevel}
+                        </span>
                       </td>
-                    )}
-                  </tr>
-                ))}
+                      <td className="px-3 py-3.5 font-medium text-slate-800 max-w-[150px]">
+                        {getOpdName(item.opdId)}
+                      </td>
+                      <td className="px-3 py-3.5 font-semibold text-slate-900 max-w-xs">
+                        {item.sasaranStrategis}
+                      </td>
+                      <td className="px-3 py-3.5 text-slate-700 max-w-xs">
+                        <p className="font-medium">{item.indikatorKinerja}</p>
+                        <span className="text-[11px] text-slate-500 font-mono">
+                          Satuan: {item.satuan}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3.5 text-center font-bold text-slate-900 bg-slate-50/50">
+                        {targetVal} {item.satuan}
+                      </td>
+                      <td className="px-3 py-3.5 text-center font-bold text-blue-700 bg-blue-50/40">
+                        {realisasiVal} {item.satuan}
+                      </td>
+                      <td className="px-3 py-3.5 text-center bg-emerald-50/40">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold font-mono border ${
+                            isGood
+                              ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                              : 'bg-amber-100 text-amber-800 border-amber-300'
+                          }`}
+                        >
+                          {capaianVal.toFixed(2)}%
+                        </span>
+                      </td>
+                      {canEdit && (
+                        <td className="px-3 py-3.5 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingSasaran(item);
+                                setFormData({
+                                  ...item,
+                                  target: item.target ?? item.targetTahun3 ?? 90,
+                                  realisasi: item.realisasi ?? item.targetTahun3 ?? 90,
+                                  capaian: item.capaian ?? 100,
+                                });
+                                setIsModalOpen(true);
+                              }}
+                              className="p-1.5 text-slate-600 hover:text-emerald-600 hover:bg-slate-100 rounded-md transition-colors"
+                              title="Edit Sasaran Renstra"
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteSasaran(item.id)}
+                              className="p-1.5 text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
+                              title="Hapus Sasaran"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -361,12 +391,20 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                           </span>
                         </div>
 
-                        <div className="flex items-center justify-between text-xs bg-slate-50 p-2 rounded-md">
+                        <div className="flex flex-wrap items-center justify-between text-xs bg-slate-50 p-2.5 rounded-md gap-2">
                           <div className="text-slate-600">
                             <strong>Indikator Kinerja:</strong> {sas.indikatorKinerja} ({sas.satuan})
                           </div>
-                          <div className="font-mono text-emerald-700 font-bold">
-                            Target Akhir: {sas.targetTahun5} {sas.satuan}
+                          <div className="flex items-center gap-3 font-mono text-xs">
+                            <span className="text-slate-700 font-semibold">
+                              Target: <strong className="text-slate-900">{sas.target ?? sas.targetTahun3 ?? 0} {sas.satuan}</strong>
+                            </span>
+                            <span className="text-blue-700 font-semibold">
+                              Realisasi: <strong className="text-blue-900">{sas.realisasi ?? sas.targetTahun3 ?? 0} {sas.satuan}</strong>
+                            </span>
+                            <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[11px]">
+                              Capaian: {sas.capaian ? `${sas.capaian.toFixed(2)}%` : '100%'}
+                            </span>
                           </div>
                         </div>
 
@@ -543,65 +581,64 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                 </div>
               </div>
 
-              {/* Target 5 Tahun */}
-              <div>
-                <label className="font-bold text-slate-800 block mb-1.5">
-                  Target Kinerja 5 Tahunan Renstra:
+              {/* Target, Realisasi & Capaian */}
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
+                <label className="font-bold text-slate-800 block text-xs">
+                  Target, Realisasi & Capaian Kinerja Renstra:
                 </label>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <span className="text-[10px] text-slate-500 font-semibold block text-center mb-1">Tahun 1</span>
+                    <span className="text-[11px] text-slate-600 font-semibold block mb-1">Target</span>
                     <input
                       type="number"
                       step="any"
                       required
-                      value={formData.targetTahun1}
-                      onChange={(e) => setFormData({ ...formData, targetTahun1: Number(e.target.value) })}
-                      className="w-full p-2 text-center rounded border border-slate-200 font-bold text-xs"
+                      value={formData.target ?? ''}
+                      onChange={(e) => {
+                        const newTarget = Number(e.target.value);
+                        const curReal = formData.realisasi ?? 0;
+                        const newCap = newTarget > 0 ? Math.round((curReal / newTarget) * 10000) / 100 : 0;
+                        setFormData({
+                          ...formData,
+                          target: newTarget,
+                          capaian: newCap,
+                        });
+                      }}
+                      className="w-full p-2.5 text-center rounded-lg border border-slate-200 font-bold text-xs bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                      placeholder="Nilai Target"
                     />
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-500 font-semibold block text-center mb-1">Tahun 2</span>
+                    <span className="text-[11px] text-slate-600 font-semibold block mb-1">Realisasi</span>
                     <input
                       type="number"
                       step="any"
                       required
-                      value={formData.targetTahun2}
-                      onChange={(e) => setFormData({ ...formData, targetTahun2: Number(e.target.value) })}
-                      className="w-full p-2 text-center rounded border border-slate-200 font-bold text-xs"
+                      value={formData.realisasi ?? ''}
+                      onChange={(e) => {
+                        const newReal = Number(e.target.value);
+                        const curTarget = formData.target ?? 0;
+                        const newCap = curTarget > 0 ? Math.round((newReal / curTarget) * 10000) / 100 : 0;
+                        setFormData({
+                          ...formData,
+                          realisasi: newReal,
+                          capaian: newCap,
+                        });
+                      }}
+                      className="w-full p-2.5 text-center rounded-lg border border-slate-200 font-bold text-xs bg-white text-blue-700 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                      placeholder="Nilai Realisasi"
                     />
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-500 font-semibold block text-center mb-1">Tahun 3</span>
+                    <span className="text-[11px] text-slate-600 font-semibold block mb-1">Capaian (%)</span>
                     <input
                       type="number"
                       step="any"
                       required
-                      value={formData.targetTahun3}
-                      onChange={(e) => setFormData({ ...formData, targetTahun3: Number(e.target.value) })}
-                      className="w-full p-2 text-center rounded border border-slate-200 font-bold text-xs"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-slate-500 font-semibold block text-center mb-1">Tahun 4</span>
-                    <input
-                      type="number"
-                      step="any"
-                      required
-                      value={formData.targetTahun4}
-                      onChange={(e) => setFormData({ ...formData, targetTahun4: Number(e.target.value) })}
-                      className="w-full p-2 text-center rounded border border-slate-200 font-bold text-xs"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-slate-500 font-semibold block text-center mb-1">Tahun 5</span>
-                    <input
-                      type="number"
-                      step="any"
-                      required
-                      value={formData.targetTahun5}
-                      onChange={(e) => setFormData({ ...formData, targetTahun5: Number(e.target.value) })}
-                      className="w-full p-2 text-center rounded border border-slate-200 font-bold text-xs"
+                      value={formData.capaian ?? ''}
+                      onChange={(e) => setFormData({ ...formData, capaian: Number(e.target.value) })}
+                      className="w-full p-2.5 text-center rounded-lg border border-slate-200 font-bold text-xs bg-emerald-50 text-emerald-800 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                      placeholder="%"
                     />
                   </div>
                 </div>

@@ -62,11 +62,14 @@ export interface RenstraSasaran {
   sasaranStrategis: string;
   indikatorKinerja: string;
   satuan: string;
-  targetTahun1: number;
-  targetTahun2: number;
-  targetTahun3: number;
-  targetTahun4: number;
-  targetTahun5: number;
+  target: number;
+  realisasi: number;
+  capaian: number;
+  targetTahun1?: number;
+  targetTahun2?: number;
+  targetTahun3?: number;
+  targetTahun4?: number;
+  targetTahun5?: number;
   cascadingLevel: 'Eselon II' | 'Eselon III' | 'Eselon IV' | 'Staf/Pelaksana';
 }
 
