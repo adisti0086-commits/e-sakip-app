@@ -15,7 +15,7 @@ import {
   ChevronRight,
   TrendingUp,
 } from 'lucide-react';
-import { RenstraTujuan, RenstraSasaran,OPD, User } from '../types';
+import { RenstraTujuan, RenstraSasaran, OPD, User } from '../types';
 
 interface MasterRenstraViewProps {
   tujuanList?: RenstraTujuan[];
@@ -125,7 +125,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Tab Switcher filter */}
+      {/* Tab Switcher & OPD filter */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
         <div className="flex items-center gap-2">
           <button
@@ -224,7 +224,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
               <thead className="bg-slate-100/80 border-b border-slate-200 text-slate-700 font-bold uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="px-3 py-3">Kode & Level</th>
-                  <th className="px-3 py-3">Unit Kerja</th>
+                  <th className="px-3 py-3">Unit Kerja (OPD)</th>
                   <th className="px-3 py-3">Sasaran Strategis</th>
                   <th className="px-3 py-3">Indikator Kinerja & Satuan</th>
                   <th className="px-3 py-3 text-center bg-slate-200/60 text-slate-800">Target</th>
@@ -237,12 +237,13 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                 {filteredSasaran.map((item) => {
                   const targetVal = item.target ?? item.targetTahun3 ?? 0;
                   const realisasiVal = item.realisasi ?? item.targetTahun3 ?? 0;
-                  const capaianVal =
+                  const rawCapaianVal =
                     item.capaian !== undefined
                       ? item.capaian
                       : targetVal > 0
                       ? Math.round((realisasiVal / targetVal) * 10000) / 100
                       : 100;
+                  const capaianVal = Math.min(rawCapaianVal, 120);
                   const isGood = capaianVal >= 100;
 
                   return (
@@ -272,15 +273,22 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                         {realisasiVal} {item.satuan}
                       </td>
                       <td className="px-3 py-3.5 text-center bg-emerald-50/40">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold font-mono border ${
-                            isGood
-                              ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                              : 'bg-amber-100 text-amber-800 border-amber-300'
-                          }`}
-                        >
-                          {capaianVal.toFixed(2)}%
-                        </span>
+                        <div className="flex flex-col items-center">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold font-mono border ${
+                              isGood
+                                ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                                : 'bg-amber-100 text-amber-800 border-amber-300'
+                            }`}
+                          >
+                            {capaianVal.toFixed(2)}%
+                          </span>
+                          {rawCapaianVal > 120 && (
+                            <span className="text-[9px] text-slate-500 mt-0.5 font-mono">
+                              (Maks. 120%)
+                            </span>
+                          )}
+                        </div>
                       </td>
                       {canEdit && (
                         <td className="px-3 py-3.5 text-right">
@@ -355,7 +363,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                 <div className="pl-6 pt-4 space-y-3">
                   <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                     <TrendingUp className="w-3 h-3 text-emerald-600" />
-                    <span>Sasaran Strategis (Ultimate Outcome / Eselon II):</span>
+                    <span>Sasaran Strategis Perangkat Daerah (Ultimate Outcome / Eselon II):</span>
                   </div>
 
                   {sasaranList
@@ -452,7 +460,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                     }
                     className="w-full p-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                   >
-                    <option value="Eselon II">Eselon II (Kepala Unit Kerja/ Ultimate Outcome)</option>
+                    <option value="Eselon II">Eselon II (Kepala OPD / Ultimate Outcome)</option>
                     <option value="Eselon III">Eselon III (Kabid / Intermediate Outcome)</option>
                     <option value="Eselon IV">Eselon IV (Kasubag / Output Kinerja)</option>
                     <option value="Staf/Pelaksana">Staf / Pelaksana (Aktivitas Kinerja)</option>
@@ -461,7 +469,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
               </div>
 
               <div>
-                <label className="font-semibold text-slate-700 block mb-1">Unit Kerja</label>
+                <label className="font-semibold text-slate-700 block mb-1">Unit Kerja (OPD)</label>
                 <select
                   value={formData.opdId}
                   onChange={(e) => setFormData({ ...formData, opdId: e.target.value })}
@@ -514,9 +522,14 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
 
               {/* Target, Realisasi & Capaian */}
               <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
-                <label className="font-bold text-slate-800 block text-xs">
-                  Target, Realisasi & Capaian Kinerja Renstra:
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-slate-800 block text-xs">
+                    Target, Realisasi & Capaian Kinerja Renstra:
+                  </label>
+                  <span className="text-[10px] text-slate-500 font-mono">
+                    (Maks. Capaian dibatasi 120%)
+                  </span>
+                </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
                     <span className="text-[11px] text-slate-600 font-semibold block mb-1">Target</span>
@@ -528,7 +541,8 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                       onChange={(e) => {
                         const newTarget = Number(e.target.value);
                         const curReal = formData.realisasi ?? 0;
-                        const newCap = newTarget > 0 ? Math.round((curReal / newTarget) * 10000) / 100 : 0;
+                        const rawCap = newTarget > 0 ? Math.round((curReal / newTarget) * 10000) / 100 : 0;
+                        const newCap = Math.min(rawCap, 120);
                         setFormData({
                           ...formData,
                           target: newTarget,
@@ -549,7 +563,8 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                       onChange={(e) => {
                         const newReal = Number(e.target.value);
                         const curTarget = formData.target ?? 0;
-                        const newCap = curTarget > 0 ? Math.round((newReal / curTarget) * 10000) / 100 : 0;
+                        const rawCap = curTarget > 0 ? Math.round((newReal / curTarget) * 10000) / 100 : 0;
+                        const newCap = Math.min(rawCap, 120);
                         setFormData({
                           ...formData,
                           realisasi: newReal,
@@ -565,9 +580,13 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                     <input
                       type="number"
                       step="any"
+                      max={120}
                       required
                       value={formData.capaian ?? ''}
-                      onChange={(e) => setFormData({ ...formData, capaian: Number(e.target.value) })}
+                      onChange={(e) => {
+                        const cap = Math.min(Number(e.target.value), 120);
+                        setFormData({ ...formData, capaian: cap });
+                      }}
                       className="w-full p-2.5 text-center rounded-lg border border-slate-200 font-bold text-xs bg-emerald-50 text-emerald-800 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                       placeholder="%"
                     />

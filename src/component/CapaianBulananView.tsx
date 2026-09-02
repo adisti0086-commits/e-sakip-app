@@ -150,7 +150,8 @@ export const CapaianBulananView: React.FC<CapaianBulananViewProps> = ({
     if (!activeIndikator || !activeEditingBulan) return;
 
     const targetB = activeEditingBulan.targetBulanan || 1;
-    const persen = Math.round((Number(realisasiInput) / targetB) * 10000) / 100;
+    const rawPersen = Math.round((Number(realisasiInput) / targetB) * 10000) / 100;
+    const persen = Math.min(rawPersen, 120);
 
     const updatedMonthItem: RealisasiBulan = {
       ...activeEditingBulan,
@@ -382,26 +383,35 @@ export const CapaianBulananView: React.FC<CapaianBulananViewProps> = ({
                     </td>
                     <td className="px-3 py-3.5 text-center bg-emerald-50/30 border-x border-emerald-100">
                       <div className="flex flex-col items-center justify-center gap-1">
-                        <span
-                          className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-black font-mono shadow-xs border ${
-                            isGreen
-                              ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
-                              : isYellow
-                              ? 'bg-amber-100 text-amber-900 border-amber-300'
-                              : isRed
-                              ? 'bg-rose-100 text-rose-900 border-rose-300'
-                              : 'bg-slate-100 text-slate-500 border-slate-200'
-                          }`}
-                        >
-                          {month.persenCapaian > 0
-                            ? `${month.persenCapaian.toFixed(2).replace('.', ',')} %`
-                            : '0,00 %'}
-                        </span>
-                        {month.realisasi > 0 && month.targetBulanan > 0 && (
-                          <span className="text-[10px] text-slate-500 font-mono">
-                            ({month.realisasi} / {month.targetBulanan}) × 100%
-                          </span>
-                        )}
+                        {(() => {
+                          const rawPersen = month.targetBulanan > 0 ? (month.realisasi / month.targetBulanan) * 100 : 0;
+                          const cappedPersen = Math.min(month.persenCapaian, 120);
+                          return (
+                            <>
+                              <span
+                                className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-black font-mono shadow-xs border ${
+                                  isGreen
+                                    ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                                    : isYellow
+                                    ? 'bg-amber-100 text-amber-900 border-amber-300'
+                                    : isRed
+                                    ? 'bg-rose-100 text-rose-900 border-rose-300'
+                                    : 'bg-slate-100 text-slate-500 border-slate-200'
+                                }`}
+                              >
+                                {cappedPersen > 0
+                                  ? `${cappedPersen.toFixed(2).replace('.', ',')} %`
+                                  : '0,00 %'}
+                              </span>
+                              {month.realisasi > 0 && month.targetBulanan > 0 && (
+                                <span className="text-[10px] text-slate-500 font-mono">
+                                  ({month.realisasi} / {month.targetBulanan}) × 100%
+                                  {rawPersen > 120 && ' (Maks. 120%)'}
+                                </span>
+                              )}
+                            </>
+                          );
+                        })()}
                       </div>
                     </td>
                     <td className="px-3 py-3.5">
@@ -519,30 +529,28 @@ export const CapaianBulananView: React.FC<CapaianBulananViewProps> = ({
               </div>
 
               {/* Live Capaian Calculation Preview */}
-              {activeEditingBulan.targetBulanan > 0 && (
-                <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 flex items-center justify-between">
-                  <div>
-                    <span className="text-[11px] font-semibold text-emerald-800 block">
-                      Hasil Capaian Terhitung:
-                    </span>
-                    <span className="text-[10px] text-emerald-600 font-mono">
-                      ({realisasiInput || 0} / {activeEditingBulan.targetBulanan}) × 100%
-                    </span>
+              {activeEditingBulan.targetBulanan > 0 && (() => {
+                const rawVal = Math.round(((Number(realisasiInput) || 0) / activeEditingBulan.targetBulanan) * 10000) / 100;
+                const cappedVal = Math.min(rawVal, 120);
+                return (
+                  <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 flex items-center justify-between">
+                    <div>
+                      <span className="text-[11px] font-semibold text-emerald-800 block">
+                        Hasil Capaian Terhitung:
+                      </span>
+                      <span className="text-[10px] text-emerald-600 font-mono">
+                        ({realisasiInput || 0} / {activeEditingBulan.targetBulanan}) × 100%
+                        {rawVal > 120 && ' (Maksimal dibatasi 120%)'}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-base font-black font-mono text-emerald-900">
+                        {cappedVal.toFixed(2).replace('.', ',')} %
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <span className="text-base font-black font-mono text-emerald-900">
-                      {(
-                        Math.round(
-                          ((Number(realisasiInput) || 0) / activeEditingBulan.targetBulanan) * 10000
-                        ) / 100
-                      )
-                        .toFixed(2)
-                        .replace('.', ',')}{' '}
-                      %
-                    </span>
-                  </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* Upload Evidens Simulator */}
               <div>

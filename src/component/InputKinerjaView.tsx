@@ -124,10 +124,11 @@ export const InputKinerjaView: React.FC<InputKinerjaViewProps> = ({
   const averageCapaianSem1 = useMemo(() => {
     if (filteredIndikator.length === 0) return 0;
     const total = filteredIndikator.reduce((acc, curr) => {
-      const val = parseFloat(curr.capaianSem1Text?.replace('%', '').replace(',', '.') || '0') || 0;
+      const rawVal = parseFloat(curr.capaianSem1Text?.replace('%', '').replace(',', '.') || '0') || 0;
+      const val = Math.min(rawVal, 120);
       return acc + val;
     }, 0);
-    return Math.round((total / filteredIndikator.length) * 100) / 100;
+    return Math.min(Math.round((total / filteredIndikator.length) * 100) / 100, 120);
   }, [filteredIndikator]);
 
   const getOpdName = (id: string) => opdList?.find((o) => o.id === id)?.nama || id;
@@ -216,22 +217,28 @@ export const InputKinerjaView: React.FC<InputKinerjaViewProps> = ({
     const num = parseFloat(capaianStr.replace('%', '').replace(',', '.'));
     if (isNaN(num)) return <span>{capaianStr}</span>;
 
-    if (num >= 100) {
+    const cappedNum = Math.min(num, 120);
+    const displayStr = num > 120 ? `${cappedNum}%` : capaianStr;
+
+    if (cappedNum >= 100) {
       return (
-        <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-          {capaianStr}
+        <span
+          className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200"
+          title={num > 120 ? `Dibatasi Maks. 120% (Kalkulasi riil: ${num}%)` : undefined}
+        >
+          {displayStr}
         </span>
       );
-    } else if (num >= 75) {
+    } else if (cappedNum >= 75) {
       return (
         <span className="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
-          {capaianStr}
+          {displayStr}
         </span>
       );
     } else {
       return (
         <span className="font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
-          {capaianStr}
+          {displayStr}
         </span>
       );
     }

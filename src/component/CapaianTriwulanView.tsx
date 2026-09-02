@@ -125,7 +125,8 @@ export const CapaianTriwulanView: React.FC<CapaianTriwulanViewProps> = ({
 
     const targetVal = Number(triwulanForm.target) || 1;
     const realisasiVal = Number(triwulanForm.realisasi) || 0;
-    const persen = Math.round((realisasiVal / targetVal) * 10000) / 100;
+    const rawPersen = Math.round((realisasiVal / targetVal) * 10000) / 100;
+    const persen = Math.min(rawPersen, 120);
 
     // Rule:
     // >= 100: hijau
@@ -476,7 +477,7 @@ export const CapaianTriwulanView: React.FC<CapaianTriwulanViewProps> = ({
                                 : 'bg-rose-600'
                             }`}
                           />
-                          <span className="font-mono">{data.persenCapaian}%</span>
+                          <span className="font-mono">{Math.min(data.persenCapaian, 120)}%</span>
                           <span className="text-[10px] uppercase font-bold tracking-wider">
                             ({data.statusWarna})
                           </span>
@@ -603,7 +604,8 @@ export const CapaianTriwulanView: React.FC<CapaianTriwulanViewProps> = ({
               {(() => {
                 const targetV = Number(triwulanForm.target) || 1;
                 const realisasiV = Number(triwulanForm.realisasi) || 0;
-                const p = Math.round((realisasiV / targetV) * 10000) / 100;
+                const rawP = Math.round((realisasiV / targetV) * 10000) / 100;
+                const p = Math.min(rawP, 120);
                 let colorClass = 'bg-rose-100 text-rose-800 border-rose-300';
                 let label = 'MERAH (<50%)';
                 if (p >= 100) {
@@ -616,7 +618,10 @@ export const CapaianTriwulanView: React.FC<CapaianTriwulanViewProps> = ({
 
                 return (
                   <div className={`p-3 rounded-lg border flex items-center justify-between ${colorClass}`}>
-                    <span className="font-bold">Estimasi % Capaian: {p}%</span>
+                    <span className="font-bold">
+                      Estimasi % Capaian: {p}%
+                      {rawP > 120 && ' (Dibatasi Maks. 120%)'}
+                    </span>
                     <span className="font-extrabold uppercase font-mono">{label}</span>
                   </div>
                 );
