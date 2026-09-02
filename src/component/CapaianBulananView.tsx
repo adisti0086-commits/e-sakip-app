@@ -339,14 +339,19 @@ export const CapaianBulananView: React.FC<CapaianBulananViewProps> = ({
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left text-xs min-w-[760px]">
             <thead className="bg-slate-100/80 border-b border-slate-200 text-slate-700 font-bold uppercase tracking-wider text-[11px]">
               <tr>
                 <th className="px-3 py-3 text-center w-12">Bulan</th>
                 <th className="px-3 py-3">Nama Bulan</th>
                 <th className="px-3 py-3 text-right">Target Kumulatif</th>
                 <th className="px-3 py-3 text-right">Realisasi Bulanan</th>
-                <th className="px-3 py-3 text-right font-extrabold">% Capaian</th>
+                <th className="px-3 py-3 text-center min-w-[150px] bg-emerald-50/70 border-x border-emerald-100">
+                  <div className="font-extrabold text-emerald-950">Capaian (%)</div>
+                  <div className="text-[9px] font-normal normal-case text-emerald-700 font-mono">
+                    (Realisasi / Target) × 100%
+                  </div>
+                </th>
                 <th className="px-3 py-3">Bukti Dukung / Evidens</th>
                 <th className="px-3 py-3">Status Validasi</th>
                 <th className="px-3 py-3">Catatan Validator</th>
@@ -370,25 +375,34 @@ export const CapaianBulananView: React.FC<CapaianBulananViewProps> = ({
                       {month.namaBulan}
                     </td>
                     <td className="px-3 py-3.5 text-right font-mono text-slate-700">
-                      {month.targetBulanan} {activeIndikator?.satuan}
+                      {month.targetBulanan.toString().replace('.', ',')} {activeIndikator?.satuan}
                     </td>
-                    <td className="px-3 py-3.5 text-right font-mono font-bold text-slate-900">
-                      {month.realisasi} {activeIndikator?.satuan}
+                    <td className="px-3 py-3.5 text-right font-mono font-bold text-blue-700">
+                      {month.realisasi.toString().replace('.', ',')} {activeIndikator?.satuan}
                     </td>
-                    <td className="px-3 py-3.5 text-right font-mono font-black">
-                      <span
-                        className={`inline-block px-2 py-0.5 rounded text-xs ${
-                          isGreen
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : isYellow
-                            ? 'bg-amber-100 text-amber-800'
-                            : isRed
-                            ? 'bg-rose-100 text-rose-800'
-                            : 'text-slate-400'
-                        }`}
-                      >
-                        {month.persenCapaian}%
-                      </span>
+                    <td className="px-3 py-3.5 text-center bg-emerald-50/30 border-x border-emerald-100">
+                      <div className="flex flex-col items-center justify-center gap-1">
+                        <span
+                          className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-black font-mono shadow-xs border ${
+                            isGreen
+                              ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                              : isYellow
+                              ? 'bg-amber-100 text-amber-900 border-amber-300'
+                              : isRed
+                              ? 'bg-rose-100 text-rose-900 border-rose-300'
+                              : 'bg-slate-100 text-slate-500 border-slate-200'
+                          }`}
+                        >
+                          {month.persenCapaian > 0
+                            ? `${month.persenCapaian.toFixed(2).replace('.', ',')} %`
+                            : '0,00 %'}
+                        </span>
+                        {month.realisasi > 0 && month.targetBulanan > 0 && (
+                          <span className="text-[10px] text-slate-500 font-mono">
+                            ({month.realisasi} / {month.targetBulanan}) × 100%
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-3 py-3.5">
                       {month.evidensNama ? (
@@ -503,6 +517,32 @@ export const CapaianBulananView: React.FC<CapaianBulananViewProps> = ({
                   className="w-full p-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-bold font-mono text-sm"
                 />
               </div>
+
+              {/* Live Capaian Calculation Preview */}
+              {activeEditingBulan.targetBulanan > 0 && (
+                <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 flex items-center justify-between">
+                  <div>
+                    <span className="text-[11px] font-semibold text-emerald-800 block">
+                      Hasil Capaian Terhitung:
+                    </span>
+                    <span className="text-[10px] text-emerald-600 font-mono">
+                      ({realisasiInput || 0} / {activeEditingBulan.targetBulanan}) × 100%
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-base font-black font-mono text-emerald-900">
+                      {(
+                        Math.round(
+                          ((Number(realisasiInput) || 0) / activeEditingBulan.targetBulanan) * 10000
+                        ) / 100
+                      )
+                        .toFixed(2)
+                        .replace('.', ',')}{' '}
+                      %
+                    </span>
+                  </div>
+                </div>
+              )}
 
               {/* Upload Evidens Simulator */}
               <div>
