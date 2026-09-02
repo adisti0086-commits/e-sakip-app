@@ -15,7 +15,7 @@ import {
   ChevronRight,
   TrendingUp,
 } from 'lucide-react';
-import { RenstraTujuan, RenstraSasaran, OPD, User } from '../types';
+import { RenstraTujuan, RenstraSasaran,OPD, User } from '../types';
 
 interface MasterRenstraViewProps {
   tujuanList?: RenstraTujuan[];
@@ -39,7 +39,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
   const [filterOpd, setFilterOpd] = useState(
     currentUser.role === 'operator_unit' ? currentUser.opdId : selectedOpdId
   );
-  const [activeTabSub, setActiveTabSub] = useState<'sasaran' | 'cascading' | 'tujuan'>('sasaran');
+  const [activeTabSub, setActiveTabSub] = useState<'sasaran' | 'cascading'>('sasaran');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSasaran, setEditingSasaran] = useState<RenstraSasaran | null>(null);
 
@@ -125,7 +125,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Tab Switcher & OPD filter */}
+      {/* Tab Switcher filter */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
         <div className="flex items-center gap-2">
           <button
@@ -224,7 +224,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
               <thead className="bg-slate-100/80 border-b border-slate-200 text-slate-700 font-bold uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="px-3 py-3">Kode & Level</th>
-                  <th className="px-3 py-3">Unit Kerja (OPD)</th>
+                  <th className="px-3 py-3">Unit Kerja</th>
                   <th className="px-3 py-3">Sasaran Strategis</th>
                   <th className="px-3 py-3">Indikator Kinerja & Satuan</th>
                   <th className="px-3 py-3 text-center bg-slate-200/60 text-slate-800">Target</th>
@@ -338,11 +338,11 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
           <div className="space-y-6">
             {tujuanList.map((tuj, idx) => (
               <div key={tuj.id} className="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
-                {/* Level 1: Tujuan Strategis Makro */}
+                {/* Level 1: Tujuan Strategis */}
                 <div className="p-3 bg-slate-900 text-white rounded-lg shadow-xs flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className="px-2 py-0.5 rounded bg-emerald-500 text-white font-bold text-[10px] font-mono">
-                      TUJUAN MAKRO #{idx + 1}
+                      TUJUAN STRATEGIS #{idx + 1}
                     </span>
                     <span className="font-bold text-xs">{tuj.pernyataan}</span>
                   </div>
@@ -355,7 +355,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                 <div className="pl-6 pt-4 space-y-3">
                   <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                     <TrendingUp className="w-3 h-3 text-emerald-600" />
-                    <span>Sasaran Strategis Perangkat Daerah (Ultimate Outcome / Eselon II):</span>
+                    <span>Sasaran Strategis (Ultimate Outcome / Eselon II):</span>
                   </div>
 
                   {sasaranList
@@ -410,47 +410,6 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
         </div>
       )}
 
-      {/* Subtab 3: Tujuan Makro Daerah */}
-      {activeTabSub === 'tujuan' && (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-6 space-y-4">
-          <div>
-            <h3 className="font-bold text-slate-900 text-sm">
-              Tujuan Pembangunan Jangka Menengah Daerah (RPJMD)
-            </h3>
-            <p className="text-xs text-slate-500">
-              Visi, Misi, dan Tujuan Makro Pemerintah Daerah periode 5 tahunan
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {tujuanList.map((tuj) => (
-              <div
-                key={tuj.id}
-                className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:shadow-md transition-all flex flex-col justify-between"
-              >
-                <div>
-                  <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                    {tuj.kode}
-                  </span>
-                  <h4 className="font-bold text-xs text-slate-800 mt-2 leading-snug">
-                    {tuj.pernyataan}
-                  </h4>
-                  <div className="mt-3 text-xs text-slate-600">
-                    <p className="font-semibold text-slate-700">Indikator Makro:</p>
-                    <p className="text-slate-500">{tuj.indikator}</p>
-                  </div>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-xs font-mono">
-                  <span className="text-slate-400">Target Awal: {tuj.targetAwal}</span>
-                  <span className="font-bold text-emerald-700">Akhir: {tuj.targetAkhir}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Modal Add / Edit Sasaran Renstra */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
@@ -493,7 +452,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                     }
                     className="w-full p-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                   >
-                    <option value="Eselon II">Eselon II (Kepala OPD / Ultimate Outcome)</option>
+                    <option value="Eselon II">Eselon II (Kepala Unit Kerja/ Ultimate Outcome)</option>
                     <option value="Eselon III">Eselon III (Kabid / Intermediate Outcome)</option>
                     <option value="Eselon IV">Eselon IV (Kasubag / Output Kinerja)</option>
                     <option value="Staf/Pelaksana">Staf / Pelaksana (Aktivitas Kinerja)</option>
@@ -501,35 +460,19 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="font-semibold text-slate-700 block mb-1">Unit Kerja (OPD)</label>
-                  <select
-                    value={formData.opdId}
-                    onChange={(e) => setFormData({ ...formData, opdId: e.target.value })}
-                    className="w-full p-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
-                  >
-                    {opdList.map((o) => (
-                      <option key={o.id} value={o.id}>
-                        {o.nama}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="font-semibold text-slate-700 block mb-1">Tujuan Makro Daerah</label>
-                  <select
-                    value={formData.tujuanId}
-                    onChange={(e) => setFormData({ ...formData, tujuanId: e.target.value })}
-                    className="w-full p-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
-                  >
-                    {tujuanList.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.kode} - {t.pernyataan.substring(0, 40)}...
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              <div>
+                <label className="font-semibold text-slate-700 block mb-1">Unit Kerja</label>
+                <select
+                  value={formData.opdId}
+                  onChange={(e) => setFormData({ ...formData, opdId: e.target.value })}
+                  className="w-full p-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                >
+                  {opdList.map((o) => (
+                    <option key={o.id} value={o.id}>
+                      {o.nama}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>
