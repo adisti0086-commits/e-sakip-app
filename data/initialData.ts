@@ -465,7 +465,7 @@ export const INITIAL_RENSTRA_SASARAN: RenstraSasaran[] = [
 ];
 
 // 18 INDIKATOR KINERJA PK SAKIP KEMENKES (RSUP DR. M DJAMIL)
-const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
+const RAW_INDIKATOR_PK: Omit<IndikatorPK, 'tahun' | 'id'>[] = [
   // Sasaran Strategis 1
   {
     opdId: 'opd-rsup-m-djamil',
@@ -492,9 +492,7 @@ const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
 
   // Sasaran Strategis 2
   {
-    id: 'pk-kemenkes-2',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 2,
     sasaranStrategis: 'Terwujudnya Penyelenggaraan Pengampuan Nasional untuk Penyakit Prioritas',
     namaIndikator: 'IKM 16.4.10 - Persentase pencapaian lokasi (lokus) yang dikelola/ diampu sesuai target',
@@ -518,9 +516,7 @@ const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
 
   // Sasaran Strategis 3
   {
-    id: 'pk-kemenkes-3',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 3,
     sasaranStrategis: 'Terwujudnya Pusat Pendidikan, pelatihan dan penelitian yang Berkesinambungan',
     namaIndikator: 'IKM 32.1 - Persentase pendapatan yang diperoleh dari semua penelitian CRU',
@@ -544,9 +540,7 @@ const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
 
   // Sasaran Strategis 4
   {
-    id: 'pk-kemenkes-4',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 4,
     sasaranStrategis: 'Terwujudnya Sistem IT dan Teknologi Kesehatan yang Andal',
     namaIndikator: 'IKM 33.7 - Persentase penerapan Sistem Informasi Manajemen Rumah Sakit (SIMRS) yang terintegrasi seluruh layanan',
@@ -570,9 +564,7 @@ const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
 
   // Sasaran Strategis 5
   {
-    id: 'pk-kemenkes-5',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 5,
     sasaranStrategis: 'Terwujudnya Tata Kelola yang Bersih dan Akuntabel',
     namaIndikator: 'IKM 33.8 - Skor BLU Maturity Rating',
@@ -594,9 +586,7 @@ const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
     tipeIndikator: 'IKU',
   },
   {
-    id: 'pk-kemenkes-6',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 6,
     sasaranStrategis: 'Terwujudnya Tata Kelola yang Bersih dan Akuntabel',
     namaIndikator: 'Nilai SAKIP RSUP Dr. M Djamil',
@@ -620,9 +610,7 @@ const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
 
   // Sasaran Strategis 6
   {
-    id: 'pk-kemenkes-7',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 7,
     sasaranStrategis: 'Terwujudnya Proses Bisnis yang efektif dan Efisien',
     namaIndikator: 'IKM 16.4.9 - Bed Occupancy Rate (BOR)',
@@ -646,9 +634,7 @@ const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
 
   // Sasaran Strategis 7
   {
-    id: 'pk-kemenkes-8',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 8,
     sasaranStrategis: 'Terwujudnya Mutu Layanan Klinis yang Baik dan Konsisten',
     namaIndikator: 'IKM 16.4.6 - Healthcare Associated Infections (HAIs) rates',
@@ -670,9 +656,7 @@ const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
     tipeIndikator: 'IKU',
   },
   {
-    id: 'pk-kemenkes-9',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 9,
     sasaranStrategis: 'Terwujudnya Mutu Layanan Klinis yang Baik dan Konsisten',
     namaIndikator: 'IKM 16.4.7 - Lama Rawat Pasien Kanker Payudara dengan Mastektomi Tanpa Komplikasi 5 Hari',
@@ -694,9 +678,7 @@ const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
     tipeIndikator: 'IKU',
   },
   {
-    id: 'pk-kemenkes-10',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 10,
     sasaranStrategis: 'Terwujudnya Mutu Layanan Klinis yang Baik dan Konsisten',
     namaIndikator: 'IKM 16.4.8 - Lama rawat ≤ 5 hari pada kasus dengan STEMI klasifikasi KILLIP 1',
@@ -720,9 +702,7 @@ const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
 
   // Sasaran Strategis 8
   {
-    id: 'pk-kemenkes-11',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 11,
     sasaranStrategis: 'Terwujudnya Kegiatan Pemasaran yang Inovatif dan Berfokus pada Pelanggan',
     namaIndikator: 'IKM 16.4.5 - Persentase pendapatan non-JKN terhadap pendapatan keseluruhan RS',
@@ -746,9 +726,7 @@ const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
 
   // Sasaran Strategis 9
   {
-    id: 'pk-kemenkes-12',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 12,
     sasaranStrategis: 'Terwujudnya SDM yang Andal dan Budaya Organisasi yang ber-AKHLAK',
     namaIndikator: 'IKM 33.1 - Skor Tingkat Kepuasan Pegawai',
@@ -770,9 +748,7 @@ const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
     tipeIndikator: 'IKU',
   },
   {
-    id: 'pk-kemenkes-13',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 13,
     sasaranStrategis: 'Terwujudnya SDM yang Andal dan Budaya Organisasi yang ber-AKHLAK',
     namaIndikator: 'IKM 33.2 - Training Effectiveness Index (TEI)',
@@ -796,9 +772,7 @@ const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
 
   // Sasaran Strategis 10
   {
-    id: 'pk-kemenkes-14',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 14,
     sasaranStrategis: 'Terwujudnya Pengelolaan Keuangan yang Andal',
     namaIndikator: 'IKM 16.4.4 - EBITDA margin',
@@ -822,9 +796,7 @@ const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
 
   // Sasaran Strategis 11
   {
-    id: 'pk-kemenkes-15',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 15,
     sasaranStrategis: 'Meningkatnya dukungan manajemen dan pelaksanaan tugas teknis lainnya',
     namaIndikator: 'IKM 33.3 - Nilai Kinerja Anggaran RSUP Dr. M Djamil',
@@ -846,9 +818,7 @@ const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
     tipeIndikator: 'IKU',
   },
   {
-    id: 'pk-kemenkes-16',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 16,
     sasaranStrategis: 'Meningkatnya dukungan manajemen dan pelaksanaan tugas teknis lainnya',
     namaIndikator: 'IKM 33.4 - Indeks Kualitas SDM RSUP Dr. M Djamil',
@@ -870,9 +840,7 @@ const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
     tipeIndikator: 'IKU',
   },
   {
-    id: 'pk-kemenkes-17',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 17,
     sasaranStrategis: 'Meningkatnya dukungan manajemen dan pelaksanaan tugas teknis lainnya',
     namaIndikator: 'IKM 33.5 - Persentase Rekomendasi Hasil Pemeriksaan BPK yang telah tuntas ditindaklanjuti RSUP Dr. M Djamil',
@@ -894,9 +862,7 @@ const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
     tipeIndikator: 'IKU',
   },
   {
-    id: 'pk-kemenkes-18',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 18,
     sasaranStrategis: 'Meningkatnya dukungan manajemen dan pelaksanaan tugas teknis lainnya',
     namaIndikator: 'IKM 33.6 - Persentase Realisasi Anggaran RSUP Dr. M Djamil',

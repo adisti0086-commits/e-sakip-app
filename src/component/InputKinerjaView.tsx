@@ -88,7 +88,7 @@ export const InputKinerjaView: React.FC<InputKinerjaViewProps> = ({
   const filteredIndikator = useMemo(() => {
     return (indikatorList || [])
       .filter((i) => {
-        const matchYear = i.tahun === selectedYear || selectedYear === 2026;
+        const matchYear = i.tahun === selectedYear;
         let matchOpd = true;
         if (currentUser.role === 'operator_unit') {
           matchOpd = i.opdId === currentUser.opdId;
@@ -98,7 +98,7 @@ export const InputKinerjaView: React.FC<InputKinerjaViewProps> = ({
         const matchSearch =
           i.namaIndikator.toLowerCase().includes(searchTerm.toLowerCase()) ||
           i.sasaranStrategis.toLowerCase().includes(searchTerm.toLowerCase());
-        return matchOpd && matchSearch;
+        return matchYear && matchOpd && matchSearch;
       })
       .sort((a, b) => (a.noUrut || 99) - (b.noUrut || 99));
   }, [indikatorList, selectedYear, currentUser, filterOpd, searchTerm]);
