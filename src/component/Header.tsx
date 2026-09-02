@@ -10,6 +10,7 @@ import {
   FileSpreadsheet,
   KeyRound,
   LogIn,
+  LogOut,
 } from 'lucide-react';
 import { User, OPD, UserRole } from '../types';
 import { ActiveTab } from './Sidebar';
@@ -27,6 +28,7 @@ interface HeaderProps {
   onToggleMobileMenu: () => void;
   pendingValidationCount: number;
   onOpenLoginModal?: () => void;
+  onOpenLogoutModal?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -42,6 +44,7 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleMobileMenu,
   pendingValidationCount,
   onOpenLoginModal,
+  onOpenLogoutModal,
 }) => {
   const [showRoleDropdown, setShowRoleDropdown] = React.useState(false);
   const [showNotification, setShowNotification] = React.useState(false);
@@ -163,17 +166,16 @@ export const Header: React.FC<HeaderProps> = ({
             </select>
           </div>
 
-          {/* Menu Login 4 User Button */}
-          {onOpenLoginModal && (
+          {/* Direct Logout Button */}
+          {onOpenLogoutModal && (
             <button
               type="button"
-              onClick={onOpenLoginModal}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs font-bold border border-slate-700 shadow-sm transition-all cursor-pointer"
-              title="Buka Menu Login 4 User SAKIP"
+              onClick={onOpenLogoutModal}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold border border-rose-200 shadow-xs transition-all cursor-pointer"
+              title="Keluar dari Sistem E-SAKIP (Log Out)"
             >
-              <KeyRound className="w-3.5 h-3.5 text-amber-400" />
-              <span className="hidden md:inline">Menu Login (4 User)</span>
-              <span className="md:hidden">Login</span>
+              <LogOut className="w-3.5 h-3.5 text-rose-600" />
+              <span className="hidden sm:inline">Log Out</span>
             </button>
           )}
 
@@ -226,7 +228,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-              className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors"
+              className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer"
             >
               <div className="w-7 h-7 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">
                 {currentUser.name.charAt(0)}
@@ -242,61 +244,44 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             {showRoleDropdown && (
-              <div className="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200 p-3 z-50">
-                <div className="pb-2 border-b border-slate-100">
-                  <p className="text-xs font-bold text-slate-800">{currentUser.name}</p>
-                  <p className="text-[11px] text-slate-500 font-mono">NIP. {currentUser.nip}</p>
-                  <span className="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
-                    {currentUser.roleTitle}
-                  </span>
+              <div className="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200 p-3.5 z-50 animate-in fade-in zoom-in-95">
+                <div className="pb-3 border-b border-slate-100 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-emerald-600 text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-xs">
+                    {currentUser.name.charAt(0)}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-bold text-slate-900 truncate">{currentUser.name}</p>
+                    <p className="text-[11px] text-slate-500 font-mono truncate">NIP. {currentUser.nip}</p>
+                    <span className="inline-block mt-0.5 text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">
+                      {currentUser.roleTitle}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="mt-3">
-                  <p className="text-[11px] uppercase font-bold text-slate-400 mb-2">
-                    Beralih Peran Pengguna (4 Role):
+                <div className="py-2 text-[11px] text-slate-600 space-y-1">
+                  <p className="truncate">
+                    <span className="text-slate-400">Unit:</span> {currentUser.opdName}
                   </p>
-                  <div className="space-y-1">
-                    {users.map((u) => (
-                      <button
-                        key={u.id}
-                        type="button"
-                        onClick={() => {
-                          onSwitchUser(u.role);
-                          setShowRoleDropdown(false);
-                        }}
-                        className={`w-full text-left p-2 rounded-lg text-xs flex items-center justify-between transition-colors ${
-                          currentUser.role === u.role
-                            ? 'bg-emerald-50 text-emerald-800 font-bold border border-emerald-200'
-                            : 'hover:bg-slate-100 text-slate-700'
-                        }`}
-                      >
-                        <div>
-                          <p className="font-semibold">{u.name}</p>
-                          <p className="text-[10px] text-slate-500 capitalize">
-                            Role: {u.role.replace('_', ' ')}
-                          </p>
-                        </div>
-                        {currentUser.role === u.role && (
-                          <UserCheck className="w-4 h-4 text-emerald-600" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
+                  <p className="truncate">
+                    <span className="text-slate-400">Email:</span> {currentUser.email}
+                  </p>
+                </div>
 
-                  {onOpenLoginModal && (
+                {onOpenLogoutModal && (
+                  <div className="pt-2 border-t border-slate-100">
                     <button
                       type="button"
                       onClick={() => {
                         setShowRoleDropdown(false);
-                        onOpenLoginModal();
+                        onOpenLogoutModal();
                       }}
-                      className="mt-2.5 w-full py-2 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      className="w-full py-2 px-3 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     >
-                      <KeyRound className="w-3.5 h-3.5 text-amber-400" />
-                      <span>Buka Menu Login & Matriks Izin</span>
+                      <LogOut className="w-3.5 h-3.5 text-rose-600" />
+                      <span>Keluar dari Sistem (Log Out)</span>
                     </button>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

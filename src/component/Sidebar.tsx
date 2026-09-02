@@ -15,6 +15,7 @@ import {
   ChevronRight,
   ChevronDown,
   LogIn,
+  LogOut,
   KeyRound,
 } from 'lucide-react';
 import { User, UserRole } from '../types';
@@ -39,6 +40,7 @@ interface SidebarProps {
   setIsOpenMobile: (open: boolean) => void;
   pendingValidationCount: number;
   onOpenLoginModal?: () => void;
+  onOpenLogoutModal?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -50,6 +52,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setIsOpenMobile,
   pendingValidationCount,
   onOpenLoginModal,
+  onOpenLogoutModal,
 }) => {
   const [masterExpanded, setMasterExpanded] = React.useState(
     activeTab === 'master-opd' || activeTab === 'master-users'
@@ -179,7 +182,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="flex items-center gap-1.5">
               <span className="font-extrabold text-lg tracking-tight text-white">E-SAKIP</span>
               <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                RS
+                PRO
               </span>
             </div>
             <p className="text-xs text-slate-400 font-medium truncate max-w-[170px]">
@@ -189,100 +192,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* User Active Card */}
-        <div className="p-4 mx-3 my-3 rounded-2xl bg-[#131c2e] border border-slate-800 shadow-md">
-          <div className="flex items-start justify-between gap-2">
+        <div className="p-3.5 mx-3 my-3 rounded-2xl bg-slate-950/70 border border-slate-800 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0">
+              {currentUser.name.charAt(0)}
+            </div>
             <div className="min-w-0 flex-1">
-              <div className="mb-1.5">
+              <div className="flex items-center justify-between gap-1 mb-0.5">
                 <span
-                  className={`text-[11px] font-bold px-3 py-0.5 rounded-full inline-block ${currentBadge.bg}`}
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-md inline-block ${currentBadge.bg}`}
                 >
                   {currentBadge.label}
                 </span>
               </div>
-              <p className="text-[13px] font-bold text-white leading-tight truncate">
+              <p className="text-xs font-bold text-white leading-tight truncate">
                 {currentUser.name}
               </p>
-              <p className="text-[11px] text-slate-400 truncate mt-0.5 font-normal">
+              <p className="text-[10px] text-slate-400 truncate mt-0.5 font-normal">
                 {currentUser.opdName}
               </p>
             </div>
-          </div>
-
-          {/* Quick Role Switcher Buttons */}
-          <div className="mt-3.5 pt-3 border-t border-slate-800/80">
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400 block">
-                SIMULASI GANTI ROLE (4 USER):
-              </label>
-            </div>
-            <div className="grid grid-cols-2 gap-1.5">
-              <button
-                type="button"
-                onClick={() => onSwitchUser('administrator')}
-                className={`text-xs px-2.5 py-1.5 rounded-lg font-bold text-left truncate transition-all cursor-pointer ${
-                  currentUser.role === 'administrator'
-                    ? 'bg-[#ff003b] hover:bg-[#e60035] text-white shadow-md shadow-rose-600/30'
-                    : 'bg-[#1e293b] text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700/50'
-                }`}
-                title="1. Administrator SAKIP"
-              >
-                1. Admin
-              </button>
-              <button
-                type="button"
-                onClick={() => onSwitchUser('operator_unit')}
-                className={`text-xs px-2.5 py-1.5 rounded-lg font-bold text-left truncate transition-all cursor-pointer ${
-                  currentUser.role === 'operator_unit'
-                    ? 'bg-sky-600 hover:bg-sky-500 text-white shadow-md shadow-sky-600/30'
-                    : 'bg-[#1e293b] text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700/50'
-                }`}
-                title="2. Operator Unit OPD"
-              >
-                2. Operator
-              </button>
-              <button
-                type="button"
-                onClick={() => onSwitchUser('validator')}
-                className={`text-xs px-2.5 py-1.5 rounded-lg font-bold text-left truncate transition-all cursor-pointer ${
-                  currentUser.role === 'validator'
-                    ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-md shadow-amber-600/30'
-                    : 'bg-[#1e293b] text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700/50'
-                }`}
-                title="3. Validator Kinerja"
-              >
-                3. Validator
-              </button>
-              <button
-                type="button"
-                onClick={() => onSwitchUser('verifikator')}
-                className={`text-xs px-2.5 py-1.5 rounded-lg font-bold text-left truncate transition-all cursor-pointer ${
-                  currentUser.role === 'verifikator'
-                    ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/30'
-                    : 'bg-[#1e293b] text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700/50'
-                }`}
-                title="4. Verifikator / Evaluator LHE"
-              >
-                4. Verifikator
-              </button>
-            </div>
-
-            {/* Open Full Login Modal Button */}
-            {onOpenLoginModal && (
-              <button
-                type="button"
-                onClick={onOpenLoginModal}
-                className="mt-2.5 w-full py-1.5 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700/90 text-slate-300 hover:text-white text-[11px] font-semibold flex items-center justify-center gap-1.5 border border-slate-700/60 transition-colors cursor-pointer"
-              >
-                <KeyRound className="w-3.5 h-3.5 text-amber-400" />
-                <span>Buka Menu Login 4 User</span>
-              </button>
-            )}
           </div>
         </div>
 
         {/* Navigation Links */}
         <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1 custom-scrollbar">
-          <div className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          <div className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
             Menu Utama SAKIP
           </div>
 
@@ -376,7 +311,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
           })}
         </div>
 
-      
+        {/* Footer info & Logout */}
+        <div className="p-3 border-t border-slate-800 bg-slate-950/60 space-y-2.5">
+          {onOpenLogoutModal && (
+            <button
+              type="button"
+              onClick={onOpenLogoutModal}
+              className="w-full py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 hover:text-rose-200 border border-rose-500/30 text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
+              title="Keluar dari Akun (Log Out)"
+            >
+              <LogOut className="w-3.5 h-3.5 text-rose-400" />
+              <span>Keluar dari Sistem (Log Out)</span>
+            </button>
+          )}
+
+          <div className="text-xs text-slate-400 px-1">
+            <div className="flex items-center justify-between text-[11px] mb-0.5">
+              <span className="font-semibold text-slate-300">PermenPAN-RB</span>
+              <span className="text-emerald-400 font-mono text-[10px]">No. 88/2021</span>
+            </div>
+            <p className="text-[10px] text-slate-500 leading-snug">
+              E-SAKIP RSUP Dr. M Djamil Padang
+            </p>
+          </div>
+        </div>
       </aside>
     </>
   );

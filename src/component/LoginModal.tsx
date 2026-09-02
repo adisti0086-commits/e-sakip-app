@@ -5,6 +5,7 @@ import {
   UserCheck,
   KeyRound,
   LogIn,
+  LogOut,
   CheckCircle2,
   Lock,
   Building2,
@@ -25,6 +26,7 @@ interface LoginModalProps {
   onSelectUser: (user: User) => void;
   users: User[];
   opdList: OPD[];
+  onLogout?: () => void;
 }
 
 export const LoginModal: React.FC<LoginModalProps> = ({
@@ -34,6 +36,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   onSelectUser,
   users,
   opdList,
+  onLogout,
 }) => {
   const [activeTab, setActiveTab] = useState<'quick' | 'form' | 'matrix'>('quick');
   const [username, setUsername] = useState('admin');
@@ -459,18 +462,33 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 border-t border-slate-800 bg-slate-950/60 flex items-center justify-between text-xs text-slate-400">
+        <div className="p-4 border-t border-slate-800 bg-slate-950/60 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span>Pengguna saat ini: <strong className="text-slate-200">{currentUser.name}</strong> ({currentUser.roleTitle})</span>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold transition-colors cursor-pointer"
-          >
-            Tutup
-          </button>
+          <div className="flex items-center gap-2">
+            {onLogout && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onLogout();
+                }}
+                className="px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 hover:text-rose-200 border border-rose-500/30 font-semibold transition-colors cursor-pointer flex items-center gap-1.5"
+              >
+                <LogOut className="w-3.5 h-3.5 text-rose-400" />
+                <span>Log Out</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold transition-colors cursor-pointer"
+            >
+              Tutup
+            </button>
+          </div>
         </div>
       </div>
     </div>

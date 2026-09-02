@@ -33,9 +33,12 @@ import { CapaianBulananView } from './component/CapaianBulananView';
 import { CapaianTriwulanView } from './component/CapaianTriwulanView';
 import { LHEView } from './component/LHEView';
 import { LoginModal } from './component/LoginModal';
+import { LoginPage } from './component/LoginPage';
+import { LogoutConfirmModal } from './component/LogoutConfirmModal';
 
 export default function App() {
-  // Navigation & User State
+  // Navigation & Authentication State
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
   const [userList, setUserList] = useState<User[]>(INITIAL_USERS);
   const [currentUser, setCurrentUser] = useState<User>(INITIAL_USERS[0]); // Default: Administrator
@@ -43,6 +46,7 @@ export default function App() {
   const [selectedOpdId, setSelectedOpdId] = useState<string>('all');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   // Core Data State
   const [opdList, setOpdList] = useState<OPD[]>(INITIAL_OPD);
@@ -64,6 +68,21 @@ export default function App() {
   0
 );
 
+  // Authentication Handlers
+  const handleLoginSuccess = (user: User, year: number) => {
+    setCurrentUser(user);
+    setSelectedYear(year);
+    setIsLoggedIn(true);
+    if (user.role === 'operator_unit' && user.opdId) {
+      setSelectedOpdId(user.opdId);
+    }
+  };
+
+  const handleLogoutConfirm = () => {
+    setIsLogoutModalOpen(false);
+    setIsLoggedIn(false);
+  };
+
   // Handle switching active user role directly or from modal
   const handleUserChange = (user: User) => {
     setCurrentUser(user);
@@ -79,9 +98,21 @@ export default function App() {
     }
   };
 
+  // If user is not logged in, show dedicated Login Page
+  if (!isLoggedIn) {
+    return (
+      <LoginPage
+        onLoginSuccess={handleLoginSuccess}
+        users={userList}
+        opdList={opdList}
+        defaultYear={selectedYear}
+      />
+    );
+  }
+
   return (
     <div className="flex h-screen bg-slate-100 text-slate-900 font-sans antialiased overflow-hidden">
-      {/* 1. Left Sidebar with Role Switching and Navigation */}
+      {/* 1. Left Sidebar with Role Switching, Navigation, and Logout */}
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -91,6 +122,7 @@ export default function App() {
         setIsOpenMobile={setIsMobileMenuOpen}
         pendingValidationCount={pendingValidationCount}
         onOpenLoginModal={() => setIsLoginModalOpen(true)}
+        onOpenLogoutModal={() => setIsLogoutModalOpen(true)}
       />
 
       {/* 2. Main Content Area */}
@@ -109,6 +141,7 @@ export default function App() {
           onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           pendingValidationCount={pendingValidationCount}
           onOpenLoginModal={() => setIsLoginModalOpen(true)}
+          onOpenLogoutModal={() => setIsLogoutModalOpen(true)}
         />
 
         {/* Content Body */}
@@ -232,6 +265,18 @@ export default function App() {
         onSelectUser={handleUserChange}
         users={userList}
         opdList={opdList}
+        onLogout={() => {
+          setIsLoginModalOpen(false);
+          setIsLogoutModalOpen(true);
+        }}
+      />
+
+      {/* Logout Confirmation Modal */}
+      <LogoutConfirmModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirmLogout={handleLogoutConfirm}
+        currentUser={currentUser}
       />
     </div>
   );
