@@ -48,6 +48,12 @@ export const InputKinerjaView: React.FC<InputKinerjaViewProps> = ({
   const [filterOpd, setFilterOpd] = useState(
     currentUser.role === 'operator_unit' ? currentUser.opdId : selectedOpdId
   );
+
+  React.useEffect(() => {
+    if (currentUser.role !== 'operator_unit') {
+      setFilterOpd(selectedOpdId);
+    }
+  }, [selectedOpdId, currentUser.role]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingIndikator, setEditingIndikator] = useState<IndikatorPK | null>(null);

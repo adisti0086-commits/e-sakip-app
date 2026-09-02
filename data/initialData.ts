@@ -464,13 +464,11 @@ export const INITIAL_RENSTRA_SASARAN: RenstraSasaran[] = [
   },
 ];
 
-// 18 INDIKATOR KINERJA PK SAKIP KEMENKES (RSUP DR. M DJAMIL TAHUN 2026)
-export const INITIAL_INDIKATOR_PK: IndikatorPK[] = [
+// 18 INDIKATOR KINERJA PK SAKIP KEMENKES (RSUP DR. M DJAMIL)
+const RAW_INDIKATOR_PK: Partial<IndikatorPK>[] = [
   // Sasaran Strategis 1
   {
-    id: 'pk-kemenkes-1',
     opdId: 'opd-rsup-m-djamil',
-    tahun: 2026,
     noUrut: 1,
     sasaranStrategis: 'Terwujudnya Layanan Terbaik Level Asia',
     namaIndikator: 'IKM 16.4.11 - Skor kepuasan pelanggan (CSAT)',
@@ -921,20 +919,38 @@ export const INITIAL_INDIKATOR_PK: IndikatorPK[] = [
   },
 ];
 
+// Generate indicators for years 2024, 2025, 2026
+export const INITIAL_INDIKATOR_PK: IndikatorPK[] = [
+  ...RAW_INDIKATOR_PK.map((item, idx) => ({
+    ...item,
+    id: `pk-kemenkes-${idx + 1}-2024`,
+    tahun: 2024,
+  } as IndikatorPK)),
+  ...RAW_INDIKATOR_PK.map((item, idx) => ({
+    ...item,
+    id: `pk-kemenkes-${idx + 1}-2025`,
+    tahun: 2025,
+  } as IndikatorPK)),
+  ...RAW_INDIKATOR_PK.map((item, idx) => ({
+    ...item,
+    id: `pk-kemenkes-${idx + 1}-2026`,
+    tahun: 2026,
+  } as IndikatorPK)),
+];
+
 const NAMA_BULAN = [
   'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
   'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
 
-// Helper to generate monthly data for all 18 indicators
+// Helper to generate monthly data for all indicators
 export const INITIAL_CAPAIAN_BULAN: CapaianIndikatorBulan[] = INITIAL_INDIKATOR_PK.map((pk) => {
   const targetBulananBase = pk.targetTahunan / 12;
   const realisasiSem1 = parseFloat(pk.realisasiSem1Text?.replace('%', '').replace(',', '.') || '0') || 0;
-  const targetSem1 = pk.targetTahunan / 2;
   
   return {
     indikatorId: pk.id,
-    tahun: 2026,
+    tahun: pk.tahun,
     opdId: pk.opdId,
     realisasiPerBulan: Array.from({ length: 12 }, (_, idx) => {
       const bulan = idx + 1;
@@ -953,12 +969,12 @@ export const INITIAL_CAPAIAN_BULAN: CapaianIndikatorBulan[] = INITIAL_INDIKATOR_
           targetBulanan: targetKumulatif,
           realisasi,
           persenCapaian: persen,
-          evidensLink: `https://sakip.djamil.kemenkes.go.id/evidens/2026/${pk.id}-b${bulan}.pdf`,
-          evidensNama: `Evidens_${pk.id}_${NAMA_BULAN[idx]}2026.pdf`,
-          keterangan: `Pelaporan capaian kinerja ${pk.namaIndikator} bulan ${NAMA_BULAN[idx]} 2026.`,
+          evidensLink: `https://sakip.djamil.kemenkes.go.id/evidens/${pk.tahun}/${pk.id}-b${bulan}.pdf`,
+          evidensNama: `Evidens_${pk.id}_${NAMA_BULAN[idx]}${pk.tahun}.pdf`,
+          keterangan: `Pelaporan capaian kinerja ${pk.namaIndikator} bulan ${NAMA_BULAN[idx]} ${pk.tahun}.`,
           statusValidasi: 'Terverifikasi' as const,
           catatanValidator: 'Data capaian valid dan telah diverifikasi sesuai sistem e-Performance Kemenkes.',
-          tanggalInput: `2026-0${Math.min(bulan + 1, 9)}-05`,
+          tanggalInput: `${pk.tahun}-0${Math.min(bulan + 1, 9)}-05`,
           validatorNama: 'dr. Hendra Setiawan, M.Kes, FISQua',
         };
       }
@@ -997,7 +1013,7 @@ export const INITIAL_CAPAIAN_TRIWULAN: CapaianIndikatorTriwulan[] = INITIAL_INDI
 
   return {
     indikatorId: pk.id,
-    tahun: 2026,
+    tahun: pk.tahun,
     opdId: pk.opdId,
     realisasiPerTriwulan: [
       {
@@ -1012,7 +1028,7 @@ export const INITIAL_CAPAIAN_TRIWULAN: CapaianIndikatorTriwulan[] = INITIAL_INDI
         tindakLanjut: 'Akselerasi tindak lanjut program prioritas pengampuan dan mutu klinis.',
         statusValidasi: 'Terverifikasi' as const,
         catatanValidator: 'Laporan Triwulan I terverifikasi lengkap dengan lampiran evidens.',
-        tanggalVerifikasi: '2026-04-10',
+        tanggalVerifikasi: `${pk.tahun}-04-10`,
         evidensFile: `Evidens_T1_${pk.id}.pdf`,
       },
       {
@@ -1027,7 +1043,7 @@ export const INITIAL_CAPAIAN_TRIWULAN: CapaianIndikatorTriwulan[] = INITIAL_INDI
         tindakLanjut: 'Tindak lanjut rekomendasi rapat evaluasi semester I bersama Ditjen Yankes.',
         statusValidasi: 'Terverifikasi' as const,
         catatanValidator: `Capaian Semester I: ${pk.capaianSem1Text}. Sesuai Tabel 3.1 Pengukuran Kinerja Kemenkes.`,
-        tanggalVerifikasi: '2026-07-15',
+        tanggalVerifikasi: `${pk.tahun}-07-15`,
         evidensFile: `Evidens_Sem1_${pk.id}.pdf`,
       },
       {
@@ -1051,7 +1067,7 @@ export const INITIAL_CAPAIAN_TRIWULAN: CapaianIndikatorTriwulan[] = INITIAL_INDI
         statusWarna: 'merah' as const,
         faktorPendorong: '-',
         faktorPenghambat: 'Belum masuk masa pelaporan akhir tahun.',
-        tindakLanjut: 'Penyusunan LAKIP / Laporan Kinerja Tahunan 2026.',
+        tindakLanjut: `Penyusunan LAKIP / Laporan Kinerja Tahunan ${pk.tahun}.`,
         statusValidasi: 'Draft' as const,
       },
     ],
@@ -1232,6 +1248,54 @@ export const DEFAULT_LHE_KRITERIA: KriteriaLHE[] = [
 ];
 
 export const INITIAL_LHE: LHEEvaluation[] = [
+  {
+    id: 'lhe-2024-djamil',
+    nomorSuratLHE: 'LHE.700/012/ITJEN-KMK/SAKIP/2024',
+    opdId: 'opd-rsup-m-djamil',
+    tahun: 2024,
+    tanggalEvaluasi: '2024-08-20',
+    evaluatorId: 'user-verifikator',
+    evaluatorNama: 'Drs. Ahmad Fauzi, Ak., CA, CFrA, CRMO',
+    dokumenLHEUrl: 'https://sakip.djamil.kemenkes.go.id/lhe/2024/LHE_SAKIP_DJAMIL_2024.pdf',
+    dokumenLHENama: 'LHE_SAKIP_RSUP_DR_M_DJAMIL_2024.pdf',
+    ukuranFile: '2.8 MB',
+    status: 'Diterbitkan ke OPD',
+    kriteriaList: DEFAULT_LHE_KRITERIA,
+    nilaiTotal: 86.45,
+    predikat: 'A',
+    kategoriPredikat: 'Memuaskan (High Quality Performance SAKIP Kemenkes)',
+    catatanEvaluasiUmum: 'Penerapan SAKIP RSUP Dr. M Djamil TA 2024 menunjukkan kinerja MEMUASKAN dengan nilai 86.45 (Predikat A).',
+    rekomendasiPerbaikan: [
+      'Peningkatan integrasi indikator kinerja ke sistem unit kerja.',
+      'Percepatan tindak lanjut evaluasi internal semesteran.',
+    ],
+    komitmenTindakLanjut: 'Manajemen RSUP Dr. M Djamil berkomitmen menindaklanjuti seluruh rekomendasi perbaikan.',
+  },
+  {
+    id: 'lhe-2025-djamil',
+    nomorSuratLHE: 'LHE.700/015/ITJEN-KMK/SAKIP/2025',
+    opdId: 'opd-rsup-m-djamil',
+    tahun: 2025,
+    tanggalEvaluasi: '2025-08-18',
+    evaluatorId: 'user-verifikator',
+    evaluatorNama: 'Drs. Ahmad Fauzi, Ak., CA, CFrA, CRMO',
+    dokumenLHEUrl: 'https://sakip.djamil.kemenkes.go.id/lhe/2025/LHE_SAKIP_DJAMIL_2025.pdf',
+    dokumenLHENama: 'LHE_SAKIP_RSUP_DR_M_DJAMIL_2025.pdf',
+    ukuranFile: '3.0 MB',
+    status: 'Diterbitkan ke OPD',
+    kriteriaList: DEFAULT_LHE_KRITERIA,
+    nilaiTotal: 88.10,
+    predikat: 'A',
+    kategoriPredikat: 'Memuaskan (High Quality Performance SAKIP Kemenkes)',
+    catatanEvaluasiUmum: 'Penerapan Sistem Akuntabilitas Kinerja Instansi Pemerintah (SAKIP) pada RSUP Dr. M Djamil Padang - Kementerian Kesehatan RI menunjukkan kinerja yang SANGAT MEMUASKAN dengan nilai AKIP 88,10 (Predikat A). Seluruh komponen Perencanaan, Pengukuran, Pelaporan, dan Evaluasi Internal telah berjalan terstruktur dan selaras dengan standar PermenPAN-RB No. 88/2021.',
+    rekomendasiPerbaikan: [
+      'Membuat program akselerasi pendapatan penelitian Clinical Research Unit (CRU) melalui kolaborasi uji klinis industri farmasi nasional & internasional.',
+      'Melakukan pengendalian biaya operasional dan optimasi pendapatan non-JKN guna mendongkrak EBITDA margin pada Semester II 2025.',
+      'Mempertahankan keunggulan implementasi SIMRS terintegrasi dan pengampuan faskes rujukan penyakit prioritas (KJSU) di wilayah Sumatera Barat dan sekitarnya.',
+      'Meningkatkan realisasi penyerapan anggaran BLU dan APBN agar target 96% di akhir tahun dapat dicapai secara proporsional.',
+    ],
+    komitmenTindakLanjut: 'Manajemen RSUP Dr. M Djamil berkomitmen menindaklanjuti seluruh rekomendasi perbaikan dalam kurun waktu 30 hari kalender bersama Ditjen Yankes.',
+  },
   {
     id: 'lhe-2026-djamil',
     nomorSuratLHE: 'LHE.700/018/ITJEN-KMK/SAKIP/2026',

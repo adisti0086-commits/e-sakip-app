@@ -48,6 +48,12 @@ export const CapaianTriwulanView: React.FC<CapaianTriwulanViewProps> = ({
   const [filterOpd, setFilterOpd] = useState(
     currentUser.role === 'operator_unit' ? currentUser.opdId : selectedOpdId
   );
+
+  React.useEffect(() => {
+    if (currentUser.role !== 'operator_unit') {
+      setFilterOpd(selectedOpdId);
+    }
+  }, [selectedOpdId, currentUser.role]);
   const [selectedTriwulan, setSelectedTriwulan] = useState<number>(0); // 0 = Semua Triwulan, 1, 2, 3, 4
   const [colorFilter, setColorFilter] = useState<'all' | 'hijau' | 'kuning' | 'merah'>('all');
 
