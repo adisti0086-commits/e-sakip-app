@@ -76,10 +76,10 @@ export const PengaturanKinerjaView: React.FC<PengaturanKinerjaViewProps> = ({
         </div>
         <div>
           <h3 className="text-sm font-bold text-slate-900">
-            Standar Pengaturan SAKIP & Evaluasi Kinerja (PermenPAN-RB No. 88 Tahun 2021)
+            Standar Pengukuran SAKIP & Evaluasi Kinerja
           </h3>
           <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-            Atur proporsi bobot evaluasi 5 pilar akuntabilitas kinerja pemerintah daerah, ambang batas visualisasi warna indikator capaian triwulanan, serta jadwal pembatasan penginputan data.
+            Atur proporsi bobot evaluasi 5 pilar akuntabilitas kinerja, ambang batas visualisasi warna indikator capaian triwulanan, serta jadwal pembatasan penginputan data.
           </p>
         </div>
       </div>
@@ -116,7 +116,7 @@ export const PengaturanKinerjaView: React.FC<PengaturanKinerjaViewProps> = ({
                   title="Kembalikan ke Bobot Standar PermenPAN-RB"
                 >
                   <RotateCcw className="w-3 h-3" />
-                  <span>Reset PermenPAN</span>
+                  <span>Reset</span>
                 </button>
               )}
             </div>
@@ -286,7 +286,7 @@ export const PengaturanKinerjaView: React.FC<PengaturanKinerjaViewProps> = ({
               3. Jadwal Batas Waktu (Deadline) Penginputan Capaian Triwulan
             </h4>
             <p className="text-[11px] text-slate-500">
-              Pengaturan batas waktu penguncian penginputan realisasi bagi Operator OPD.
+              Pengukuran batas waktu penguncian penginputan realisasi bagi Operator OPD.
             </p>
           </div>
 
@@ -339,7 +339,7 @@ export const PengaturanKinerjaView: React.FC<PengaturanKinerjaViewProps> = ({
           <div className="flex items-center justify-end gap-3 pt-2">
             {isSaved && (
               <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
-                <CheckCircle2 className="w-4 h-4" /> Pengaturan berhasil disimpan!
+                <CheckCircle2 className="w-4 h-4" /> Pengukuran berhasil disimpan!
               </span>
             )}
             <button
@@ -348,7 +348,7 @@ export const PengaturanKinerjaView: React.FC<PengaturanKinerjaViewProps> = ({
               className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs rounded-lg shadow-sm flex items-center gap-2 transition-colors"
             >
               <Save className="w-4 h-4" />
-              <span>Simpan Pengaturan Kinerja</span>
+              <span>Simpan Pengukuran Kinerja</span>
             </button>
           </div>
         )}
