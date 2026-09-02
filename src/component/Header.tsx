@@ -59,7 +59,7 @@ export const Header: React.FC<HeaderProps> = ({
       case 'master-opd':
         return {
           title: 'Master OPD / Unit Kerja',
-          subtitle: 'Daftar Satuan Kerja Perangkat Daerah dan Pimpinan Unit',
+          subtitle: 'Daftar Satuan Kerja / Unit Organisasi dan Pimpinan Unit',
         };
       case 'master-users':
         return {
@@ -156,7 +156,7 @@ export const Header: React.FC<HeaderProps> = ({
               title={isOpdFilterDisabled ? 'Terkunci sesuai OPD Operator' : 'Pilih Unit Kerja / OPD'}
             >
               {currentUser.role !== 'operator_unit' && (
-                <option value="all">Semua OPD / Seluruh Pemda</option>
+                <option value="all">Semua Unit Kerja / Seluruh Satker</option>
               )}
               {opdList.map((opd) => (
                 <option key={opd.id} value={opd.id}>

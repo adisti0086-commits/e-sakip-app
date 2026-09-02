@@ -142,7 +142,7 @@ export const LHEView: React.FC<LHEViewProps> = ({
       evaluatorId: currentUser.id,
       status: 'Draft Evaluasi',
       kriteriaList: DEFAULT_LHE_KRITERIA.map((k) => ({ ...k })),
-      catatanEvaluasiUmum: 'Hasil evaluasi akuntabilitas kinerja menunjukkan komitmen perangkat daerah dalam peningkatan kualitas perencanaan dan pengukuran kinerja.',
+      catatanEvaluasiUmum: 'Hasil evaluasi akuntabilitas kinerja menunjukkan komitmen unit kerja dalam peningkatan kualitas perencanaan dan pengukuran kinerja.',
       rekomendasiPerbaikan: [
         'Melakukan sinkronisasi cascading sasaran strategis dengan perjanjian kinerja staf.',
         'Meningkatkan kepatuhan pemenuhan dokumen bukti dukung pada aplikasi E-SAKIP.',
@@ -259,7 +259,7 @@ export const LHEView: React.FC<LHEViewProps> = ({
               ...l,
               dokumenLHENama: uploadFileName,
               ukuranFile: uploadFileSize || '1.8 MB',
-              dokumenLHEUrl: 'https://cloud.pemda.go.id/lhe/uploaded.pdf',
+              dokumenLHEUrl: 'https://cloud.kemkes.go.id/lhe/uploaded.pdf',
             }
           : l
       )

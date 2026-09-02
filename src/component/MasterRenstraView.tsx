@@ -211,7 +211,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                 Matriks Sasaran Strategis, Target & Capaian Renstra
               </h3>
               <p className="text-[11px] text-slate-500">
-                Landasan utama penyusunan Perjanjian Kinerja (PK) tahunan dan IKU Perangkat Daerah
+                Landasan utama penyusunan Perjanjian Kinerja (PK) tahunan dan IKU Unit Kerja
               </p>
             </div>
             <span className="text-xs font-semibold text-slate-600">
@@ -339,7 +339,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
               <span>Cascading Pohon Kinerja (Hierarki Sasaran & Indikator SAKIP)</span>
             </h3>
             <p className="text-xs text-slate-500 mt-1">
-              Menghubungkan Sasaran Strategis Daerah (RPJMD) hingga level operasional Perangkat Daerah.
+              Menghubungkan Sasaran Strategis Kementerian Kesehatan RI hingga level operasional Unit Kerja.
             </p>
           </div>
 
@@ -359,11 +359,11 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                   </span>
                 </div>
 
-                {/* Level 2: Sasaran Strategis OPD (Eselon II) */}
+                {/* Level 2: Sasaran Strategis (Eselon II) */}
                 <div className="pl-6 pt-4 space-y-3">
                   <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                     <TrendingUp className="w-3 h-3 text-emerald-600" />
-                    <span>Sasaran Strategis Perangkat Daerah (Ultimate Outcome / Eselon II):</span>
+                    <span>Sasaran Strategis Unit Kerja / Satker (Ultimate Outcome / Eselon II):</span>
                   </div>
 
                   {sasaranList

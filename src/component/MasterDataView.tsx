@@ -88,7 +88,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
   };
 
   const handleDeleteOpd = (id: string) => {
-    if (confirm('Apakah Anda yakin ingin menghapus Unit Kerja ini?')) {
+    if (confirm('Apakah Anda yakin ingin menghapus OPD ini?')) {
       setOpdList((prev) => prev.filter((o) => o.id !== id));
     }
   };
@@ -105,11 +105,11 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
         case 'administrator':
           return 'Administrator Utama SAKIP';
         case 'operator_unit':
-          return 'Operator Unit';
+          return 'Operator Unit / Perencana OPD';
         case 'validator':
           return 'Tim Validator Kinerja Organisasi';
         case 'verifikator':
-          return ' Tim Evaluator LHE';
+          return 'Auditor Madya / Tim Evaluator LHE';
       }
     };
 
@@ -135,7 +135,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
         role: (userForm.role as UserRole) || 'operator_unit',
         roleTitle: userForm.roleTitle || getRoleTitle(userForm.role as UserRole),
         opdId: userForm.opdId || opdList?.[0]?.id || '',
-        opdName: assignedOpd ? assignedOpd.nama : 'Perangkat Daerah',
+        opdName: assignedOpd ? assignedOpd.nama : 'Unit Kerja',
       };
       setUsersList((prev) => [...prev, newUser]);
     }
@@ -475,7 +475,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                     <label className="font-semibold text-slate-700 block mb-1">Email Resmi</label>
                     <input
                       type="email"
-                      placeholder="opd@pemda.go.id"
+                      placeholder="satker@kemenkes.go.id"
                       value={opdForm.email}
                       onChange={(e) => setOpdForm({ ...opdForm, email: e.target.value })}
                       className="w-full p-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
@@ -485,7 +485,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                     <label className="font-semibold text-slate-700 block mb-1">Telepon / Fax</label>
                     <input
                       type="text"
-                      placeholder="(021) 7894xxx"
+                      placeholder="(0751) 37790"
                       value={opdForm.telepon}
                       onChange={(e) => setOpdForm({ ...opdForm, telepon: e.target.value })}
                       className="w-full p-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
@@ -505,7 +505,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                     type="submit"
                     className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
                   >
-                    Simpan OPD
+                    Simpan Unit Kerja
                   </button>
                 </div>
               </form>
@@ -541,7 +541,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                     <input
                       type="email"
                       required
-                      placeholder="nama@pemda.go.id"
+                      placeholder="nama@kemenkes.go.id"
                       value={userForm.email}
                       onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
                       className="w-full p-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"

@@ -58,13 +58,13 @@ export const PrintLHEModal: React.FC<PrintLHEModalProps> = ({
           {/* Official Letterhead (Kop Surat) */}
           <div className="text-center pb-4 border-b-4 border-double border-slate-900 mb-6">
             <h2 className="text-sm font-bold uppercase tracking-widest text-slate-800">
-              Pemerintah Daerah Provinsi / Kabupaten / Kota
+              Kementerian Kesehatan Republik Indonesia
             </h2>
             <h1 className="text-lg font-black uppercase tracking-wider text-slate-900">
-              INSPEKTORAT DAERAH
+              INSPEKTORAT JENDERAL
             </h1>
             <p className="text-[11px] font-sans text-slate-600">
-              Jalan Pemuda No. 1 Kompleks Perkantoran Pemerintah Daerah • Telp: (021) 7890123 • Email: inspektorat@pemda.go.id
+              Jl. H.R. Rasuna Said Blok X-5 Kav. 4-9 Jakarta 12950 • Telp: (021) 5201590 • Email: itjen@kemkes.go.id
             </p>
           </div>
 
@@ -84,7 +84,7 @@ export const PrintLHEModal: React.FC<PrintLHEModalProps> = ({
           {/* OPD Info */}
           <div className="mb-6 font-sans text-xs space-y-1">
             <div className="flex">
-              <span className="w-44 font-semibold text-slate-600">Perangkat Daerah yang Dievaluasi</span>
+              <span className="w-44 font-semibold text-slate-600">Unit Kerja yang Dievaluasi</span>
               <span className="font-bold text-slate-900">: {opdName}</span>
             </div>
             <div className="flex">
@@ -305,7 +305,7 @@ export const PrintLHEModal: React.FC<PrintLHEModalProps> = ({
 
             <div>
               <h4 className="font-bold uppercase tracking-wider text-slate-900 mb-1">
-                IV. Rekomendasi Perbaikan untuk Perangkat Daerah
+                IV. Rekomendasi Perbaikan untuk Unit Kerja
               </h4>
               <ol className="list-decimal list-inside space-y-1 p-3 bg-slate-50 border border-slate-300 rounded text-slate-800 leading-relaxed">
                 {lhe.rekomendasiPerbaikan.map((rek, idx) => (
@@ -321,7 +321,7 @@ export const PrintLHEModal: React.FC<PrintLHEModalProps> = ({
           <div className="font-sans text-xs flex justify-between items-start pt-6 border-t border-slate-300">
             <div>
               <p className="text-slate-600">Mengetahui,</p>
-              <p className="font-bold text-slate-900">Kepala {opdName}</p>
+              <p className="font-bold text-slate-900">Kepala / Direktur {opdName}</p>
               <div className="h-16" />
               <p className="font-bold text-slate-900 underline">................................................</p>
               <p className="text-[10px] text-slate-500">NIP. ........................................</p>
@@ -329,7 +329,7 @@ export const PrintLHEModal: React.FC<PrintLHEModalProps> = ({
 
             <div className="text-right">
               <p className="text-slate-600">Ditetapkan pada: {lhe.tanggalEvaluasi}</p>
-              <p className="font-bold text-slate-900">Tim Evaluator SAKIP Inspektorat Daerah</p>
+              <p className="font-bold text-slate-900">Tim Evaluator SAKIP Inspektorat Jenderal Kemenkes</p>
               <div className="h-16" />
               <p className="font-bold text-slate-900 underline">{lhe.evaluatorNama}</p>
               <p className="text-[10px] text-slate-500">NIP. 19840215 200801 1 004</p>
