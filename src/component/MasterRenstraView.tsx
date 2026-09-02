@@ -152,18 +152,6 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
             <Network className="w-3.5 h-3.5" />
             <span>Pohon Kinerja (Cascading)</span>
           </button>
-          <button
-            type="button"
-            onClick={() => setActiveTabSub('tujuan')}
-            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
-              activeTabSub === 'tujuan'
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5" />
-            <span>Tujuan Makro Daerah</span>
-          </button>
         </div>
 
         {/* Action button & Filter */}
