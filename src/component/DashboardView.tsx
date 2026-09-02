@@ -306,12 +306,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
       {/* Grid: Bobot 5 Komponen SAKIP & Realisasi Triwulanan */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column: 5 Komponen Evaluasi SAKIP PermenPAN-RB */}
+        {/* Left Column: 4 Komponen Evaluasi SAKIP PermenPAN-RB */}
         <div className="lg:col-span-7 bg-white p-6 rounded-xl border border-slate-200/80 shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h3 className="font-bold text-slate-900 text-sm">
-                5 Komponen Evaluasi SAKIP (PermenPAN-RB No. 88/2021)
+                4 Komponen Evaluasi SAKIP (PermenPAN-RB No. 88/2021)
               </h3>
               <p className="text-xs text-slate-500">
                 Struktur bobot penilaian akuntabilitas kinerja instansi pemerintah
@@ -328,15 +328,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div className="flex items-center justify-between text-xs mb-1.5">
                 <span className="font-bold text-slate-800">1. Perencanaan Kinerja</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-emerald-700 font-semibold">Skor: 27.5</span>
+                  <span className="text-emerald-700 font-semibold font-mono">Nilai: 24.00 (80.00%)</span>
                   <span className="text-slate-500">Bobot {bobotSakip.perencanaan}%</span>
                 </div>
               </div>
               <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full bg-emerald-600 rounded-full" style={{ width: '92%' }} />
+                <div className="h-full bg-emerald-600 rounded-full" style={{ width: '80%' }} />
               </div>
               <p className="text-[11px] text-slate-500 mt-1">
-                Renstra, IKU OPD, Rencana Kerja Tahunan, dan Perjanjian Kinerja berjenjang.
+                Ketersediaan dokumen perencanaan, pemenuhan standar SMART, cascading berjenjang & crosscutting, serta pemanfaatan berkesinambungan.
               </p>
             </div>
 
@@ -345,15 +345,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div className="flex items-center justify-between text-xs mb-1.5">
                 <span className="font-bold text-slate-800">2. Pengukuran Kinerja</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-emerald-700 font-semibold">Skor: 25.0</span>
+                  <span className="text-emerald-700 font-semibold font-mono">Nilai: 27.60 (92.00%)</span>
                   <span className="text-slate-500">Bobot {bobotSakip.pengukuran}%</span>
                 </div>
               </div>
               <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full bg-teal-600 rounded-full" style={{ width: '83%' }} />
+                <div className="h-full bg-teal-600 rounded-full" style={{ width: '92%' }} />
               </div>
               <p className="text-[11px] text-slate-500 mt-1">
-                Sistem E-SAKIP, ketersediaan bukti dukung bulanan, dan keandalan data kinerja.
+                Pelaksanaan pengukuran kinerja, kebutuhan efisiensi berjenjang berkelanjutan, dan pemanfaatan untuk reward/punishment serta strategi.
               </p>
             </div>
 
@@ -362,15 +362,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div className="flex items-center justify-between text-xs mb-1.5">
                 <span className="font-bold text-slate-800">3. Pelaporan Kinerja</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-emerald-700 font-semibold">Skor: 14.2</span>
+                  <span className="text-emerald-700 font-semibold font-mono">Nilai: 13.50 (90.00%)</span>
                   <span className="text-slate-500">Bobot {bobotSakip.pelaporan}%</span>
                 </div>
               </div>
               <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full bg-sky-600 rounded-full" style={{ width: '95%' }} />
+                <div className="h-full bg-sky-600 rounded-full" style={{ width: '90%' }} />
               </div>
               <p className="text-[11px] text-slate-500 mt-1">
-                Ketepatan waktu LAKIP, kedalaman analisis deviasi, dan publikasi ke masyarakat.
+                Ketersediaan dokumen laporan, kualitas informasi pencapaian/kegagalan & perbaikan, serta dampak penyesuaian kebijakan.
               </p>
             </div>
 
@@ -379,32 +379,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div className="flex items-center justify-between text-xs mb-1.5">
                 <span className="font-bold text-slate-800">4. Evaluasi Akuntabilitas Kinerja Internal</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-emerald-700 font-semibold">Skor: 8.8</span>
+                  <span className="text-emerald-700 font-semibold font-mono">Nilai: 23.00 (92.00%)</span>
                   <span className="text-slate-500">Bobot {bobotSakip.evaluasiInternal}%</span>
                 </div>
               </div>
               <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full bg-indigo-600 rounded-full" style={{ width: '88%' }} />
+                <div className="h-full bg-indigo-600 rounded-full" style={{ width: '92%' }} />
               </div>
               <p className="text-[11px] text-slate-500 mt-1">
-                Evaluasi mandiri berkala dan tindak lanjut rekomendasi LHE sebelumnya.
-              </p>
-            </div>
-
-            {/* Komponen 5 */}
-            <div>
-              <div className="flex items-center justify-between text-xs mb-1.5">
-                <span className="font-bold text-slate-800">5. Capaian Kinerja</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-emerald-700 font-semibold">Skor: 14.5</span>
-                  <span className="text-slate-500">Bobot {bobotSakip.capaianKinerja}%</span>
-                </div>
-              </div>
-              <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full bg-emerald-600 rounded-full" style={{ width: '96%' }} />
-              </div>
-              <p className="text-[11px] text-slate-500 mt-1">
-                Capaian realisasi IKU, efisiensi penggunaan anggaran, serta inovasi daerah.
+                Pelaksanaan evaluasi akuntabilitas internal, kualitas SDM evaluator, dan peningkatan implementasi SAKIP yang memberikan dampak nyata.
               </p>
             </div>
           </div>

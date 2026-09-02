@@ -38,11 +38,10 @@ export const PengaturanKinerjaView: React.FC<PengaturanKinerjaViewProps> = ({
   const [isSaved, setIsSaved] = useState(false);
 
   const totalBobot =
-    Number(localBobot.perencanaan) +
-    Number(localBobot.pengukuran) +
-    Number(localBobot.pelaporan) +
-    Number(localBobot.evaluasiInternal) +
-    Number(localBobot.capaianKinerja);
+    Number(localBobot.perencanaan || 0) +
+    Number(localBobot.pengukuran || 0) +
+    Number(localBobot.pelaporan || 0) +
+    Number(localBobot.evaluasiInternal || 0);
 
   const isBobotValid = totalBobot === 100;
 
@@ -62,8 +61,7 @@ export const PengaturanKinerjaView: React.FC<PengaturanKinerjaViewProps> = ({
       perencanaan: 30,
       pengukuran: 30,
       pelaporan: 15,
-      evaluasiInternal: 10,
-      capaianKinerja: 15,
+      evaluasiInternal: 25,
     });
   };
 
@@ -196,7 +194,7 @@ export const PengaturanKinerjaView: React.FC<PengaturanKinerjaViewProps> = ({
 
             <div className="p-3 rounded-lg border border-slate-200 bg-slate-50/50">
               <div className="flex justify-between items-center mb-1.5">
-                <label className="font-bold text-slate-800">4. Evaluasi Akuntabilitas Internal</label>
+                <label className="font-bold text-slate-800">4. Evaluasi Akuntabilitas Kinerja Internal</label>
                 <div className="flex items-center gap-1">
                   <input
                     type="number"
@@ -213,30 +211,7 @@ export const PengaturanKinerjaView: React.FC<PengaturanKinerjaViewProps> = ({
                 </div>
               </div>
               <p className="text-[11px] text-slate-500">
-                Evaluasi mandiri berkala OPD & tindak lanjut rekomendasi LHE sebelumnya.
-              </p>
-            </div>
-
-            <div className="p-3 rounded-lg border border-slate-200 bg-slate-50/50 sm:col-span-2">
-              <div className="flex justify-between items-center mb-1.5">
-                <label className="font-bold text-slate-800">5. Capaian Kinerja</label>
-                <div className="flex items-center gap-1">
-                  <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    disabled={!canEdit}
-                    value={localBobot.capaianKinerja}
-                    onChange={(e) =>
-                      setLocalBobot({ ...localBobot, capaianKinerja: Number(e.target.value) })
-                    }
-                    className="w-16 p-1 text-center font-bold font-mono bg-white border border-slate-300 rounded text-xs"
-                  />
-                  <span className="font-bold text-slate-600">%</span>
-                </div>
-              </div>
-              <p className="text-[11px] text-slate-500">
-                Capaian realisasi IKU strategis, efisiensi anggaran, dan inovasi pelayanan publik.
+                Evaluasi mandiri internal berkala (SPI), kualitas SDM evaluator, dan tindak lanjut rekomendasi perbaikan.
               </p>
             </div>
           </div>

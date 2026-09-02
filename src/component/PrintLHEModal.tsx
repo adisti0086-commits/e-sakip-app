@@ -123,78 +123,171 @@ export const PrintLHEModal: React.FC<PrintLHEModalProps> = ({
             </div>
           </div>
 
-          {/* Tabel Nilai 5 Komponen SAKIP */}
+          {/* Tabel Nilai Komponen, Sub-Komponen, dan Kriteria SAKIP PermenPAN-RB No. 88/2021 */}
           <div className="mb-6">
             <h4 className="font-sans font-bold text-xs uppercase tracking-wider text-slate-900 mb-2">
-              I. Rincian Capaian Nilai per Komponen Evaluasi SAKIP
+              I. Rincian Evaluasi Komponen, Sub-Komponen & Kriteria SAKIP
             </h4>
-            <table className="w-full text-left font-sans text-xs border-collapse border border-slate-400">
+            <table className="w-full text-left font-sans text-[11px] border-collapse border border-slate-400">
               <thead className="bg-slate-200 font-bold text-slate-800 text-[11px]">
                 <tr>
-                  <th className="border border-slate-400 px-3 py-2 text-center w-8">No</th>
-                  <th className="border border-slate-400 px-3 py-2">Komponen Evaluasi</th>
-                  <th className="border border-slate-400 px-3 py-2 text-center">Bobot Standar</th>
-                  <th className="border border-slate-400 px-3 py-2 text-center">Nilai Tercapai</th>
-                  <th className="border border-slate-400 px-3 py-2 text-center">% Efektivitas</th>
+                  <th className="border border-slate-400 px-2 py-1.5 text-center w-12">No</th>
+                  <th className="border border-slate-400 px-3 py-1.5">Komponen / Sub Komponen / Kriteria</th>
+                  <th className="border border-slate-400 px-2 py-1.5 text-center w-16">Bobot</th>
+                  <th className="border border-slate-400 px-2 py-1.5 text-center w-16">Nilai</th>
+                  <th className="border border-slate-400 px-2 py-1.5 text-center w-16">%</th>
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(result.skorKomponen).map(([namaKomponen, detail], idx) => (
-                  <tr key={namaKomponen}>
-                    <td className="border border-slate-400 px-3 py-1.5 text-center font-mono">{idx + 1}</td>
-                    <td className="border border-slate-400 px-3 py-1.5 font-semibold">{namaKomponen}</td>
-                    <td className="border border-slate-400 px-3 py-1.5 text-center font-mono">{detail.totalBobot}%</td>
-                    <td className="border border-slate-400 px-3 py-1.5 text-center font-mono font-bold text-slate-900">
-                      {detail.skorDidapat}
-                    </td>
-                    <td className="border border-slate-400 px-3 py-1.5 text-center font-mono">
-                      {detail.persen}%
-                    </td>
-                  </tr>
-                ))}
-                <tr className="bg-slate-100 font-bold">
-                  <td colSpan={2} className="border border-slate-400 px-3 py-2 text-right">
-                    TOTAL NILAI AKUNTABILITAS (SAKIP)
+                {/* 1. PERENCANAAN KINERJA */}
+                <tr className="bg-slate-100 font-bold text-slate-900">
+                  <td className="border border-slate-400 px-2 py-1 text-center font-mono">1</td>
+                  <td className="border border-slate-400 px-3 py-1 uppercase">PERENCANAAN KINERJA</td>
+                  <td className="border border-slate-400 px-2 py-1 text-center font-mono">30.00</td>
+                  <td className="border border-slate-400 px-2 py-1 text-center font-mono">
+                    {result.skorKomponen['PERENCANAAN KINERJA']?.skorDidapat.toFixed(2) || '24.00'}
                   </td>
-                  <td className="border border-slate-400 px-3 py-2 text-center font-mono">100%</td>
-                  <td className="border border-slate-400 px-3 py-2 text-center font-mono font-black text-sm text-emerald-800">
-                    {result.nilaiTotal}
+                  <td className="border border-slate-400 px-2 py-1 text-center font-mono">
+                    {result.skorKomponen['PERENCANAAN KINERJA']?.persen.toFixed(2) || '80.00'}%
                   </td>
-                  <td className="border border-slate-400 px-3 py-2 text-center font-mono font-black">
+                </tr>
+                {lhe.kriteriaList
+                  .filter((k) => k.komponen.toUpperCase().includes('PERENCANAAN'))
+                  .map((k) => (
+                    <tr key={k.id} className="hover:bg-slate-50">
+                      <td className="border border-slate-400 px-2 py-1 text-center font-mono font-semibold text-slate-700">
+                        {k.kode || '1.x'}
+                      </td>
+                      <td className="border border-slate-400 px-3 py-1 text-slate-800 leading-snug">
+                        {k.kriteria || k.parameter}
+                      </td>
+                      <td className="border border-slate-400 px-2 py-1 text-center font-mono text-slate-700">
+                        {k.bobotKriteria.toFixed(2)}
+                      </td>
+                      <td className="border border-slate-400 px-2 py-1 text-center font-mono font-semibold text-slate-900">
+                        {k.nilai !== undefined ? k.nilai.toFixed(2) : (k.skor === 1 ? k.bobotKriteria.toFixed(2) : '0.00')}
+                      </td>
+                      <td className="border border-slate-400 px-2 py-1 text-center font-mono text-slate-700">
+                        {k.persen !== undefined ? `${k.persen.toFixed(2)}%` : (k.skor === 1 ? '100.00%' : '0.00%')}
+                      </td>
+                    </tr>
+                  ))}
+
+                {/* 2. PENGUKURAN KINERJA */}
+                <tr className="bg-slate-100 font-bold text-slate-900">
+                  <td className="border border-slate-400 px-2 py-1 text-center font-mono">2</td>
+                  <td className="border border-slate-400 px-3 py-1 uppercase">PENGUKURAN KINERJA</td>
+                  <td className="border border-slate-400 px-2 py-1 text-center font-mono">30.00</td>
+                  <td className="border border-slate-400 px-2 py-1 text-center font-mono">
+                    {result.skorKomponen['PENGUKURAN KINERJA']?.skorDidapat.toFixed(2) || '27.60'}
+                  </td>
+                  <td className="border border-slate-400 px-2 py-1 text-center font-mono">
+                    {result.skorKomponen['PENGUKURAN KINERJA']?.persen.toFixed(2) || '92.00'}%
+                  </td>
+                </tr>
+                {lhe.kriteriaList
+                  .filter((k) => k.komponen.toUpperCase().includes('PENGUKURAN'))
+                  .map((k) => (
+                    <tr key={k.id} className="hover:bg-slate-50">
+                      <td className="border border-slate-400 px-2 py-1 text-center font-mono font-semibold text-slate-700">
+                        {k.kode || '2.x'}
+                      </td>
+                      <td className="border border-slate-400 px-3 py-1 text-slate-800 leading-snug">
+                        {k.kriteria || k.parameter}
+                      </td>
+                      <td className="border border-slate-400 px-2 py-1 text-center font-mono text-slate-700">
+                        {k.bobotKriteria.toFixed(2)}
+                      </td>
+                      <td className="border border-slate-400 px-2 py-1 text-center font-mono font-semibold text-slate-900">
+                        {k.nilai !== undefined ? k.nilai.toFixed(2) : (k.skor === 1 ? k.bobotKriteria.toFixed(2) : '0.00')}
+                      </td>
+                      <td className="border border-slate-400 px-2 py-1 text-center font-mono text-slate-700">
+                        {k.persen !== undefined ? `${k.persen.toFixed(2)}%` : (k.skor === 1 ? '100.00%' : '0.00%')}
+                      </td>
+                    </tr>
+                  ))}
+
+                {/* 3. PELAPORAN KINERJA */}
+                <tr className="bg-slate-100 font-bold text-slate-900">
+                  <td className="border border-slate-400 px-2 py-1 text-center font-mono">3</td>
+                  <td className="border border-slate-400 px-3 py-1 uppercase">PELAPORAN KINERJA</td>
+                  <td className="border border-slate-400 px-2 py-1 text-center font-mono">15.00</td>
+                  <td className="border border-slate-400 px-2 py-1 text-center font-mono">
+                    {result.skorKomponen['PELAPORAN KINERJA']?.skorDidapat.toFixed(2) || '13.50'}
+                  </td>
+                  <td className="border border-slate-400 px-2 py-1 text-center font-mono">
+                    {result.skorKomponen['PELAPORAN KINERJA']?.persen.toFixed(2) || '90.00'}%
+                  </td>
+                </tr>
+                {lhe.kriteriaList
+                  .filter((k) => k.komponen.toUpperCase().includes('PELAPORAN'))
+                  .map((k) => (
+                    <tr key={k.id} className="hover:bg-slate-50">
+                      <td className="border border-slate-400 px-2 py-1 text-center font-mono font-semibold text-slate-700">
+                        {k.kode || '3.x'}
+                      </td>
+                      <td className="border border-slate-400 px-3 py-1 text-slate-800 leading-snug">
+                        {k.kriteria || k.parameter}
+                      </td>
+                      <td className="border border-slate-400 px-2 py-1 text-center font-mono text-slate-700">
+                        {k.bobotKriteria.toFixed(2)}
+                      </td>
+                      <td className="border border-slate-400 px-2 py-1 text-center font-mono font-semibold text-slate-900">
+                        {k.nilai !== undefined ? k.nilai.toFixed(2) : (k.skor === 1 ? k.bobotKriteria.toFixed(2) : '0.00')}
+                      </td>
+                      <td className="border border-slate-400 px-2 py-1 text-center font-mono text-slate-700">
+                        {k.persen !== undefined ? `${k.persen.toFixed(2)}%` : (k.skor === 1 ? '100.00%' : '0.00%')}
+                      </td>
+                    </tr>
+                  ))}
+
+                {/* 4. EVALUASI AKUNTABILITAS KINERJA INTERNAL */}
+                <tr className="bg-slate-100 font-bold text-slate-900">
+                  <td className="border border-slate-400 px-2 py-1 text-center font-mono">4</td>
+                  <td className="border border-slate-400 px-3 py-1 uppercase">EVALUASI AKUNTABILITAS KINERJA INTERNAL</td>
+                  <td className="border border-slate-400 px-2 py-1 text-center font-mono">25.00</td>
+                  <td className="border border-slate-400 px-2 py-1 text-center font-mono">
+                    {result.skorKomponen['EVALUASI AKUNTABILITAS KINERJA INTERNAL']?.skorDidapat.toFixed(2) || '23.00'}
+                  </td>
+                  <td className="border border-slate-400 px-2 py-1 text-center font-mono">
+                    {result.skorKomponen['EVALUASI AKUNTABILITAS KINERJA INTERNAL']?.persen.toFixed(2) || '92.00'}%
+                  </td>
+                </tr>
+                {lhe.kriteriaList
+                  .filter((k) => k.komponen.toUpperCase().includes('EVALUASI'))
+                  .map((k) => (
+                    <tr key={k.id} className="hover:bg-slate-50">
+                      <td className="border border-slate-400 px-2 py-1 text-center font-mono font-semibold text-slate-700">
+                        {k.kode || '4.x'}
+                      </td>
+                      <td className="border border-slate-400 px-3 py-1 text-slate-800 leading-snug">
+                        {k.kriteria || k.parameter}
+                      </td>
+                      <td className="border border-slate-400 px-2 py-1 text-center font-mono text-slate-700">
+                        {k.bobotKriteria.toFixed(2)}
+                      </td>
+                      <td className="border border-slate-400 px-2 py-1 text-center font-mono font-semibold text-slate-900">
+                        {k.nilai !== undefined ? k.nilai.toFixed(2) : (k.skor === 1 ? k.bobotKriteria.toFixed(2) : '0.00')}
+                      </td>
+                      <td className="border border-slate-400 px-2 py-1 text-center font-mono text-slate-700">
+                        {k.persen !== undefined ? `${k.persen.toFixed(2)}%` : (k.skor === 1 ? '100.00%' : '0.00%')}
+                      </td>
+                    </tr>
+                  ))}
+
+                {/* FOOTER TOTAL */}
+                <tr className="bg-slate-200 font-black text-slate-900">
+                  <td colSpan={2} className="border border-slate-400 px-3 py-2 text-right uppercase">
+                    Nilai Akuntabilitas Kinerja / Kategori Predikat
+                  </td>
+                  <td className="border border-slate-400 px-2 py-2 text-center font-mono">100.00</td>
+                  <td className="border border-slate-400 px-2 py-2 text-center font-mono font-black text-sm text-emerald-900">
+                    {result.nilaiTotal.toFixed(2)}
+                  </td>
+                  <td className="border border-slate-400 px-2 py-2 text-center font-mono font-black text-sm text-emerald-900">
                     {result.predikat}
                   </td>
                 </tr>
-              </tbody>
-            </table>
-          </div>
-
-          {/* Lembar Kerja Penilaian 1/0 */}
-          <div className="mb-6">
-            <h4 className="font-sans font-bold text-xs uppercase tracking-wider text-slate-900 mb-2">
-              II. Lembar Kerja Evaluasi Parameter (Penilaian 1/0)
-            </h4>
-            <table className="w-full text-left font-sans text-[11px] border-collapse border border-slate-400">
-              <thead className="bg-slate-200 font-bold text-slate-800">
-                <tr>
-                  <th className="border border-slate-400 px-2 py-1.5 text-center w-8">No</th>
-                  <th className="border border-slate-400 px-2 py-1.5">Komponen / Sub-Komponen</th>
-                  <th className="border border-slate-400 px-2 py-1.5">Parameter Indikator Standar</th>
-                  <th className="border border-slate-400 px-2 py-1.5 text-center w-16">Skor (1/0)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {lhe.kriteriaList.map((k, idx) => (
-                  <tr key={k.id}>
-                    <td className="border border-slate-400 px-2 py-1 text-center font-mono">{idx + 1}</td>
-                    <td className="border border-slate-400 px-2 py-1">
-                      <strong>{k.komponen}</strong> - {k.subKomponen}
-                    </td>
-                    <td className="border border-slate-400 px-2 py-1">{k.parameter}</td>
-                    <td className="border border-slate-400 px-2 py-1 text-center font-black font-mono">
-                      {k.skor === 1 ? '1 (Ya)' : '0 (Tidak)'}
-                    </td>
-                  </tr>
-                ))}
               </tbody>
             </table>
           </div>

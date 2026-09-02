@@ -179,7 +179,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="flex items-center gap-1.5">
               <span className="font-extrabold text-lg tracking-tight text-white">E-SAKIP</span>
               <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                PRO
+                RS
               </span>
             </div>
             <p className="text-xs text-slate-400 font-medium truncate max-w-[170px]">
@@ -376,16 +376,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           })}
         </div>
 
-        {/* Footer info */}
-        <div className="p-4 border-t border-slate-800 text-xs text-slate-400 bg-slate-950/40">
-          <div className="flex items-center justify-between text-[11px] mb-1">
-            <span className="font-semibold text-slate-300">Standar PermenPAN-RB</span>
-            <span className="text-emerald-400 font-mono">No. 88/2021</span>
-          </div>
-          <p className="text-[10px] text-slate-500 leading-relaxed">
-            Evaluasi Akuntabilitas Kinerja Instansi Pemerintah Terintegrasi
-          </p>
-        </div>
+      
       </aside>
     </>
   );

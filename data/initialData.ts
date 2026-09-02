@@ -8,6 +8,7 @@ import {
   CapaianIndikatorTriwulan,
   LHEEvaluation,
   BobotSakip,
+  KriteriaLHE,
 } from '../src/types';
 
 export const INITIAL_USERS: User[] = [
@@ -1061,154 +1062,172 @@ export const INITIAL_BOBOT_SAKIP: BobotSakip = {
   perencanaan: 30,
   pengukuran: 30,
   pelaporan: 15,
-  evaluasiInternal: 10,
-  capaianKinerja: 15,
+  evaluasiInternal: 25,
 };
 
-export const DEFAULT_LHE_KRITERIA = [
-  // 1. Perencanaan Kinerja (Bobot 30%)
+export const DEFAULT_LHE_KRITERIA: KriteriaLHE[] = [
+  // 1. PERENCANAAN KINERJA (Bobot 30.00, Nilai 24.00, 80.00%)
   {
-    id: 'crit-1-1',
-    komponen: 'Perencanaan Kinerja' as const,
-    subKomponen: 'Dokumen Renstra & Keselarasan Renstra Kemenkes',
-    parameter: 'Renstra RSUP Dr. M Djamil telah memuat 11 Sasaran Strategis dan IKU yang selaras dengan 6 Pilar Transformasi Kesehatan Kemenkes RI.',
-    skor: 1 as 0 | 1,
-    bobotKriteria: 7.5,
-    catatanEvaluator: 'Dokumen Renstra telah selaras sempurna dengan pohon kinerja Ditjen Pelayanan Kesehatan.',
+    id: 'crit-1-a',
+    kode: '1.a',
+    komponen: 'PERENCANAAN KINERJA',
+    subKomponen: 'Keberadaan Dokumen Perencanaan Kinerja',
+    kriteria: 'Dokumen Perencanaan kinerja telah tersedia',
+    parameter: 'Dokumen Perencanaan kinerja telah tersedia',
+    bobotKriteria: 6.00,
+    nilai: 5.40,
+    persen: 90.00,
+    skor: 1,
+    catatanEvaluator: 'Dokumen Renstra, RKT, dan Perjanjian Kinerja (PK) telah tersedia lengkap dan disahkan.',
   },
   {
-    id: 'crit-1-2',
-    komponen: 'Perencanaan Kinerja' as const,
-    subKomponen: 'Perjanjian Kinerja (PK) Berjenjang 18 Indikator',
-    parameter: 'Terdapat penetapan Perjanjian Kinerja 18 indikator berjenjang mulai Direktur Utama, Direktur, Ketua KSM, hingga Kepala Instalasi.',
-    skor: 1 as 0 | 1,
-    bobotKriteria: 7.5,
-    catatanEvaluator: 'PK 18 Indikator telah ditandatangani bersama Ditjen Yankes dan diinput lengkap.',
+    id: 'crit-1-b',
+    kode: '1.b',
+    komponen: 'PERENCANAAN KINERJA',
+    subKomponen: 'Kualitas Dokumen Perencanaan (SMART, Cascading & Crosscutting)',
+    kriteria: 'Dokumen Perencanaan kinerja telah memenuhi standar yang baik, yaitu untuk mencapai hasil, dengan ukuran kinerja yang SMART, menggunakan penyelarasan (cascading) disetiap level secara logis, serta memperhatikan kinerja bidang lain (crosscutting)',
+    parameter: 'Dokumen Perencanaan kinerja telah memenuhi standar yang baik, yaitu untuk mencapai hasil, dengan ukuran kinerja yang SMART, menggunakan penyelarasan (cascading) disetiap level secara logis, serta memperhatikan kinerja bidang lain (crosscutting)',
+    bobotKriteria: 9.00,
+    nilai: 8.10,
+    persen: 90.00,
+    skor: 1,
+    catatanEvaluator: 'Telah memenuhi kaidah SMART-C, cascading pohon kinerja selaras berjenjang, dan memperhatikan crosscutting program.',
   },
   {
-    id: 'crit-1-3',
-    komponen: 'Perencanaan Kinerja' as const,
-    subKomponen: 'Kualitas Indikator Kinerja Utama (IKU/IKM)',
-    parameter: 'Indikator kinerja memenuhi kaidah SMART-C dan mencakup aspek layanan klinis, mutu HAIs, kematangan SIMRS, dan pengampuan nasional.',
-    skor: 1 as 0 | 1,
-    bobotKriteria: 7.5,
-    catatanEvaluator: 'Formula perhitungan matematis jelas dan memiliki target semester terukur.',
-  },
-  {
-    id: 'crit-1-4',
-    komponen: 'Perencanaan Kinerja' as const,
-    subKomponen: 'Pemanfaatan Perencanaan untuk Penganggaran BLU',
-    parameter: 'Alokasi RBA/DIPA BLU telah secara nyata mendukung pencapaian 11 Sasaran Strategis (Money Follows Program).',
-    skor: 1 as 0 | 1,
-    bobotKriteria: 7.5,
-    catatanEvaluator: 'Anggaran terfokus pada pengampuan lokus, perbaikan mutu, dan transformasi digital SIMRS.',
-  },
-
-  // 2. Pengukuran Kinerja (Bobot 30%)
-  {
-    id: 'crit-2-1',
-    komponen: 'Pengukuran Kinerja' as const,
-    subKomponen: 'Sistem Informasi Pengukuran Kinerja (E-SAKIP Kemenkes)',
-    parameter: 'Telah memanfaatkan aplikasi E-SAKIP untuk mengumpulkan dan memproses capaian 18 indikator secara realtime per bulan dan semester.',
-    skor: 1 as 0 | 1,
-    bobotKriteria: 7.5,
-    catatanEvaluator: 'Aplikasi E-SAKIP Kemenkes aktif digunakan dengan visualisasi capaian 18 indikator.',
-  },
-  {
-    id: 'crit-2-2',
-    komponen: 'Pengukuran Kinerja' as const,
-    subKomponen: 'Keandalan Bukti Dukung (Data Evidens SIMRS/Klinis)',
-    parameter: 'Pengukuran didukung data klinis SIMRS, rekam medik, laporan keuangan BLU, dan berita acara pengampuan yang sahih.',
-    skor: 1 as 0 | 1,
-    bobotKriteria: 7.5,
-    catatanEvaluator: 'Evidens lengkap terlampir untuk seluruh 18 indikator kinerja.',
-  },
-  {
-    id: 'crit-2-3',
-    komponen: 'Pengukuran Kinerja' as const,
-    subKomponen: 'Pengukuran Kinerja Berkala (Tabel 3.1 Semester I)',
-    parameter: 'Pengukuran kinerja dilakukan berkala dan disusun ke dalam Tabel 3.1 Hasil Pengukuran Kinerja dengan rata-rata capaian 88,42%.',
-    skor: 1 as 0 | 1,
-    bobotKriteria: 7.5,
-    catatanEvaluator: 'Tabel 3.1 Semester I tersaji lengkap dengan analisis capaian per indikator.',
-  },
-  {
-    id: 'crit-2-4',
-    komponen: 'Pengukuran Kinerja' as const,
-    subKomponen: 'Pemanfaatan Hasil Pengukuran untuk Remunerasi',
-    parameter: 'Hasil pengukuran capaian indikator telah diintegrasikan dengan sistem remunerasi dan penilaian kinerja pegawai RSUP.',
-    skor: 1 as 0 | 1,
-    bobotKriteria: 7.5,
-    catatanEvaluator: 'Telah terkoneksi dengan komponen penilaian kinerja remunerasi BLU.',
+    id: 'crit-1-c',
+    kode: '1.c',
+    komponen: 'PERENCANAAN KINERJA',
+    subKomponen: 'Pemanfaatan Perencanaan Berkesinambungan',
+    kriteria: 'Perencanaan Kinerja telah dimanfaatkan untuk mewujudkan hasil yang berkesinambungan',
+    parameter: 'Perencanaan Kinerja telah dimanfaatkan untuk mewujudkan hasil yang berkesinambungan',
+    bobotKriteria: 15.00,
+    nilai: 10.50,
+    persen: 70.00,
+    skor: 1,
+    catatanEvaluator: 'Perencanaan kinerja telah dimanfaatkan nyata untuk alokasi penganggaran DIPA/RBA dan program berkelanjutan.',
   },
 
-  // 3. Pelaporan Kinerja (Bobot 15%)
+  // 2. PENGUKURAN KINERJA (Bobot 30.00, Nilai 27.60, 92.00%)
   {
-    id: 'crit-3-1',
-    komponen: 'Pelaporan Kinerja' as const,
-    subKomponen: 'Ketepatan Waktu Penyampaian LAKIP Kemenkes',
-    parameter: 'Laporan Akuntabilitas Kinerja disampaikan tepat waktu kepada Ditjen Yankes dan Inspektorat Jenderal Kemenkes RI.',
-    skor: 1 as 0 | 1,
-    bobotKriteria: 5.0,
-    catatanEvaluator: 'Laporan kinerja semesteran dan tahunan diunggah tepat waktu.',
+    id: 'crit-2-a',
+    kode: '2.a',
+    komponen: 'PENGUKURAN KINERJA',
+    subKomponen: 'Pelaksanaan Pengukuran Kinerja',
+    kriteria: 'Pengukuran Kinerja telah dilakukan',
+    parameter: 'Pengukuran Kinerja telah dilakukan',
+    bobotKriteria: 6.00,
+    nilai: 6.00,
+    persen: 100.00,
+    skor: 1,
+    catatanEvaluator: 'Pengukuran capaian kinerja dilakukan secara berkala dan konsisten setiap bulan dan semester.',
   },
   {
-    id: 'crit-3-2',
-    komponen: 'Pelaporan Kinerja' as const,
-    subKomponen: 'Kualitas Analisis Capaian Kinerja (18 Indikator)',
-    parameter: 'Laporan menyajikan analisis mendalam faktor pendorong dan kendala, khususnya pada indikator dengan capaian di bawah target (misal EBITDA dan CRU).',
-    skor: 1 as 0 | 1,
-    bobotKriteria: 5.0,
-    catatanEvaluator: 'Analisis komprehensif mencakup kendala dan strategi perbaikan semester II.',
+    id: 'crit-2-b',
+    kode: '2.b',
+    komponen: 'PENGUKURAN KINERJA',
+    subKomponen: 'Kebutuhan Pengukuran Efektif & Efisien Berjenjang',
+    kriteria: 'Pengukuran Kinerja telah menjadi kebutuhan dalam mewujudkan Kinerja secara Efektif dan Efisien dan telah dilakukan secara berjenjang dan berkelanjutan',
+    parameter: 'Pengukuran Kinerja telah menjadi kebutuhan dalam mewujudkan Kinerja secara Efektif dan Efisien dan telah dilakukan secara berjenjang dan berkelanjutan',
+    bobotKriteria: 9.00,
+    nilai: 8.10,
+    persen: 90.00,
+    skor: 1,
+    catatanEvaluator: 'Pengukuran kinerja didukung sistem informasi E-SAKIP dan data SIMRS terintegrasi.',
   },
   {
-    id: 'crit-3-3',
-    komponen: 'Pelaporan Kinerja' as const,
-    subKomponen: 'Publikasi Kinerja ke Portal Resmi Rumah Sakit',
-    parameter: 'Laporan kinerja dipublikasikan secara terbuka melalui portal resmi RSUP Dr. M Djamil untuk transparansi publik.',
-    skor: 1 as 0 | 1,
-    bobotKriteria: 5.0,
-    catatanEvaluator: 'Tersedia di menu e-PPID dan website resmi RSUP Dr. M Djamil.',
-  },
-
-  // 4. Evaluasi Akuntabilitas Kinerja Internal (Bobot 10%)
-  {
-    id: 'crit-4-1',
-    komponen: 'Evaluasi Internal' as const,
-    subKomponen: 'Pelaksanaan Evaluasi Kinerja Internal Mandiri oleh SPI',
-    parameter: 'Satuan Pengawas Internal (SPI) dan Tim SAKIP melaksanakan evaluasi berkala atas akuntabilitas kinerja unit kerja/instalasi.',
-    skor: 1 as 0 | 1,
-    bobotKriteria: 5.0,
-    catatanEvaluator: 'Terdapat laporan reviu SPI atas capaian IKU triwulanan.',
-  },
-  {
-    id: 'crit-4-2',
-    komponen: 'Evaluasi Internal' as const,
-    subKomponen: 'Tindak Lanjut Rekomendasi LHE Itjen Kemenkes',
-    parameter: 'Telah menindaklanjuti 100% rekomendasi perbaikan dari LHE Inspektorat Jenderal Kemenkes periode sebelumnya.',
-    skor: 1 as 0 | 1,
-    bobotKriteria: 5.0,
-    catatanEvaluator: 'Rekomendasi tahun sebelumnya telah tuntas ditindaklanjuti (Indikator 17 tercapai 102.73%).',
+    id: 'crit-2-c',
+    kode: '2.c',
+    komponen: 'PENGUKURAN KINERJA',
+    subKomponen: 'Pemanfaatan Hasil Ukur (Reward, Punishment & Strategi)',
+    kriteria: 'Pengukuran Kinerja telah dijadikan dasar dalam pemberian Reward dan Punishment, serta penyesuaian strategi dalam mencapai kinerja yang efektif dan efisien',
+    parameter: 'Pengukuran Kinerja telah dijadikan dasar dalam pemberian Reward dan Punishment, serta penyesuaian strategi dalam mencapai kinerja yang efektif dan efisien',
+    bobotKriteria: 15.00,
+    nilai: 13.50,
+    persen: 90.00,
+    skor: 1,
+    catatanEvaluator: 'Telah terintegrasi dengan skema penilaian remunerasi pegawai dan evaluasi strategi pencapaian kinerja.',
   },
 
-  // 5. Capaian Kinerja (Bobot 15%)
+  // 3. PELAPORAN KINERJA (Bobot 15.00, Nilai 13.50, 90.00%)
   {
-    id: 'crit-5-1',
-    komponen: 'Capaian Kinerja' as const,
-    subKomponen: 'Rata-Rata Capaian 18 Indikator Kinerja PK',
-    parameter: 'Rata-rata capaian kinerja Semester I mencapai 88,42% (kategori Baik) dengan beberapa IKU unggulan melampaui target 100%.',
-    skor: 1 as 0 | 1,
-    bobotKriteria: 7.5,
-    catatanEvaluator: 'Rata-rata capaian 88,42% dengan IKM SIMRS (164,84%), Pengampuan (112,09%), dan Mastektomi (125%) terlampaui.',
+    id: 'crit-3-a',
+    kode: '3.a',
+    komponen: 'PELAPORAN KINERJA',
+    subKomponen: 'Ketersediaan Dokumen Laporan Kinerja',
+    kriteria: 'Terdapat Dokumen Laporan yang menggambarkan Kinerja',
+    parameter: 'Terdapat Dokumen Laporan yang menggambarkan Kinerja',
+    bobotKriteria: 3.00,
+    nilai: 2.70,
+    persen: 90.00,
+    skor: 1,
+    catatanEvaluator: 'Dokumen LAKIP / Laporan Kinerja semesteran dan tahunan tersedia tepat waktu.',
   },
   {
-    id: 'crit-5-2',
-    komponen: 'Capaian Kinerja' as const,
-    subKomponen: 'Inovasi Layanan Kesehatan Rujukan & Prestasi Nasional',
-    parameter: 'RSUP Dr. M Djamil meraih prestasi/penghargaan layanan rujukan dan akreditasi internasional/KARS Paripurna.',
-    skor: 1 as 0 | 1,
-    bobotKriteria: 7.5,
-    catatanEvaluator: 'Meraih Predikat Akreditasi RS Pendidikan Paripurna dan Pelayanan Rujukan Terbaik Wilayah Barat.',
+    id: 'crit-3-b',
+    kode: '3.b',
+    komponen: 'PELAPORAN KINERJA',
+    subKomponen: 'Kualitas Laporan (Capaian, Keberhasilan/Kegagalan & Perbaikan)',
+    kriteria: 'Dokumen Laporan Kinerja telah memenuhi Standar menggambarkan Kualitas atas Pencapaian Kinerja, informasi keberhasilan/kegagalan kinerja serta upaya perbaikan/penyempurnaannya',
+    parameter: 'Dokumen Laporan Kinerja telah memenuhi Standar menggambarkan Kualitas atas Pencapaian Kinerja, informasi keberhasilan/kegagalan kinerja serta upaya perbaikan/penyempurnaannya',
+    bobotKriteria: 4.50,
+    nilai: 4.05,
+    persen: 90.00,
+    skor: 1,
+    catatanEvaluator: 'Laporan menyajikan analisis komprehensif faktor pendorong, kendala capaian, dan aksi tindak lanjut.',
+  },
+  {
+    id: 'crit-3-c',
+    kode: '3.c',
+    komponen: 'PELAPORAN KINERJA',
+    subKomponen: 'Dampak Laporan pada Penyesuaian Strategi/Kebijakan',
+    kriteria: 'Pelaporan Kinerja telah memberikan dampak yang besar dalam penyesuaian strategi/kebijakan dalam mencapai kinerja berikutnya',
+    parameter: 'Pelaporan Kinerja telah memberikan dampak yang besar dalam penyesuaian strategi/kebijakan dalam mencapai kinerja berikutnya',
+    bobotKriteria: 7.50,
+    nilai: 6.75,
+    persen: 90.00,
+    skor: 1,
+    catatanEvaluator: 'Hasil pelaporan kinerja menjadi acuan utama rapat pimpinan untuk penetapan kebijakan perbaikan.',
+  },
+
+  // 4. EVALUASI AKUNTABILITAS KINERJA INTERNAL (Bobot 25.00, Nilai 23.00, 92.00%)
+  {
+    id: 'crit-4-a',
+    kode: '4.a',
+    komponen: 'EVALUASI AKUNTABILITAS KINERJA INTERNAL',
+    subKomponen: 'Pelaksanaan Evaluasi Internal',
+    kriteria: 'Evaluasi Akuntabilitas Kinerja Internal telah dilaksanakan',
+    parameter: 'Evaluasi Akuntabilitas Kinerja Internal telah dilaksanakan',
+    bobotKriteria: 5.00,
+    nilai: 5.00,
+    persen: 100.00,
+    skor: 1,
+    catatanEvaluator: 'Evaluasi internal mandiri dilakukan secara berkala oleh SPI dan Tim SAKIP.',
+  },
+  {
+    id: 'crit-4-b',
+    kode: '4.b',
+    komponen: 'EVALUASI AKUNTABILITAS KINERJA INTERNAL',
+    subKomponen: 'Kualitas Evaluasi Internal & Sumber Daya Memadai',
+    kriteria: 'Evaluasi Akuntabilitas Kinerja Internal telah dilaksanakan secara berkualitas dengan Sumber Daya yang memadai',
+    parameter: 'Evaluasi Akuntabilitas Kinerja Internal telah dilaksanakan secara berkualitas dengan Sumber Daya yang memadai',
+    bobotKriteria: 7.50,
+    nilai: 6.75,
+    persen: 90.00,
+    skor: 1,
+    catatanEvaluator: 'Didukung oleh tim evaluator berintegritas dan kompeten sesuai standar PermenPAN-RB.',
+  },
+  {
+    id: 'crit-4-c',
+    kode: '4.c',
+    komponen: 'EVALUASI AKUNTABILITAS KINERJA INTERNAL',
+    subKomponen: 'Dampak Nyata Evaluasi pada Efektivitas & Efisiensi Kinerja',
+    kriteria: 'Implementasi SAKIP telah meningkat karena evaluasi Akuntabilitas Kinerja Internal sehingga memberikan kesan yang nyata (dampak) dalam efektifitas dan efisiensi Kinerja',
+    parameter: 'Implementasi SAKIP telah meningkat karena evaluasi Akuntabilitas Kinerja Internal sehingga memberikan kesan yang nyata (dampak) dalam efektifitas dan efisiensi Kinerja',
+    bobotKriteria: 12.50,
+    nilai: 11.25,
+    persen: 90.00,
+    skor: 1,
+    catatanEvaluator: 'Tindak lanjut rekomendasi evaluasi internal terbukti meningkatkan efisiensi dan efektivitas kinerja organisasi.',
   },
 ];
 
@@ -1229,54 +1248,92 @@ export const INITIAL_LHE: LHEEvaluation[] = [
     nilaiTotal: 88.10,
     predikat: 'A',
     kategoriPredikat: 'Memuaskan (High Quality Performance SAKIP Kemenkes)',
-    catatanEvaluasiUmum: 'Penerapan Sistem Akuntabilitas Kinerja Instansi Pemerintah (SAKIP) pada RSUP Dr. M Djamil Padang - Kementerian Kesehatan RI menunjukkan kinerja yang SANGAT MEMUASKAN dengan nilai AKIP 88,10 (Predikat A). Seluruh 18 Indikator Kinerja Perjanjian Kinerja (PK) telah terpantau dengan rata-rata capaian Semester I Tahun 2026 sebesar 88,42%. Perlu perhatian khusus pada peningkatan pendapatan penelitian CRU dan EBITDA margin.',
+    catatanEvaluasiUmum: 'Penerapan Sistem Akuntabilitas Kinerja Instansi Pemerintah (SAKIP) pada RSUP Dr. M Djamil Padang - Kementerian Kesehatan RI menunjukkan kinerja yang SANGAT MEMUASKAN dengan nilai AKIP 88,10 (Predikat A). Seluruh komponen Perencanaan, Pengukuran, Pelaporan, dan Evaluasi Internal telah berjalan terstruktur dan selaras dengan standar PermenPAN-RB No. 88/2021.',
     rekomendasiPerbaikan: [
       'Membuat program akselerasi pendapatan penelitian Clinical Research Unit (CRU) melalui kolaborasi uji klinis industri farmasi nasional & internasional.',
       'Melakukan pengendalian biaya operasional dan optimasi pendapatan non-JKN guna mendongkrak EBITDA margin pada Semester II 2026.',
-      'Mempertahankan keunggulan implementasi SIMRS terintegrasi (capaian 164,84%) dan pengampuan faskes rujukan penyakit prioritas (KJSU) di wilayah Sumatera Barat dan sekitarnya.',
+      'Mempertahankan keunggulan implementasi SIMRS terintegrasi dan pengampuan faskes rujukan penyakit prioritas (KJSU) di wilayah Sumatera Barat dan sekitarnya.',
       'Meningkatkan realisasi penyerapan anggaran BLU dan APBN agar target 96% di akhir tahun dapat dicapai secara proporsional.',
     ],
     komitmenTindakLanjut: 'Manajemen RSUP Dr. M Djamil berkomitmen menindaklanjuti seluruh rekomendasi perbaikan dalam kurun waktu 30 hari kalender bersama Ditjen Yankes.',
   },
 ];
 
-export function hitungNilaiLHE(kriteriaList: typeof DEFAULT_LHE_KRITERIA, bobot: BobotSakip): {
+export function hitungNilaiLHE(kriteriaList: KriteriaLHE[], bobot: BobotSakip): {
   nilaiTotal: number;
   predikat: 'AA' | 'A' | 'BB' | 'B' | 'CC' | 'C' | 'D';
   kategori: string;
   skorKomponen: Record<string, { totalBobot: number; skorDidapat: number; persen: number }>;
 } {
-  const komponenMap: Record<string, { totalBobot: number; skorDidapat: number }> = {
-    'Perencanaan Kinerja': { totalBobot: bobot.perencanaan, skorDidapat: 0 },
-    'Pengukuran Kinerja': { totalBobot: bobot.pengukuran, skorDidapat: 0 },
-    'Pelaporan Kinerja': { totalBobot: bobot.pelaporan, skorDidapat: 0 },
-    'Evaluasi Internal': { totalBobot: bobot.evaluasiInternal, skorDidapat: 0 },
-    'Capaian Kinerja': { totalBobot: bobot.capaianKinerja, skorDidapat: 0 },
-  };
-
-  const totalItemPerKomponen: Record<string, number> = {};
-  const skorItemPerKomponen: Record<string, number> = {};
-
-  kriteriaList.forEach((k) => {
-    totalItemPerKomponen[k.komponen] = (totalItemPerKomponen[k.komponen] || 0) + 1;
-    skorItemPerKomponen[k.komponen] = (skorItemPerKomponen[k.komponen] || 0) + (k.skor === 1 ? 1 : 0);
-  });
+  // Mapping 4 Komponen resmi PermenPAN-RB No. 88/2021
+  const komponenDefinitions: {
+    nama: string;
+    keyBobot: keyof BobotSakip;
+    defaultBobot: number;
+    matchNames: string[];
+  }[] = [
+    {
+      nama: 'PERENCANAAN KINERJA',
+      keyBobot: 'perencanaan',
+      defaultBobot: 30,
+      matchNames: ['PERENCANAAN KINERJA', 'Perencanaan Kinerja'],
+    },
+    {
+      nama: 'PENGUKURAN KINERJA',
+      keyBobot: 'pengukuran',
+      defaultBobot: 30,
+      matchNames: ['PENGUKURAN KINERJA', 'Pengukuran Kinerja'],
+    },
+    {
+      nama: 'PELAPORAN KINERJA',
+      keyBobot: 'pelaporan',
+      defaultBobot: 15,
+      matchNames: ['PELAPORAN KINERJA', 'Pelaporan Kinerja'],
+    },
+    {
+      nama: 'EVALUASI AKUNTABILITAS KINERJA INTERNAL',
+      keyBobot: 'evaluasiInternal',
+      defaultBobot: 25,
+      matchNames: ['EVALUASI AKUNTABILITAS KINERJA INTERNAL', 'Evaluasi Akuntabilitas Kinerja Internal', 'Evaluasi Internal'],
+    },
+  ];
 
   let nilaiTotal = 0;
   const skorKomponen: Record<string, { totalBobot: number; skorDidapat: number; persen: number }> = {};
 
-  Object.keys(komponenMap).forEach((komp) => {
-    const totalItem = totalItemPerKomponen[komp] || 1;
-    const skorItem = skorItemPerKomponen[komp] || 0;
-    const bobotKomponen = komponenMap[komp].totalBobot;
-    const nilaiKomponen = (skorItem / totalItem) * bobotKomponen;
-    nilaiTotal += nilaiKomponen;
+  komponenDefinitions.forEach((def) => {
+    const items = kriteriaList.filter((k) => def.matchNames.includes(k.komponen));
+    const totalBobotKomponen = bobot[def.keyBobot] ?? def.defaultBobot;
 
-    skorKomponen[komp] = {
-      totalBobot: bobotKomponen,
-      skorDidapat: Math.round(nilaiKomponen * 100) / 100,
-      persen: Math.round((skorItem / totalItem) * 100),
+    let nilaiDidapatKomponen = 0;
+
+    if (items.length > 0) {
+      // Calculate based on explicit nilai if present, otherwise calculate from persen or skor
+      const totalNilaiItems = items.reduce((acc, curr) => {
+        if (curr.nilai !== undefined && curr.nilai !== null) {
+          return acc + Number(curr.nilai);
+        }
+        if (curr.persen !== undefined && curr.persen !== null) {
+          return acc + (Number(curr.persen) / 100) * curr.bobotKriteria;
+        }
+        return acc + (curr.skor === 1 ? curr.bobotKriteria : 0);
+      }, 0);
+
+      nilaiDidapatKomponen = Math.round(totalNilaiItems * 100) / 100;
+    }
+
+    const persenKomponen =
+      totalBobotKomponen > 0
+        ? Math.round((nilaiDidapatKomponen / totalBobotKomponen) * 10000) / 100
+        : 0;
+
+    skorKomponen[def.nama] = {
+      totalBobot: totalBobotKomponen,
+      skorDidapat: nilaiDidapatKomponen,
+      persen: persenKomponen,
     };
+
+    nilaiTotal += nilaiDidapatKomponen;
   });
 
   nilaiTotal = Math.round(nilaiTotal * 100) / 100;

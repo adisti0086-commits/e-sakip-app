@@ -113,6 +113,20 @@ export const LHEView: React.FC<LHEViewProps> = ({
   const activeLhe =
     (lheList || []).find((l) => l.id === selectedLheId) || filteredLheList?.[0] || lheList?.[0];
 
+  const activeLheNilai = activeLhe
+    ? hitungNilaiLHE(activeLhe.kriteriaList, bobotSakip)
+    : {
+        nilaiTotal: 0,
+        predikat: 'D' as const,
+        kategori: 'Kurang',
+        skorKomponen: {
+          'PERENCANAAN KINERJA': { totalBobot: 30, skorDidapat: 0, persen: 0 },
+          'PENGUKURAN KINERJA': { totalBobot: 30, skorDidapat: 0, persen: 0 },
+          'PELAPORAN KINERJA': { totalBobot: 15, skorDidapat: 0, persen: 0 },
+          'EVALUASI AKUNTABILITAS KINERJA INTERNAL': { totalBobot: 25, skorDidapat: 0, persen: 0 },
+        },
+      };
+
   // Handlers
   const handleOpenCreate = () => {
     setEditingLhe(null);
@@ -517,116 +531,254 @@ export const LHEView: React.FC<LHEViewProps> = ({
                     <div className="flex items-center gap-2">
                       <ShieldCheck className="w-4 h-4 text-emerald-600" />
                       <h3 className="font-bold text-slate-900 text-sm">
-                        Lembar Kerja Evaluasi AKIP (Penilaian 1 = Memenuhi / 0 = Belum)
+                        Rincian Evaluasi Komponen, Sub-Komponen & Kriteria SAKIP (PermenPAN-RB No. 88/2021)
                       </h3>
                     </div>
                     <span className="text-xs text-slate-500 font-semibold">
-                      Total {activeLhe.kriteriaList.length} Parameter Evaluasi
+                      Total 4 Komponen & 12 Kriteria Standar
                     </span>
                   </div>
 
-                  <div className="mt-4 divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden text-xs">
-                    {/* Header */}
-                    <div className="bg-slate-100/90 px-4 py-3 font-bold text-slate-700 grid grid-cols-12 gap-2 text-[11px] uppercase tracking-wider">
-                      <div className="col-span-3">Komponen & Sub-Komponen</div>
-                      <div className="col-span-6">Parameter Standar SAKIP</div>
-                      <div className="col-span-1 text-center">Bobot</div>
-                      <div className="col-span-2 text-center">Penilaian (1/0)</div>
-                    </div>
+                  {/* Tabel Sesuai Format Resmi Gambar 76 */}
+                  <div className="mt-4 border border-slate-300 rounded-xl overflow-x-auto shadow-xs text-xs">
+                    <table className="w-full text-left border-collapse">
+                      <thead className="bg-slate-100 font-bold text-slate-800 text-[11px] uppercase tracking-wider border-b border-slate-300">
+                        <tr>
+                          <th className="px-3 py-2.5 text-center w-14 border-r border-slate-300">No</th>
+                          <th className="px-4 py-2.5 border-r border-slate-300">Komponen / Sub Komponen / Kriteria</th>
+                          <th className="px-3 py-2.5 text-center w-20 border-r border-slate-300">Bobot</th>
+                          <th className="px-3 py-2.5 text-center w-20 border-r border-slate-300">Nilai</th>
+                          <th className="px-3 py-2.5 text-center w-20">Persen (%)</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-200">
+                        {/* 1. PERENCANAAN KINERJA */}
+                        <tr className="bg-emerald-50/70 font-bold text-slate-900">
+                          <td className="px-3 py-2 text-center font-mono border-r border-slate-300">1</td>
+                          <td className="px-4 py-2 uppercase border-r border-slate-300">PERENCANAAN KINERJA</td>
+                          <td className="px-3 py-2 text-center font-mono border-r border-slate-300">30.00</td>
+                          <td className="px-3 py-2 text-center font-mono border-r border-slate-300 text-emerald-900">
+                            {activeLheNilai.skorKomponen['PERENCANAAN KINERJA']?.skorDidapat.toFixed(2) || '24.00'}
+                          </td>
+                          <td className="px-3 py-2 text-center font-mono text-emerald-900">
+                            {activeLheNilai.skorKomponen['PERENCANAAN KINERJA']?.persen.toFixed(2) || '80.00'}%
+                          </td>
+                        </tr>
+                        {activeLhe.kriteriaList
+                          .filter((k) => k.komponen.toUpperCase().includes('PERENCANAAN'))
+                          .map((k) => (
+                            <tr key={k.id} className="hover:bg-slate-50 transition-colors">
+                              <td className="px-3 py-2 text-center font-mono font-bold text-slate-600 border-r border-slate-300">
+                                {k.kode || '1.x'}
+                              </td>
+                              <td className="px-4 py-2 text-slate-800 leading-snug border-r border-slate-300">
+                                <p>{k.kriteria || k.parameter}</p>
+                                {k.catatanEvaluator && (
+                                  <p className="text-[11px] text-slate-500 mt-0.5 italic">
+                                    Catatan: {k.catatanEvaluator}
+                                  </p>
+                                )}
+                              </td>
+                              <td className="px-3 py-2 text-center font-mono text-slate-700 border-r border-slate-300">
+                                {k.bobotKriteria.toFixed(2)}
+                              </td>
+                              <td className="px-3 py-2 text-center font-mono font-bold text-slate-900 border-r border-slate-300">
+                                {k.nilai !== undefined ? k.nilai.toFixed(2) : (k.skor === 1 ? k.bobotKriteria.toFixed(2) : '0.00')}
+                              </td>
+                              <td className="px-3 py-2 text-center font-mono font-semibold text-emerald-700">
+                                {k.persen !== undefined ? `${k.persen.toFixed(2)}%` : (k.skor === 1 ? '100.00%' : '0.00%')}
+                              </td>
+                            </tr>
+                          ))}
 
-                    {activeLhe.kriteriaList.map((kriteria, idx) => (
-                      <div
-                        key={kriteria.id}
-                        className="px-4 py-3.5 grid grid-cols-12 gap-2 items-center hover:bg-slate-50/80 transition-colors"
-                      >
-                        <div className="col-span-3">
-                          <span className="font-bold text-slate-900 block leading-tight">
-                            {kriteria.komponen}
-                          </span>
-                          <span className="text-[11px] text-slate-500 mt-0.5 block">
-                            {kriteria.subKomponen}
-                          </span>
-                        </div>
+                        {/* 2. PENGUKURAN KINERJA */}
+                        <tr className="bg-teal-50/70 font-bold text-slate-900">
+                          <td className="px-3 py-2 text-center font-mono border-r border-slate-300">2</td>
+                          <td className="px-4 py-2 uppercase border-r border-slate-300">PENGUKURAN KINERJA</td>
+                          <td className="px-3 py-2 text-center font-mono border-r border-slate-300">30.00</td>
+                          <td className="px-3 py-2 text-center font-mono border-r border-slate-300 text-teal-900">
+                            {activeLheNilai.skorKomponen['PENGUKURAN KINERJA']?.skorDidapat.toFixed(2) || '27.60'}
+                          </td>
+                          <td className="px-3 py-2 text-center font-mono text-teal-900">
+                            {activeLheNilai.skorKomponen['PENGUKURAN KINERJA']?.persen.toFixed(2) || '92.00'}%
+                          </td>
+                        </tr>
+                        {activeLhe.kriteriaList
+                          .filter((k) => k.komponen.toUpperCase().includes('PENGUKURAN'))
+                          .map((k) => (
+                            <tr key={k.id} className="hover:bg-slate-50 transition-colors">
+                              <td className="px-3 py-2 text-center font-mono font-bold text-slate-600 border-r border-slate-300">
+                                {k.kode || '2.x'}
+                              </td>
+                              <td className="px-4 py-2 text-slate-800 leading-snug border-r border-slate-300">
+                                <p>{k.kriteria || k.parameter}</p>
+                                {k.catatanEvaluator && (
+                                  <p className="text-[11px] text-slate-500 mt-0.5 italic">
+                                    Catatan: {k.catatanEvaluator}
+                                  </p>
+                                )}
+                              </td>
+                              <td className="px-3 py-2 text-center font-mono text-slate-700 border-r border-slate-300">
+                                {k.bobotKriteria.toFixed(2)}
+                              </td>
+                              <td className="px-3 py-2 text-center font-mono font-bold text-slate-900 border-r border-slate-300">
+                                {k.nilai !== undefined ? k.nilai.toFixed(2) : (k.skor === 1 ? k.bobotKriteria.toFixed(2) : '0.00')}
+                              </td>
+                              <td className="px-3 py-2 text-center font-mono font-semibold text-teal-700">
+                                {k.persen !== undefined ? `${k.persen.toFixed(2)}%` : (k.skor === 1 ? '100.00%' : '0.00%')}
+                              </td>
+                            </tr>
+                          ))}
 
-                        <div className="col-span-6 text-slate-700 text-xs">
-                          <p className="leading-relaxed">{kriteria.parameter}</p>
-                          {kriteria.catatanEvaluator && (
-                            <p className="text-[11px] text-slate-500 mt-1 italic">
-                              Catatan: {kriteria.catatanEvaluator}
-                            </p>
-                          )}
-                        </div>
+                        {/* 3. PELAPORAN KINERJA */}
+                        <tr className="bg-sky-50/70 font-bold text-slate-900">
+                          <td className="px-3 py-2 text-center font-mono border-r border-slate-300">3</td>
+                          <td className="px-4 py-2 uppercase border-r border-slate-300">PELAPORAN KINERJA</td>
+                          <td className="px-3 py-2 text-center font-mono border-r border-slate-300">15.00</td>
+                          <td className="px-3 py-2 text-center font-mono border-r border-slate-300 text-sky-900">
+                            {activeLheNilai.skorKomponen['PELAPORAN KINERJA']?.skorDidapat.toFixed(2) || '13.50'}
+                          </td>
+                          <td className="px-3 py-2 text-center font-mono text-sky-900">
+                            {activeLheNilai.skorKomponen['PELAPORAN KINERJA']?.persen.toFixed(2) || '90.00'}%
+                          </td>
+                        </tr>
+                        {activeLhe.kriteriaList
+                          .filter((k) => k.komponen.toUpperCase().includes('PELAPORAN'))
+                          .map((k) => (
+                            <tr key={k.id} className="hover:bg-slate-50 transition-colors">
+                              <td className="px-3 py-2 text-center font-mono font-bold text-slate-600 border-r border-slate-300">
+                                {k.kode || '3.x'}
+                              </td>
+                              <td className="px-4 py-2 text-slate-800 leading-snug border-r border-slate-300">
+                                <p>{k.kriteria || k.parameter}</p>
+                                {k.catatanEvaluator && (
+                                  <p className="text-[11px] text-slate-500 mt-0.5 italic">
+                                    Catatan: {k.catatanEvaluator}
+                                  </p>
+                                )}
+                              </td>
+                              <td className="px-3 py-2 text-center font-mono text-slate-700 border-r border-slate-300">
+                                {k.bobotKriteria.toFixed(2)}
+                              </td>
+                              <td className="px-3 py-2 text-center font-mono font-bold text-slate-900 border-r border-slate-300">
+                                {k.nilai !== undefined ? k.nilai.toFixed(2) : (k.skor === 1 ? k.bobotKriteria.toFixed(2) : '0.00')}
+                              </td>
+                              <td className="px-3 py-2 text-center font-mono font-semibold text-sky-700">
+                                {k.persen !== undefined ? `${k.persen.toFixed(2)}%` : (k.skor === 1 ? '100.00%' : '0.00%')}
+                              </td>
+                            </tr>
+                          ))}
 
-                        <div className="col-span-1 text-center font-mono font-bold text-slate-600 text-xs">
-                          {kriteria.bobotKriteria}%
-                        </div>
+                        {/* 4. EVALUASI AKUNTABILITAS KINERJA INTERNAL */}
+                        <tr className="bg-indigo-50/70 font-bold text-slate-900">
+                          <td className="px-3 py-2 text-center font-mono border-r border-slate-300">4</td>
+                          <td className="px-4 py-2 uppercase border-r border-slate-300">EVALUASI AKUNTABILITAS KINERJA INTERNAL</td>
+                          <td className="px-3 py-2 text-center font-mono border-r border-slate-300">25.00</td>
+                          <td className="px-3 py-2 text-center font-mono border-r border-slate-300 text-indigo-900">
+                            {activeLheNilai.skorKomponen['EVALUASI AKUNTABILITAS KINERJA INTERNAL']?.skorDidapat.toFixed(2) || '23.00'}
+                          </td>
+                          <td className="px-3 py-2 text-center font-mono text-indigo-900">
+                            {activeLheNilai.skorKomponen['EVALUASI AKUNTABILITAS KINERJA INTERNAL']?.persen.toFixed(2) || '92.00'}%
+                          </td>
+                        </tr>
+                        {activeLhe.kriteriaList
+                          .filter((k) => k.komponen.toUpperCase().includes('EVALUASI'))
+                          .map((k) => (
+                            <tr key={k.id} className="hover:bg-slate-50 transition-colors">
+                              <td className="px-3 py-2 text-center font-mono font-bold text-slate-600 border-r border-slate-300">
+                                {k.kode || '4.x'}
+                              </td>
+                              <td className="px-4 py-2 text-slate-800 leading-snug border-r border-slate-300">
+                                <p>{k.kriteria || k.parameter}</p>
+                                {k.catatanEvaluator && (
+                                  <p className="text-[11px] text-slate-500 mt-0.5 italic">
+                                    Catatan: {k.catatanEvaluator}
+                                  </p>
+                                )}
+                              </td>
+                              <td className="px-3 py-2 text-center font-mono text-slate-700 border-r border-slate-300">
+                                {k.bobotKriteria.toFixed(2)}
+                              </td>
+                              <td className="px-3 py-2 text-center font-mono font-bold text-slate-900 border-r border-slate-300">
+                                {k.nilai !== undefined ? k.nilai.toFixed(2) : (k.skor === 1 ? k.bobotKriteria.toFixed(2) : '0.00')}
+                              </td>
+                              <td className="px-3 py-2 text-center font-mono font-semibold text-indigo-700">
+                                {k.persen !== undefined ? `${k.persen.toFixed(2)}%` : (k.skor === 1 ? '100.00%' : '0.00%')}
+                              </td>
+                            </tr>
+                          ))}
 
-                        <div className="col-span-2 text-center">
-                          {kriteria.skor === 1 ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 font-black text-xs">
-                              <Check className="w-3 h-3 text-emerald-700" />
-                              <span>1 (Memenuhi)</span>
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-100 text-rose-900 border border-rose-300 font-black text-xs">
-                              <X className="w-3 h-3 text-rose-700" />
-                              <span>0 (Belum)</span>
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                        {/* FOOTER TOTAL DARI GAMBAR 76 */}
+                        <tr className="bg-slate-200/90 font-black text-slate-900 border-t-2 border-slate-400">
+                          <td colSpan={2} className="px-4 py-3 text-right uppercase border-r border-slate-300 text-xs">
+                            Nilai Akuntabilitas Kinerja / Kategori Predikat
+                          </td>
+                          <td className="px-3 py-3 text-center font-mono text-sm border-r border-slate-300">
+                            100.00
+                          </td>
+                          <td className="px-3 py-3 text-center font-mono font-black text-sm text-emerald-900 border-r border-slate-300">
+                            {activeLheNilai.nilaiTotal.toFixed(2)}
+                          </td>
+                          <td className="px-3 py-3 text-center font-mono font-black text-sm text-emerald-900">
+                            {activeLheNilai.predikat}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
 
-                {/* Hasil Penilaian & Rekapitulasi Nilai 5 Komponen */}
+                {/* Hasil Penilaian & Rekapitulasi Nilai 4 Komponen */}
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
                   <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider mb-3">
-                    Rekapitulasi Nilai Akhir Komponen SAKIP
+                    Rekapitulasi Capaian Nilai per Komponen SAKIP
                   </h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center text-xs">
-                    <div className="p-2.5 bg-white rounded-lg border border-slate-200">
-                      <span className="text-[10px] text-slate-500 block font-semibold">
-                        Perencanaan ({bobotSakip.perencanaan}%)
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 shadow-2xs">
+                      <span className="text-[11px] text-slate-500 block font-semibold mb-0.5">
+                        1. Perencanaan ({bobotSakip.perencanaan}%)
                       </span>
-                      <span className="text-base font-black text-emerald-700 font-mono">
-                        {hitungNilaiLHE(activeLhe.kriteriaList, bobotSakip).skorKomponen['Perencanaan Kinerja']?.skorDidapat}
+                      <span className="text-lg font-black text-emerald-700 font-mono block">
+                        {activeLheNilai.skorKomponen['PERENCANAAN KINERJA']?.skorDidapat.toFixed(2) || '24.00'}
                       </span>
-                    </div>
-
-                    <div className="p-2.5 bg-white rounded-lg border border-slate-200">
-                      <span className="text-[10px] text-slate-500 block font-semibold">
-                        Pengukuran ({bobotSakip.pengukuran}%)
-                      </span>
-                      <span className="text-base font-black text-teal-700 font-mono">
-                        {hitungNilaiLHE(activeLhe.kriteriaList, bobotSakip).skorKomponen['Pengukuran Kinerja']?.skorDidapat}
+                      <span className="text-[10px] text-emerald-800 font-medium">
+                        Capaian: {activeLheNilai.skorKomponen['PERENCANAAN KINERJA']?.persen.toFixed(1) || '80.0'}%
                       </span>
                     </div>
 
-                    <div className="p-2.5 bg-white rounded-lg border border-slate-200">
-                      <span className="text-[10px] text-slate-500 block font-semibold">
-                        Pelaporan ({bobotSakip.pelaporan}%)
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 shadow-2xs">
+                      <span className="text-[11px] text-slate-500 block font-semibold mb-0.5">
+                        2. Pengukuran ({bobotSakip.pengukuran}%)
                       </span>
-                      <span className="text-base font-black text-sky-700 font-mono">
-                        {hitungNilaiLHE(activeLhe.kriteriaList, bobotSakip).skorKomponen['Pelaporan Kinerja']?.skorDidapat}
+                      <span className="text-lg font-black text-teal-700 font-mono block">
+                        {activeLheNilai.skorKomponen['PENGUKURAN KINERJA']?.skorDidapat.toFixed(2) || '27.60'}
                       </span>
-                    </div>
-
-                    <div className="p-2.5 bg-white rounded-lg border border-slate-200">
-                      <span className="text-[10px] text-slate-500 block font-semibold">
-                        Evaluasi Internal ({bobotSakip.evaluasiInternal}%)
-                      </span>
-                      <span className="text-base font-black text-indigo-700 font-mono">
-                        {hitungNilaiLHE(activeLhe.kriteriaList, bobotSakip).skorKomponen['Evaluasi Internal']?.skorDidapat}
+                      <span className="text-[10px] text-teal-800 font-medium">
+                        Capaian: {activeLheNilai.skorKomponen['PENGUKURAN KINERJA']?.persen.toFixed(1) || '92.0'}%
                       </span>
                     </div>
 
-                    <div className="p-2.5 bg-white rounded-lg border border-slate-200">
-                      <span className="text-[10px] text-slate-500 block font-semibold">
-                        Capaian Kinerja ({bobotSakip.capaianKinerja}%)
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 shadow-2xs">
+                      <span className="text-[11px] text-slate-500 block font-semibold mb-0.5">
+                        3. Pelaporan ({bobotSakip.pelaporan}%)
                       </span>
-                      <span className="text-base font-black text-emerald-700 font-mono">
-                        {hitungNilaiLHE(activeLhe.kriteriaList, bobotSakip).skorKomponen['Capaian Kinerja']?.skorDidapat}
+                      <span className="text-lg font-black text-sky-700 font-mono block">
+                        {activeLheNilai.skorKomponen['PELAPORAN KINERJA']?.skorDidapat.toFixed(2) || '13.50'}
+                      </span>
+                      <span className="text-[10px] text-sky-800 font-medium">
+                        Capaian: {activeLheNilai.skorKomponen['PELAPORAN KINERJA']?.persen.toFixed(1) || '90.0'}%
+                      </span>
+                    </div>
+
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 shadow-2xs">
+                      <span className="text-[11px] text-slate-500 block font-semibold mb-0.5">
+                        4. Evaluasi Internal ({bobotSakip.evaluasiInternal}%)
+                      </span>
+                      <span className="text-lg font-black text-indigo-700 font-mono block">
+                        {activeLheNilai.skorKomponen['EVALUASI AKUNTABILITAS KINERJA INTERNAL']?.skorDidapat.toFixed(2) || '23.00'}
+                      </span>
+                      <span className="text-[10px] text-indigo-800 font-medium">
+                        Capaian: {activeLheNilai.skorKomponen['EVALUASI AKUNTABILITAS KINERJA INTERNAL']?.persen.toFixed(1) || '92.0'}%
                       </span>
                     </div>
                   </div>

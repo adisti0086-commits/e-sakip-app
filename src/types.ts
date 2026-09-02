@@ -149,12 +149,16 @@ export interface CapaianIndikatorTriwulan {
 
 export interface KriteriaLHE {
   id: string;
-  komponen: 'Perencanaan Kinerja' | 'Pengukuran Kinerja' | 'Pelaporan Kinerja' | 'Evaluasi Internal' | 'Capaian Kinerja';
-  subKomponen: string;
-  parameter: string;
+  kode?: string; // 1.a, 1.b, 1.c, 2.a, dll.
+  komponen: string; // PERENCANAAN KINERJA, PENGUKURAN KINERJA, PELAPORAN KINERJA, EVALUASI AKUNTABILITAS KINERJA INTERNAL
+  subKomponen?: string;
+  parameter?: string;
+  kriteria?: string; // Teks lengkap kriteria gambar 76
+  bobotKriteria: number; // 6.00, 9.00, 15.00, dll.
+  nilai?: number; // 5.4, 8.1, 10.5, dll.
+  persen?: number; // 90.00%, 70.00%, dll.
   skor: 0 | 1; // 1 = Memenuhi, 0 = Belum Memenuhi
-  bobotKriteria: number;
-  catatanEvaluator: string;
+  catatanEvaluator?: string;
 }
 
 export interface LHEEvaluation {
@@ -182,6 +186,6 @@ export interface BobotSakip {
   perencanaan: number; // default 30
   pengukuran: number;  // default 30
   pelaporan: number;   // default 15
-  evaluasiInternal: number; // default 10
-  capaianKinerja: number; // default 15
+  evaluasiInternal: number; // default 25
+  capaianKinerja?: number; // optional
 }
