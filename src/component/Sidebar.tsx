@@ -111,7 +111,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'pengaturan-kinerja' as ActiveTab,
-      label: 'Pengaturan Kinerja',
+      label: 'Pengukuran  Kinerja',
       icon: Sliders,
       roles: ['administrator', 'verifikator'],
       badge: null,
