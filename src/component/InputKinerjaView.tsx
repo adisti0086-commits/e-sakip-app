@@ -91,8 +91,12 @@ export const InputKinerjaView: React.FC<InputKinerjaViewProps> = ({
         const matchYear = i.tahun === selectedYear;
         let matchOpd = true;
         if (currentUser.role === 'operator_unit') {
-          matchOpd = i.opdId === currentUser.opdId;
-        } else if (filterOpd !== 'all') {
+          if (currentUser.opdId && currentUser.opdId !== 'opd-rsup-m-djamil') {
+            matchOpd = i.opdId === currentUser.opdId;
+          } else {
+            matchOpd = filterOpd === 'all' || filterOpd === 'opd-rsup-m-djamil' ? true : i.opdId === filterOpd;
+          }
+        } else if (filterOpd !== 'all' && filterOpd !== 'opd-rsup-m-djamil') {
           matchOpd = i.opdId === filterOpd;
         }
         const matchSearch =

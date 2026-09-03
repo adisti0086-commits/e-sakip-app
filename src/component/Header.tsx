@@ -172,7 +172,7 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               onClick={onOpenLogoutModal}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold border border-rose-200 shadow-xs transition-all cursor-pointer"
-              title="Keluar dari Sistem E-SAKIP (Log Out)"
+              title="Keluar dari Sistem SAKElek (Log Out)"
             >
               <LogOut className="w-3.5 h-3.5 text-rose-600" />
               <span className="hidden sm:inline">Log Out</span>
@@ -238,7 +238,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {currentUser.name}
                 </p>
                 <p className="text-[10px] text-emerald-600 font-semibold capitalize mt-0.5">
-                  {currentUser.role.replace('_', ' ')}
+                  {currentUser.roleTitle || currentUser.role.replace('_', ' ')}
                 </p>
               </div>
             </button>
@@ -251,7 +251,11 @@ export const Header: React.FC<HeaderProps> = ({
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-xs font-bold text-slate-900 truncate">{currentUser.name}</p>
-                    <p className="text-[11px] text-slate-500 font-mono truncate">NIP. {currentUser.nip}</p>
+                    {currentUser.nip && currentUser.nip !== '-' ? (
+                      <p className="text-[11px] text-slate-500 font-mono truncate">NIP. {currentUser.nip}</p>
+                    ) : (
+                      <p className="text-[11px] text-slate-500 font-mono truncate">{currentUser.email}</p>
+                    )}
                     <span className="inline-block mt-0.5 text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">
                       {currentUser.roleTitle}
                     </span>

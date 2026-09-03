@@ -60,7 +60,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   > = {
     administrator: {
       username: 'admin',
-      roleName: '1. Administrator SAKIP',
+      roleName: '1. Administrator',
       color: 'border-rose-500/40 bg-rose-950/20 hover:border-rose-500',
       activeColor: 'ring-2 ring-rose-500 border-rose-500 bg-rose-950/40',
       badgeBg: 'bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-900/60 dark:text-rose-200 dark:border-rose-700',
@@ -73,8 +73,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       ],
     },
     operator_unit: {
-      username: 'operator_bappeda',
-      roleName: '2. Operator Unit OPD',
+      username: 'operator',
+      roleName: '2. Operator',
       color: 'border-sky-500/40 bg-sky-950/20 hover:border-sky-500',
       activeColor: 'ring-2 ring-sky-500 border-sky-500 bg-sky-950/40',
       badgeBg: 'bg-sky-100 text-sky-800 border-sky-300 dark:bg-sky-900/60 dark:text-sky-200 dark:border-sky-700',
@@ -87,8 +87,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       ],
     },
     validator: {
-      username: 'validator_sakip',
-      roleName: '3. Validator Kinerja',
+      username: 'validator',
+      roleName: '3. Validator',
       color: 'border-amber-500/40 bg-amber-950/20 hover:border-amber-500',
       activeColor: 'ring-2 ring-amber-500 border-amber-500 bg-amber-950/40',
       badgeBg: 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900/60 dark:text-amber-200 dark:border-amber-700',
@@ -101,8 +101,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       ],
     },
     verifikator: {
-      username: 'evaluator_inspektorat',
-      roleName: '4. Verifikator / Evaluator LHE',
+      username: 'verifikator',
+      roleName: '4. Verifikator',
       color: 'border-emerald-500/40 bg-emerald-950/20 hover:border-emerald-500',
       activeColor: 'ring-2 ring-emerald-500 border-emerald-500 bg-emerald-950/40',
       badgeBg: 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/60 dark:text-emerald-200 dark:border-emerald-700',
@@ -264,7 +264,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                           {user.name}
                         </h3>
                         <p className="text-xs text-slate-300 mt-0.5 font-medium">{user.opdName}</p>
-                        <p className="text-[11px] text-slate-400 font-mono mt-0.5">NIP: {user.nip}</p>
+                        {user.nip && user.nip !== '-' && (
+                          <p className="text-[11px] text-slate-400 font-mono mt-0.5">NIP: {user.nip}</p>
+                        )}
 
                         <div className="mt-2.5 pt-2 border-t border-slate-700/60">
                           <p className="text-[11px] text-slate-300 leading-snug">{cred.desc}</p>
@@ -380,7 +382,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                   className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <LogIn className="w-4 h-4" />
-                  <span>Masuk ke Sistem E-SAKIP</span>
+                  <span>Masuk ke Sistem SAKElek</span>
                 </button>
               </form>
             </div>
@@ -390,7 +392,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           {activeTab === 'matrix' && (
             <div className="space-y-4 text-xs">
               <p className="text-slate-300 leading-relaxed">
-                Aplikasi E-SAKIP menerapkan <strong>Role-Based Access Control (RBAC)</strong> sesuai dengan tugas pokok dan fungsi tata kelola kinerja pemerintah:
+                Aplikasi SAKElek menerapkan <strong>Role-Based Access Control (RBAC)</strong> sesuai dengan tugas pokok dan fungsi tata kelola kinerja pemerintah:
               </p>
 
               <div className="overflow-x-auto rounded-xl border border-slate-700">

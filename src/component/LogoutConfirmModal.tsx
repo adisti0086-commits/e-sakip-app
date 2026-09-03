@@ -28,7 +28,7 @@ export const LogoutConfirmModal: React.FC<LogoutConfirmModalProps> = ({
             </div>
             <div>
               <h3 className="font-bold text-slate-900 text-base">Konfirmasi Log Out</h3>
-              <p className="text-xs text-slate-500">Keluar dari sesi aplikasi E-SAKIP</p>
+              <p className="text-xs text-slate-500">Keluar dari sesi aplikasi SAKElek</p>
             </div>
           </div>
           <button
@@ -48,11 +48,15 @@ export const LogoutConfirmModal: React.FC<LogoutConfirmModalProps> = ({
             <p className="text-xs text-slate-600 capitalize mt-0.5">
               Peran: <span className="font-semibold text-emerald-700">{currentUser.roleTitle}</span>
             </p>
-            <p className="text-[11px] text-slate-400 font-mono mt-0.5">NIP. {currentUser.nip}</p>
+            {currentUser.nip && currentUser.nip !== '-' ? (
+              <p className="text-[11px] text-slate-400 font-mono mt-0.5">NIP. {currentUser.nip}</p>
+            ) : (
+              <p className="text-[11px] text-slate-400 font-mono mt-0.5">{currentUser.email}</p>
+            )}
           </div>
 
           <p className="text-xs text-slate-600 leading-relaxed">
-            Apakah Anda yakin ingin keluar dari sesi E-SAKIP? Semua perubahan data yang belum disimpan pada form yang sedang aktif mungkin akan hilang.
+            Apakah Anda yakin ingin keluar dari sesi SAKElek? Semua perubahan data yang belum disimpan pada form yang sedang aktif mungkin akan hilang.
           </p>
         </div>
 

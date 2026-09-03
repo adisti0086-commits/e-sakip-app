@@ -353,7 +353,9 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                             </div>
                             <div>
                               <p className="font-bold text-slate-900">{user.name}</p>
-                              <p className="text-[11px] text-slate-500 font-mono">NIP. {user.nip}</p>
+                              {user.nip && user.nip !== '-' && (
+                                <p className="text-[11px] text-slate-500 font-mono">NIP. {user.nip}</p>
+                              )}
                             </div>
                           </div>
                         </td>
@@ -513,12 +515,12 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
               <form onSubmit={handleSaveUser} className="mt-4 space-y-3.5 text-xs">
                 <div>
                   <label className="font-semibold text-slate-700 block mb-1">
-                    Nama Lengkap & Gelar
+                    Nama Role / Pengguna
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="misal: Budi Santoso, S.Kom, M.AP"
+                    placeholder="misal: Administrator / Operator"
                     value={userForm.name}
                     onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
                     className="w-full p-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
@@ -526,11 +528,10 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="font-semibold text-slate-700 block mb-1">NIP Pegawai</label>
+                    <label className="font-semibold text-slate-700 block mb-1">NIP (Opsional)</label>
                     <input
                       type="text"
-                      required
-                      placeholder="1990xxxx..."
+                      placeholder="NIP atau tanda (-)"
                       value={userForm.nip}
                       onChange={(e) => setUserForm({ ...userForm, nip: e.target.value })}
                       className="w-full p-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"

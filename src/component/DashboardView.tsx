@@ -72,14 +72,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   // Filter Indicators by selected OPD & Year
   const filteredIndikator = useMemo(() => {
     return (indikatorList || []).filter(
-      (i) => (selectedOpdId === 'all' || i.opdId === selectedOpdId) && i.tahun === selectedYear
+      (i) => (selectedOpdId === 'all' || selectedOpdId === 'opd-rsup-m-djamil' || i.opdId === selectedOpdId) && i.tahun === selectedYear
     );
   }, [indikatorList, selectedOpdId, selectedYear]);
 
   // Filter LHE evaluations
   const filteredLhe = useMemo(() => {
     return (lheList || []).filter(
-      (l) => (selectedOpdId === 'all' || l.opdId === selectedOpdId) && l.tahun === selectedYear
+      (l) => (selectedOpdId === 'all' || selectedOpdId === 'opd-rsup-m-djamil' || l.opdId === selectedOpdId) && l.tahun === selectedYear
     );
   }, [lheList, selectedOpdId, selectedYear]);
 

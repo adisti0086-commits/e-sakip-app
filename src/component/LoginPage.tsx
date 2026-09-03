@@ -58,7 +58,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     {
       role: 'administrator',
       username: 'admin',
-      label: '1. Administrator SAKIP',
+      label: '1. Administrator',
       badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
       activeBorder: 'border-rose-500 bg-rose-950/30 ring-2 ring-rose-500/40',
       iconColor: 'text-rose-400',
@@ -68,7 +68,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     {
       role: 'operator_unit',
       username: 'operator',
-      label: '2. Operator Unit OPD',
+      label: '2. Operator',
       badgeColor: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
       activeBorder: 'border-sky-500 bg-sky-950/30 ring-2 ring-sky-500/40',
       iconColor: 'text-sky-400',
@@ -78,7 +78,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     {
       role: 'validator',
       username: 'validator',
-      label: '3. Validator Kinerja',
+      label: '3. Validator',
       badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
       activeBorder: 'border-amber-500 bg-amber-950/30 ring-2 ring-amber-500/40',
       iconColor: 'text-amber-400',
@@ -88,7 +88,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     {
       role: 'verifikator',
       username: 'verifikator',
-      label: '4. Verifikator / Evaluator LHE',
+      label: '4. Verifikator',
       badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
       activeBorder: 'border-emerald-500 bg-emerald-950/30 ring-2 ring-emerald-500/40',
       iconColor: 'text-emerald-400',
@@ -184,7 +184,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-lg tracking-tight text-white">E-SAKIP</span>
+                <span className="font-extrabold text-lg tracking-tight text-white">SAKElek</span>
                 <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                   RSUP DR. M DJAMIL
                 </span>
@@ -219,7 +219,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 <span>Portal Autentikasi Pengguna</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                Masuk ke E-SAKIP
+                Masuk ke SAKElek
               </h1>
               <p className="text-xs sm:text-sm text-slate-400 mt-1">
                 Silakan masukkan kredensial atau pilih akun simulasi untuk mulai mengelola akuntabilitas kinerja.
@@ -336,7 +336,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   ) : (
                     <>
                       <LogIn className="w-4 h-4" />
-                      <span>Masuk ke Sistem E-SAKIP</span>
+                      <span>Masuk ke Sistem SAKElek</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
@@ -432,7 +432,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-900/80 border border-slate-800/90 text-xs">
               <h3 className="font-bold text-slate-200 text-xs uppercase tracking-wider mb-2.5 flex items-center gap-2">
                 <Building2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Fitur Utama E-SAKIP RSUP Dr. M Djamil</span>
+                <span>Fitur Utama SAKElek RSUP Dr. M Djamil</span>
               </h3>
               <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
                 <div className="flex items-center gap-1.5">
@@ -460,7 +460,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       {/* Footer */}
       <footer className="border-t border-slate-800/80 bg-slate-900/40 py-3.5 text-center text-xs text-slate-500">
         <p>
-          &copy; {selectedYear} E-SAKIP RSUP Dr. M Djamil Padang - Kementerian Kesehatan Republik Indonesia.
+          &copy; {selectedYear} SAKElek RSUP Dr. M Djamil Padang - Kementerian Kesehatan Republik Indonesia.
         </p>
       </footer>
     </div>

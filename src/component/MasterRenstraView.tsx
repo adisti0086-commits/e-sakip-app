@@ -60,9 +60,16 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
 
   const filteredSasaran = (sasaranList || []).filter((s) => {
     if (currentUser.role === 'operator_unit') {
-      return s.opdId === currentUser.opdId;
+      if (currentUser.opdId && currentUser.opdId !== 'opd-rsup-m-djamil') {
+        return s.opdId === currentUser.opdId || (s.unitKerja && opdList?.find((o) => o.id === currentUser.opdId && s.unitKerja?.includes(o.nama)));
+      }
+      return filterOpd === 'all' || s.opdId === filterOpd;
     }
-    return filterOpd === 'all' || s.opdId === filterOpd;
+    if (filterOpd === 'all') return true;
+    if (s.opdId === filterOpd) return true;
+    const selectedOpdObj = opdList?.find((o) => o.id === filterOpd);
+    if (selectedOpdObj && s.unitKerja && s.unitKerja.includes(selectedOpdObj.nama)) return true;
+    return false;
   });
 
   const getOpdName = (id: string) => opdList?.find((o) => o.id === id)?.nama || id;
@@ -90,6 +97,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
             ? ({
                 ...s,
                 ...formData,
+                unitKerja: formData.unitKerja || (formData.opdId ? getOpdName(formData.opdId) : s.unitKerja),
                 target: targetVal,
                 realisasi: realisasiVal,
                 capaian: calculatedCapaian,
@@ -102,6 +110,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
         id: `sasaran-${Date.now()}`,
         kode: formData.kode || `SS.${Date.now().toString().slice(-4)}`,
         opdId: formData.opdId || opdList?.[0]?.id || '',
+        unitKerja: formData.unitKerja || (formData.opdId ? getOpdName(formData.opdId) : ''),
         tujuanId: formData.tujuanId || (tujuanList && tujuanList[0]?.id) || '',
         sasaranStrategis: formData.sasaranStrategis || '',
         indikatorKinerja: formData.indikatorKinerja || '',
@@ -254,8 +263,10 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                           {item.cascadingLevel}
                         </span>
                       </td>
-                      <td className="px-3 py-3.5 font-medium text-slate-800 max-w-[150px]">
-                        {getOpdName(item.opdId)}
+                      <td className="px-3 py-3.5 font-medium text-slate-800 max-w-[220px]">
+                        <span className="font-semibold text-slate-900 block text-xs leading-snug">
+                          {item.unitKerja || getOpdName(item.opdId)}
+                        </span>
                       </td>
                       <td className="px-3 py-3.5 font-semibold text-slate-900 max-w-xs">
                         {item.sasaranStrategis}
@@ -299,6 +310,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                                 setEditingSasaran(item);
                                 setFormData({
                                   ...item,
+                                  unitKerja: item.unitKerja || getOpdName(item.opdId),
                                   target: item.target ?? item.targetTahun3 ?? 90,
                                   realisasi: item.realisasi ?? item.targetTahun3 ?? 90,
                                   capaian: item.capaian ?? 100,
@@ -382,8 +394,8 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                               {sas.sasaranStrategis}
                             </span>
                           </div>
-                          <span className="text-[11px] font-semibold text-slate-500">
-                            {getOpdName(sas.opdId)}
+                          <span className="text-[11px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                            {sas.unitKerja || getOpdName(sas.opdId)}
                           </span>
                         </div>
 
@@ -472,7 +484,14 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                 <label className="font-semibold text-slate-700 block mb-1">Unit Kerja (OPD)</label>
                 <select
                   value={formData.opdId}
-                  onChange={(e) => setFormData({ ...formData, opdId: e.target.value })}
+                  onChange={(e) => {
+                    const selected = opdList?.find((o) => o.id === e.target.value);
+                    setFormData({
+                      ...formData,
+                      opdId: e.target.value,
+                      unitKerja: selected ? selected.nama : formData.unitKerja,
+                    });
+                  }}
                   className="w-full p-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                 >
                   {opdList.map((o) => (

@@ -57,6 +57,7 @@ export interface RenstraTujuan {
 export interface RenstraSasaran {
   id: string;
   opdId: string;
+  unitKerja?: string;
   tujuanId: string;
   kode: string;
   sasaranStrategis: string;

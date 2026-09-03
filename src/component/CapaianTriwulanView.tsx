@@ -78,9 +78,12 @@ export const CapaianTriwulanView: React.FC<CapaianTriwulanViewProps> = ({
   const filteredIndikator = (indikatorList || []).filter((i) => {
     const matchYear = i.tahun === selectedYear;
     if (currentUser.role === 'operator_unit') {
-      return matchYear && i.opdId === currentUser.opdId;
+      if (currentUser.opdId && currentUser.opdId !== 'opd-rsup-m-djamil') {
+        return matchYear && i.opdId === currentUser.opdId;
+      }
+      return matchYear && (filterOpd === 'all' || filterOpd === 'opd-rsup-m-djamil' || i.opdId === filterOpd);
     }
-    return matchYear && (filterOpd === 'all' || i.opdId === filterOpd);
+    return matchYear && (filterOpd === 'all' || filterOpd === 'opd-rsup-m-djamil' || i.opdId === filterOpd);
   });
 
   // Calculate Color stats

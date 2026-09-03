@@ -145,7 +145,7 @@ export const LHEView: React.FC<LHEViewProps> = ({
       catatanEvaluasiUmum: 'Hasil evaluasi akuntabilitas kinerja menunjukkan komitmen unit kerja dalam peningkatan kualitas perencanaan dan pengukuran kinerja.',
       rekomendasiPerbaikan: [
         'Melakukan sinkronisasi cascading sasaran strategis dengan perjanjian kinerja staf.',
-        'Meningkatkan kepatuhan pemenuhan dokumen bukti dukung pada aplikasi E-SAKIP.',
+        'Meningkatkan kepatuhan pemenuhan dokumen bukti dukung pada aplikasi SAKElek.',
       ],
     });
     setIsEvaluationModalOpen(true);
