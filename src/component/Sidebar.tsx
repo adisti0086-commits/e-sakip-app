@@ -180,9 +180,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-lg tracking-tight text-white">E-SAKIP</span>
+              <span className="font-extrabold text-lg tracking-tight text-white">SAKElek</span>
               <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                PRO
+                RS
               </span>
             </div>
             <p className="text-xs text-slate-400 font-medium truncate max-w-[170px]">
