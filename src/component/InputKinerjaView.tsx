@@ -22,6 +22,15 @@ import {
   Sparkles,
   Percent,
   Check,
+  AlertCircle,
+  Target,
+  Compass,
+  Link2,
+  ExternalLink,
+  FileText,
+  ChevronDown,
+  ChevronUp,
+  Eye,
 } from 'lucide-react';
 import { IndikatorPK, OPD, RenstraSasaran, User, Polarisasi } from '../types';
 
@@ -57,6 +66,7 @@ export const InputKinerjaView: React.FC<InputKinerjaViewProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingIndikator, setEditingIndikator] = useState<IndikatorPK | null>(null);
+  const [viewingAnalysisItem, setViewingAnalysisItem] = useState<IndikatorPK | null>(null);
 
   // Form State for Indikator PK & Target
   const [formData, setFormData] = useState<Partial<IndikatorPK>>({
@@ -81,6 +91,10 @@ export const InputKinerjaView: React.FC<InputKinerjaViewProps> = ({
     paguAnggaran: 500000000,
     penanggungJawab: 'Instalasi / KSM Terkait',
     tipeIndikator: 'IKU',
+    permasalahan: '',
+    rencanaTindakLanjut: '',
+    strategi: '',
+    linkDakung: '',
   });
 
   const canEdit = currentUser.role === 'administrator' || currentUser.role === 'operator_unit';
@@ -170,6 +184,10 @@ export const InputKinerjaView: React.FC<InputKinerjaViewProps> = ({
       paguAnggaran: 250000000,
       penanggungJawab: 'Tim Kerja Teknis SAKIP',
       tipeIndikator: 'IKU',
+      permasalahan: '',
+      rencanaTindakLanjut: '',
+      strategi: '',
+      linkDakung: '',
     });
     setIsModalOpen(true);
   };
@@ -208,6 +226,10 @@ export const InputKinerjaView: React.FC<InputKinerjaViewProps> = ({
         paguAnggaran: Number(formData.paguAnggaran) || 0,
         penanggungJawab: formData.penanggungJawab || '-',
         tipeIndikator: formData.tipeIndikator || 'IKU',
+        permasalahan: formData.permasalahan || '',
+        rencanaTindakLanjut: formData.rencanaTindakLanjut || '',
+        strategi: formData.strategi || '',
+        linkDakung: formData.linkDakung || '',
       };
       setIndikatorList((prev) => [...prev, newIndikator]);
     }
@@ -447,7 +469,34 @@ export const InputKinerjaView: React.FC<InputKinerjaViewProps> = ({
                           <td className="px-4 py-3 border-r border-slate-200">
                             <p className="font-bold text-slate-900 text-xs">{item.namaIndikator}</p>
                             <p className="text-[11px] text-slate-500 mt-0.5 italic">{item.formula}</p>
-                            <p className="text-[10px] text-slate-400 mt-0.5">PJ: {item.penanggungJawab}</p>
+                            <div className="flex flex-wrap items-center gap-2 mt-1">
+                              <span className="text-[10px] text-slate-500">PJ: <strong>{item.penanggungJawab}</strong></span>
+                              {item.linkDakung && (
+                                <a
+                                  href={item.linkDakung}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-[10px] font-bold transition-colors"
+                                  title={`Data Dukung: ${item.linkDakung}`}
+                                >
+                                  <Link2 className="w-2.5 h-2.5" />
+                                  <span>Dakung</span>
+                                  <ExternalLink className="w-2 h-2" />
+                                </a>
+                              )}
+                              {(item.permasalahan || item.strategi || item.rencanaTindakLanjut) && (
+                                <button
+                                  type="button"
+                                  onClick={() => setViewingAnalysisItem(item)}
+                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-semibold transition-colors cursor-pointer"
+                                  title="Lihat Rincian Analisis Kinerja"
+                                >
+                                  <FileText className="w-2.5 h-2.5 text-slate-500" />
+                                  <span>Analisis Kinerja</span>
+                                </button>
+                              )}
+                            </div>
                           </td>
                           <td className="px-3 py-3 text-center font-medium text-slate-800 border-r border-slate-200">
                             {item.targetRenstra || '-'}
@@ -545,6 +594,7 @@ export const InputKinerjaView: React.FC<InputKinerjaViewProps> = ({
                   <th className="px-2 py-3 text-center bg-slate-200/50">T3</th>
                   <th className="px-2 py-3 text-center bg-slate-200/50">T4</th>
                   <th className="px-3 py-3">Pagu & Penanggung Jawab</th>
+                  <th className="px-3 py-3">Analisis Kinerja & Dakung</th>
                   {canEdit && <th className="px-3 py-3 text-right">Aksi</th>}
                 </tr>
               </thead>
@@ -583,11 +633,61 @@ export const InputKinerjaView: React.FC<InputKinerjaViewProps> = ({
                     <td className="px-2 py-3.5 text-center font-bold text-slate-700 bg-slate-50/50 align-top">
                       {item.targetT4}
                     </td>
-                    <td className="px-3 py-3.5 align-top text-slate-600 max-w-[160px]">
+                    <td className="px-3 py-3.5 align-top text-slate-600 max-w-[150px]">
                       <p className="font-mono text-[11px] font-bold text-slate-800">
                         Rp {item.paguAnggaran.toLocaleString('id-ID')}
                       </p>
                       <p className="text-[11px] text-slate-500 mt-0.5">{item.penanggungJawab}</p>
+                    </td>
+                    <td className="px-3 py-3.5 align-top max-w-[210px]">
+                      <div className="space-y-1 text-[11px]">
+                        {item.linkDakung && (
+                          <div className="mb-1">
+                            <a
+                              href={item.linkDakung}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold transition-colors"
+                              title={item.linkDakung}
+                            >
+                              <Link2 className="w-3 h-3" />
+                              <span>Link Dakung</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </a>
+                          </div>
+                        )}
+                        {item.permasalahan && (
+                          <div className="text-slate-600 line-clamp-2">
+                            <span className="font-bold text-rose-600">Kendala: </span>
+                            {item.permasalahan}
+                          </div>
+                        )}
+                        {item.strategi && (
+                          <div className="text-slate-600 line-clamp-2">
+                            <span className="font-bold text-amber-700">Strategi: </span>
+                            {item.strategi}
+                          </div>
+                        )}
+                        {item.rencanaTindakLanjut && (
+                          <div className="text-slate-600 line-clamp-2">
+                            <span className="font-bold text-blue-700">RTL: </span>
+                            {item.rencanaTindakLanjut}
+                          </div>
+                        )}
+                        {(item.permasalahan || item.strategi || item.rencanaTindakLanjut) && (
+                          <button
+                            type="button"
+                            onClick={() => setViewingAnalysisItem(item)}
+                            className="inline-flex items-center gap-1 text-[10px] text-emerald-700 hover:text-emerald-900 font-bold hover:underline mt-0.5 cursor-pointer"
+                          >
+                            <Eye className="w-2.5 h-2.5" />
+                            <span>Detail Analisis</span>
+                          </button>
+                        )}
+                        {!item.linkDakung && !item.permasalahan && !item.strategi && !item.rencanaTindakLanjut && (
+                          <span className="text-slate-400 italic text-[11px]">Belum diinput</span>
+                        )}
+                      </div>
                     </td>
                     {canEdit && (
                       <td className="px-3 py-3.5 text-right align-top">
@@ -892,6 +992,106 @@ export const InputKinerjaView: React.FC<InputKinerjaViewProps> = ({
                 </div>
               </div>
 
+              {/* Row 7: Permasalahan, Rencana Tindak Lanjut, Strategi & Link Dakung */}
+              <div className="border-t border-slate-200/80 pt-4 mt-2 space-y-3 bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/80">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                      Analisis Capaian Kinerja, Strategi & Data Dukung (Dakung)
+                    </h4>
+                  </div>
+                  <span className="text-[10px] font-medium text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
+                    Sinergi Pelaporan SAKIP
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Permasalahan */}
+                  <div>
+                    <label className="font-semibold text-slate-700 flex items-center gap-1.5 mb-1 text-xs">
+                      <AlertCircle className="w-3.5 h-3.5 text-rose-500" />
+                      <span>Permasalahan</span>
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="Identifikasi kendala atau hambatan pencapaian target kinerja..."
+                      value={formData.permasalahan || ''}
+                      onChange={(e) => setFormData({ ...formData, permasalahan: e.target.value })}
+                      className="w-full p-2.5 text-xs rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden transition-all placeholder:text-slate-400"
+                    />
+                  </div>
+
+                  {/* Rencana Tindak Lanjut */}
+                  <div>
+                    <label className="font-semibold text-slate-700 flex items-center gap-1.5 mb-1 text-xs">
+                      <Target className="w-3.5 h-3.5 text-blue-500" />
+                      <span>Rencana Tindak Lanjut</span>
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="Rencana aksi perbaikan atau tindak lanjut pemecahan masalah..."
+                      value={formData.rencanaTindakLanjut || ''}
+                      onChange={(e) => setFormData({ ...formData, rencanaTindakLanjut: e.target.value })}
+                      className="w-full p-2.5 text-xs rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden transition-all placeholder:text-slate-400"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Strategi */}
+                  <div>
+                    <label className="font-semibold text-slate-700 flex items-center gap-1.5 mb-1 text-xs">
+                      <Compass className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Strategi</span>
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="Strategi atau langkah terobosan untuk mencapai target kinerja..."
+                      value={formData.strategi || ''}
+                      onChange={(e) => setFormData({ ...formData, strategi: e.target.value })}
+                      className="w-full p-2.5 text-xs rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden transition-all placeholder:text-slate-400"
+                    />
+                  </div>
+
+                  {/* Link Dakung */}
+                  <div>
+                    <label className="font-semibold text-slate-700 flex items-center gap-1.5 mb-1 text-xs">
+                      <Link2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Link Dakung (Data Dukung)</span>
+                    </label>
+                    <div className="space-y-1.5">
+                      <div className="relative">
+                        <input
+                          type="url"
+                          placeholder="https://drive.google.com/... atau link dokumen"
+                          value={formData.linkDakung || ''}
+                          onChange={(e) => setFormData({ ...formData, linkDakung: e.target.value })}
+                          className="w-full p-2.5 pl-8 text-xs rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-mono text-slate-700 placeholder:font-sans placeholder:text-slate-400"
+                        />
+                        <Link2 className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
+                      </div>
+                      {formData.linkDakung && (
+                        <div className="flex items-center justify-between bg-emerald-50/80 px-2.5 py-1 rounded border border-emerald-200">
+                          <span className="text-[11px] text-emerald-800 truncate font-mono max-w-[200px] sm:max-w-[230px]">
+                            {formData.linkDakung}
+                          </span>
+                          <a
+                            href={formData.linkDakung}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-900 hover:underline shrink-0"
+                          >
+                            <span>Tes Buka</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="pt-3 flex justify-end gap-2 border-t border-slate-100">
                 <button
                   type="button"
@@ -908,6 +1108,120 @@ export const InputKinerjaView: React.FC<InputKinerjaViewProps> = ({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* 6. MODAL: PREVIEW LENGKAP ANALISIS KINERJA & DATA DUKUNG */}
+      {viewingAnalysisItem && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between pb-3 border-b border-slate-100">
+              <div>
+                <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 tracking-wider">
+                  Analisis Kinerja & Data Dukung
+                </span>
+                <h3 className="font-bold text-slate-900 text-sm mt-1">
+                  {viewingAnalysisItem.namaIndikator}
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  PJ: {viewingAnalysisItem.penanggungJawab} • Sasaran: {viewingAnalysisItem.sasaranStrategis}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setViewingAnalysisItem(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="mt-4 space-y-3 text-xs">
+              {/* Permasalahan */}
+              <div className="p-3 bg-rose-50/50 rounded-xl border border-rose-200/80">
+                <div className="flex items-center gap-1.5 font-bold text-rose-800 mb-1">
+                  <AlertCircle className="w-4 h-4 text-rose-600" />
+                  <span>Permasalahan</span>
+                </div>
+                <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">
+                  {viewingAnalysisItem.permasalahan || 'Belum ada catatan permasalahan yang diinput.'}
+                </p>
+              </div>
+
+              {/* Rencana Tindak Lanjut */}
+              <div className="p-3 bg-blue-50/50 rounded-xl border border-blue-200/80">
+                <div className="flex items-center gap-1.5 font-bold text-blue-800 mb-1">
+                  <Target className="w-4 h-4 text-blue-600" />
+                  <span>Rencana Tindak Lanjut</span>
+                </div>
+                <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">
+                  {viewingAnalysisItem.rencanaTindakLanjut || 'Belum ada rencana tindak lanjut yang diinput.'}
+                </p>
+              </div>
+
+              {/* Strategi */}
+              <div className="p-3 bg-amber-50/50 rounded-xl border border-amber-200/80">
+                <div className="flex items-center gap-1.5 font-bold text-amber-800 mb-1">
+                  <Compass className="w-4 h-4 text-amber-600" />
+                  <span>Strategi</span>
+                </div>
+                <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">
+                  {viewingAnalysisItem.strategi || 'Belum ada catatan strategi yang diinput.'}
+                </p>
+              </div>
+
+              {/* Link Dakung */}
+              <div className="p-3 bg-emerald-50/50 rounded-xl border border-emerald-200/80">
+                <div className="flex items-center gap-1.5 font-bold text-emerald-800 mb-1">
+                  <Link2 className="w-4 h-4 text-emerald-600" />
+                  <span>Link Dakung (Data Dukung)</span>
+                </div>
+                {viewingAnalysisItem.linkDakung ? (
+                  <div className="flex items-center justify-between gap-2 mt-1">
+                    <span className="font-mono text-emerald-900 truncate underline text-[11px]">
+                      {viewingAnalysisItem.linkDakung}
+                    </span>
+                    <a
+                      href={viewingAnalysisItem.linkDakung}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shrink-0 transition-colors shadow-xs cursor-pointer"
+                    >
+                      <span>Buka Link</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                ) : (
+                  <p className="text-slate-500 italic">Tautan data dukung belum disertakan.</p>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-5 pt-3 flex justify-between items-center border-t border-slate-100">
+              {canEdit ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData(viewingAnalysisItem);
+                    setEditingIndikator(viewingAnalysisItem);
+                    setViewingAnalysisItem(null);
+                    setIsModalOpen(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg cursor-pointer"
+                >
+                  <Edit2 className="w-3.5 h-3.5" />
+                  <span>Edit Data Ini</span>
+                </button>
+              ) : <div />}
+              <button
+                type="button"
+                onClick={() => setViewingAnalysisItem(null)}
+                className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs cursor-pointer"
+              >
+                Tutup
+              </button>
+            </div>
           </div>
         </div>
       )}

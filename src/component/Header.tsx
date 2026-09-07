@@ -91,12 +91,37 @@ export const Header: React.FC<HeaderProps> = ({
           title: 'Capaian Kinerja Triwulan',
           subtitle: 'Rekapitulasi Triwulanan dengan Indikator Warna (Hijau ≥100%, Kuning 50-99%, Merah <50%)',
         };
+      case 'lke':
+        return {
+          title: 'Lembar Kerja Evaluasi (LKE) SAKIP',
+          subtitle: 'Tabel Komponen, Sub-Komponen, Kriteria Standar & Skor 1/0 PermenPAN-RB',
+        };
+      case 'perencanaan-1a':
+        return {
+          title: '1.a Dokumen Perencanaan Kinerja Tersedia',
+          subtitle: 'Pemenuhan 6 Kriteria Standar Dokumen Jangka Panjang, Renstra, RKT & PK, RBA, dan DIPA Anggaran (Bobot 6.00)',
+        };
+      case 'perencanaan-1b':
+        return {
+          title: '1.b Standar SMART & Kualitas Perencanaan',
+          subtitle: 'Pemenuhan 11 Kriteria Standar SMART, IKU Sustainable, Pohon Cascading, Crosscutting & SKP Pegawai (Bobot 9.00)',
+        };
+      case 'perencanaan-1c':
+        return {
+          title: '1.c Pemanfaatan Perencanaan Mewujudkan Hasil',
+          subtitle: 'Pemenuhan 8 Kriteria Penganggaran Berbasis Kinerja, Monitoring Rencana Aksi, Evaluasi & Komitmen (Bobot 15.00)',
+        };
       case 'lhe':
         return {
           title: 'Laporan Hasil Evaluasi (LHE) SAKIP',
           subtitle: 'Modul Evaluasi AKIP, Penilaian Lembar Kerja 1/0, Catatan & Rekomendasi',
         };
-    }
+        default:
+        return {
+          title: 'Sistem Akuntabilitas Kinerja',
+          subtitle: 'Sistem Informasi Akuntabilitas Kinerja Instansi Pemerintah',
+    };
+  }
   };
 
   const pageInfo = getPageTitle(activeTab);

@@ -32,6 +32,19 @@ import { InputKinerjaView } from './component/InputKinerjaView';
 import { CapaianBulananView } from './component/CapaianBulananView';
 import { CapaianTriwulanView } from './component/CapaianTriwulanView';
 import { LHEView } from './component/LHEView';
+import { LKEEvaluasiView } from './component/LKEEvaluasiView';
+import { Perencanaan1aView } from './component/Perencanaan1aView';
+import { Perencanaan1bView } from './component/Perencanaan1bView';
+import { Perencanaan1cView } from './component/Perencanaan1cView';
+import { Pengukuran2aView } from './component/Pengukuran2aView';
+import { Pengukuran2bView } from './component/Pengukuran2bView';
+import { Pengukuran2cView } from './component/Pengukuran2cView';
+import { Pelaporan3aView } from './component/Pelaporan3aView';
+import { Pelaporan3bView } from './component/Pelaporan3bView';
+import { Pelaporan3cView } from './component/Pelaporan3cView';
+import { Evaluasi4aView } from './component/Evaluasi4aView';
+import { Evaluasi4bView } from './component/Evaluasi4bView';
+import { Evaluasi4cView } from './component/Evaluasi4cView';
 import { LoginModal } from './component/LoginModal';
 import { LoginPage } from './component/LoginPage';
 import { LogoutConfirmModal } from './component/LogoutConfirmModal';
@@ -59,11 +72,11 @@ export default function App() {
   const [lheList, setLheList] = useState<LHEEvaluation[]>(INITIAL_LHE);
 
   // Count pending validation for validator
-  const pendingValidationCount = capaianTriwulanList.reduce(
+  const pendingValidationCount = capaianBulanList.reduce(
   (total, capaian) =>
     total +
-    capaian.realisasiPerTriwulan.filter(
-      (r) => r.statusValidasi === 'Menunggu Validasi'
+    capaian.realisasiPerBulan.filter(
+      (bulan) => bulan.statusValidasi === 'Menunggu Validasi'
     ).length,
   0
 );
@@ -184,6 +197,131 @@ export default function App() {
               />
             )}
 
+            {activeTab === 'perencanaan-1a' && (
+              <Perencanaan1aView
+                opdList={opdList}
+                selectedOpdId={selectedOpdId}
+                selectedYear={selectedYear}
+                currentUser={currentUser}
+                onNavigateTab={(tab) => setActiveTab(tab as ActiveTab)}
+              />
+            )}
+
+            {activeTab === 'perencanaan-1b' && (
+              <Perencanaan1bView
+                opdList={opdList}
+                sasaranList={renstraList}
+                indikatorList={indikatorList}
+                selectedOpdId={selectedOpdId}
+                selectedYear={selectedYear}
+                currentUser={currentUser}
+                onNavigateTab={(tab) => setActiveTab(tab as ActiveTab)}
+              />
+            )}
+
+            {activeTab === 'perencanaan-1c' && (
+              <Perencanaan1cView
+                opdList={opdList}
+                selectedOpdId={selectedOpdId}
+                selectedYear={selectedYear}
+                currentUser={currentUser}
+                onNavigateTab={(tab) => setActiveTab(tab as ActiveTab)}
+              />
+            )}
+
+            {/* KOMPONEN 2: PENGUKURAN KINERJA (SAKIP) */}
+            {activeTab === 'pengukuran-2a' && (
+              <Pengukuran2aView
+                opdList={opdList}
+                selectedOpdId={selectedOpdId}
+                selectedYear={selectedYear}
+                currentUser={currentUser}
+                onNavigateTab={(tab) => setActiveTab(tab as ActiveTab)}
+              />
+            )}
+
+            {activeTab === 'pengukuran-2b' && (
+              <Pengukuran2bView
+                opdList={opdList}
+                selectedOpdId={selectedOpdId}
+                selectedYear={selectedYear}
+                currentUser={currentUser}
+                onNavigateTab={(tab) => setActiveTab(tab as ActiveTab)}
+              />
+            )}
+
+            {activeTab === 'pengukuran-2c' && (
+              <Pengukuran2cView
+                opdList={opdList}
+                selectedOpdId={selectedOpdId}
+                selectedYear={selectedYear}
+                currentUser={currentUser}
+                onNavigateTab={(tab) => setActiveTab(tab as ActiveTab)}
+              />
+            )}
+
+            {/* KOMPONEN 3: PELAPORAN KINERJA (SAKIP) */}
+            {activeTab === 'pelaporan-3a' && (
+              <Pelaporan3aView
+                opdList={opdList}
+                selectedOpdId={selectedOpdId}
+                selectedYear={selectedYear}
+                currentUser={currentUser}
+                onNavigateTab={(tab) => setActiveTab(tab as ActiveTab)}
+              />
+            )}
+
+            {activeTab === 'pelaporan-3b' && (
+              <Pelaporan3bView
+                opdList={opdList}
+                selectedOpdId={selectedOpdId}
+                selectedYear={selectedYear}
+                currentUser={currentUser}
+                onNavigateTab={(tab) => setActiveTab(tab as ActiveTab)}
+              />
+            )}
+
+            {activeTab === 'pelaporan-3c' && (
+              <Pelaporan3cView
+                opdList={opdList}
+                selectedOpdId={selectedOpdId}
+                selectedYear={selectedYear}
+                currentUser={currentUser}
+                onNavigateTab={(tab) => setActiveTab(tab as ActiveTab)}
+              />
+            )}
+
+            {/* KOMPONEN 4: EVALUASI INTERNAL (SAKIP) */}
+            {activeTab === 'evaluasi-4a' && (
+              <Evaluasi4aView
+                opdList={opdList}
+                selectedOpdId={selectedOpdId}
+                selectedYear={selectedYear}
+                currentUser={currentUser}
+                onNavigateTab={(tab) => setActiveTab(tab as ActiveTab)}
+              />
+            )}
+
+            {activeTab === 'evaluasi-4b' && (
+              <Evaluasi4bView
+                opdList={opdList}
+                selectedOpdId={selectedOpdId}
+                selectedYear={selectedYear}
+                currentUser={currentUser}
+                onNavigateTab={(tab) => setActiveTab(tab as ActiveTab)}
+              />
+            )}
+
+            {activeTab === 'evaluasi-4c' && (
+              <Evaluasi4cView
+                opdList={opdList}
+                selectedOpdId={selectedOpdId}
+                selectedYear={selectedYear}
+                currentUser={currentUser}
+                onNavigateTab={(tab) => setActiveTab(tab as ActiveTab)}
+              />
+            )}
+
             {activeTab === 'master-renstra' && (
               <MasterRenstraView
                 tujuanList={tujuanList}
@@ -239,6 +377,16 @@ export default function App() {
                 selectedOpdId={selectedOpdId}
                 selectedYear={selectedYear}
                 currentUser={currentUser}
+              />
+            )}
+
+            {activeTab === 'lke' && (
+              <LKEEvaluasiView
+                opdList={opdList}
+                selectedOpdId={selectedOpdId}
+                selectedYear={selectedYear}
+                currentUser={currentUser}
+                onNavigateTab={(tab) => setActiveTab(tab as ActiveTab)}
               />
             )}
 

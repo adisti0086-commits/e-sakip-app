@@ -99,6 +99,10 @@ export interface IndikatorPK {
   paguAnggaran: number;
   penanggungJawab: string;
   tipeIndikator: 'IKU' | 'IKP' | 'Program' | 'Kegiatan';
+  permasalahan?: string;
+  rencanaTindakLanjut?: string;
+  strategi?: string;
+  linkDakung?: string;
 }
 
 export type StatusValidasi = 'Draft' | 'Menunggu Validasi' | 'Terverifikasi' | 'Perlu Perbaikan' | 'Ditolak';
@@ -139,6 +143,8 @@ export interface RealisasiTriwulan {
   catatanValidator?: string;
   tanggalVerifikasi?: string;
   evidensFile?: string;
+  strategi?: string;
+  linkDakung?: string;
 }
 
 export interface CapaianIndikatorTriwulan {
