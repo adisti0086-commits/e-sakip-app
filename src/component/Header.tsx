@@ -177,7 +177,7 @@ export const Header: React.FC<HeaderProps> = ({
   const isOpdFilterDisabled = currentUser.role === 'operator_unit';
 
   return (
-    <header className="sticky top-0 z-30 bg-white border-b border-slate-200/80 shadow-xs">
+    <header id="sakip-main-header" className="sticky top-0 z-30 bg-white border-b border-slate-200/80 shadow-xs no-print print:hidden">
       <div className="px-4 lg:px-8 py-3.5 flex items-center justify-between gap-4">
         {/* Left: Mobile Toggle & Page Title */}
         <div className="flex items-center gap-3">

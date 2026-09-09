@@ -173,7 +173,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-screen bg-slate-100 text-slate-900 font-sans antialiased overflow-hidden">
+    <div className="flex h-screen bg-slate-100 text-slate-900 font-sans antialiased overflow-hidden print:h-auto print:overflow-visible print:bg-white print:block">
       {/* 1. Left Sidebar with Role Switching, Navigation, and Logout */}
       <Sidebar
         activeTab={activeTab}
@@ -188,7 +188,7 @@ export default function App() {
       />
 
       {/* 2. Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden lg:pl-72">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden lg:pl-72 print:overflow-visible print:pl-0 print:block print:w-full">
         {/* Header */}
         <Header
           activeTab={activeTab}
@@ -207,8 +207,8 @@ export default function App() {
         />
 
         {/* Content Body */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto space-y-6">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 print:overflow-visible print:p-0 print:m-0 print:h-auto print:block print:w-full">
+          <div className="max-w-7xl mx-auto space-y-6 print:max-w-full print:m-0 print:p-0 print:space-y-0">
             {activeTab === 'dashboard' && (
               <DashboardView
                 indikatorList={indikatorList}

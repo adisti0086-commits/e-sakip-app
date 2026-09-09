@@ -171,7 +171,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       <aside
         id="sakip-main-sidebar"
-        className={`fixed top-0 left-0 bottom-0 z-50 w-72 bg-slate-900 text-slate-100 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 left-0 bottom-0 z-50 w-72 bg-slate-900 text-slate-100 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 no-print print:hidden ${
           isOpenMobile ? 'translate-x-0' : '-translate-x-full'
         } border-r border-slate-800 shadow-xl`}
       >
@@ -200,12 +200,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {currentUser.name.charAt(0)}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-1 mb-0.5">
+              <div className="flex items-center gap-1 mb-0.5">
                 <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${currentBadge.bg}`}>
                   {currentBadge.label}
-                </span>
-                <span className="text-[10px] font-mono text-emerald-400 font-bold">
-                  88.10 (A)
                 </span>
               </div>
               <p className="text-xs font-bold text-white leading-tight truncate">
@@ -262,7 +259,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="pt-3 pb-1 px-2">
             <div className="flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-800 pb-1">
               <span>Komponen SAKIP (Tabel LKE)</span>
-              <span>Bobot / Nilai</span>
+              <span>Bobot</span>
             </div>
           </div>
 
@@ -283,7 +280,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800">
-                  30 | {sakipSummary.komp1Nilai.toFixed(1)}
+                  30
                 </span>
                 {openKomp1 ? (
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
@@ -354,7 +351,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">
-                  30 | {sakipSummary.komp2Nilai.toFixed(1)}
+                  30
                 </span>
                 {openKomp2 ? (
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
@@ -425,7 +422,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800">
-                  15 | {sakipSummary.komp3Nilai.toFixed(1)}
+                  15
                 </span>
                 {openKomp3 ? (
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
@@ -496,7 +493,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800">
-                  25 | {sakipSummary.komp4Nilai.toFixed(1)}
+                  25
                 </span>
                 {openKomp4 ? (
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
@@ -559,19 +556,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   >
                     <span className="truncate">Lembar Kerja Evaluasi (LKE)</span>
                     <span className="text-[9px] font-bold text-amber-400">Tabel 100</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleNavClick('lhe')}
-                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${
-                      activeTab === 'lhe'
-                        ? 'bg-slate-800 text-emerald-300 font-bold'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                    }`}
-                  >
-                    <span className="truncate">LHE & Rekomendasi SPI</span>
-                    <span className="text-[9px] font-bold text-emerald-400">Hasil</span>
                   </button>
                 </div>
               </div>

@@ -110,6 +110,10 @@ export const LKEEvaluasiView: React.FC<LKEEvaluasiViewProps> = ({
     new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
   );
 
+  // Modal for official PDF printing options
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+  const [includeSignatures, setIncludeSignatures] = useState(true);
+
   // Modal for viewing full connected evidence
   const [selectedCritModal, setSelectedCritModal] = useState<{
     crit: LKECriteriaItem;
@@ -225,6 +229,12 @@ export const LKEEvaluasiView: React.FC<LKEEvaluasiViewProps> = ({
   const totalKriteriaCount = allKriteria.length;
   const totalMemenuhiCount = allKriteria.filter((k) => k.skor === 1).length;
 
+  const currentDateFormatted = new Date().toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+
   // Filter components
   const filteredKomponen = lkeData.filter((k) => {
     if (filterKomponen !== 'all' && k.kode !== filterKomponen) return false;
@@ -248,14 +258,117 @@ export const LKEEvaluasiView: React.FC<LKEEvaluasiViewProps> = ({
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl border border-emerald-500/40 flex items-center gap-2.5 animate-in slide-in-from-bottom-5">
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl border border-emerald-500/40 flex items-center gap-2.5 animate-in slide-in-from-bottom-5 no-print print:hidden">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span className="text-xs font-semibold">{toastMessage}</span>
         </div>
       )}
 
+      {/* KOP SURAT RESMI KEMENKES & RSUP DR. M. DJAMIL (HANYA MUNCUL SAAT CETAK / PDF) */}
+      <div className="print-only mb-4 font-serif text-slate-900">
+        <div className="flex items-center justify-between gap-4 pb-2 border-b-2 border-slate-900">
+          <div className="w-16 h-16 flex items-center justify-center shrink-0">
+            <div className="w-14 h-14 rounded-full border-2 border-slate-900 flex flex-col items-center justify-center bg-slate-50 font-bold text-center text-[8px] uppercase leading-tight font-sans">
+              <span className="text-emerald-700 font-black">BAKTI</span>
+              <span className="text-slate-900 font-extrabold">HUSADA</span>
+            </div>
+          </div>
+          <div className="text-center flex-1">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-800 font-sans">
+              Kementerian Kesehatan Republik Indonesia
+            </h3>
+            <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-700 font-sans">
+              Direktorat Jenderal Pelayanan Kesehatan
+            </h4>
+            <h1 className="text-sm font-black uppercase tracking-wide text-slate-950 font-sans mt-0.5">
+              RSUP DR. M. DJAMIL PADANG
+            </h1>
+            <p className="text-[8.5px] text-slate-600 font-sans mt-0.5">
+              Jl. Perintis Kemerdekaan, Padang, Sumatera Barat 25127 • Telp: (0751) 32370, 32371 • Fax: (0751) 32371
+            </p>
+            <p className="text-[8px] text-slate-500 font-sans">
+              Laman Resmi: www.rsdjamil.co.id • Pos-el: rsupdjamil@kemkes.go.id
+            </p>
+          </div>
+          <div className="w-16 h-16 flex items-center justify-center shrink-0">
+            <div className="w-14 h-14 rounded-lg border-2 border-slate-900 flex flex-col items-center justify-center bg-slate-50 text-slate-900 font-black text-center text-[8px] uppercase leading-tight font-sans">
+              <span className="text-rose-900 font-black">SAKIP</span>
+              <span className="text-slate-700 font-semibold">LKE</span>
+            </div>
+          </div>
+        </div>
+        <div className="border-b-4 border-double border-slate-900 mt-0.5 mb-3" />
+
+        {/* JUDUL DOKUMEN RESMI */}
+        <div className="text-center mb-3">
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-950 font-sans">
+            LEMBAR KERJA EVALUASI (LKE) SISTEM AKUNTABILITAS KINERJA INSTANSI PEMERINTAH (SAKIP)
+          </h2>
+          <p className="text-[10.5px] font-bold text-slate-800 font-sans mt-0.5">
+            TAHUN ANGGARAN {selectedYear}
+          </p>
+          <p className="text-[8px] text-slate-500 italic font-sans">
+            Pedoman Teknis Evaluasi Akuntabilitas Kinerja Instansi Pemerintah • PermenPAN-RB No. 88 Tahun 2021
+          </p>
+        </div>
+
+        {/* INFORMASI EVALUASI & RINGKASAN CAPAIAN SAKIP */}
+        <div className="border border-slate-700 rounded p-2 mb-3 text-[9px] font-sans bg-slate-50">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+            <div className="flex">
+              <span className="w-32 font-bold text-slate-700">Nama Instansi:</span>
+              <span className="font-bold text-slate-950">RSUP Dr. M. Djamil Padang</span>
+            </div>
+            <div className="flex">
+              <span className="w-32 font-bold text-slate-700">Nilai Akhir SAKIP:</span>
+              <span className="font-black text-slate-950 font-mono">
+                {roundedTotal.toFixed(2)} / 100.00 ({predikatObj.predikat} - {predikatObj.kategori})
+              </span>
+            </div>
+            <div className="flex">
+              <span className="w-32 font-bold text-slate-700">Tanggal Cetak:</span>
+              <span className="text-slate-900">{currentDateFormatted}</span>
+            </div>
+            <div className="flex">
+              <span className="w-32 font-bold text-slate-700">Capaian Normalisasi:</span>
+              <span className="font-bold font-mono text-slate-900">{totalNormPersen.toFixed(2)}% (Maks. 120%)</span>
+            </div>
+            <div className="flex">
+              <span className="w-32 font-bold text-slate-700">Tim Evaluator:</span>
+              <span className="text-slate-800">Satuan Pengawas Internal (SPI) & Tim Kerja Perencanaan</span>
+            </div>
+            <div className="flex">
+              <span className="w-32 font-bold text-slate-700">Pemenuhan Kriteria:</span>
+              <span className="font-bold text-emerald-800 font-mono">
+                {totalMemenuhiCount} dari {totalKriteriaCount} Kriteria Terpenuhi ({totalKriteriaCount > 0 ? ((totalMemenuhiCount/totalKriteriaCount)*100).toFixed(1) : 0}%)
+              </span>
+            </div>
+          </div>
+
+          {/* Rincian 4 Komponen */}
+          <div className="grid grid-cols-4 gap-1.5 mt-2 pt-1.5 border-t border-slate-300 text-center text-[8.5px]">
+            <div className="p-1 bg-white border border-slate-300 rounded">
+              <span className="block font-semibold text-slate-600">1. Perencanaan Kinerja</span>
+              <span className="font-mono font-bold text-slate-900">{lkeData[0]?.nilai.toFixed(2)}</span> / {lkeData[0]?.bobot.toFixed(2)}
+            </div>
+            <div className="p-1 bg-white border border-slate-300 rounded">
+              <span className="block font-semibold text-slate-600">2. Pengukuran Kinerja</span>
+              <span className="font-mono font-bold text-slate-900">{lkeData[1]?.nilai.toFixed(2)}</span> / {lkeData[1]?.bobot.toFixed(2)}
+            </div>
+            <div className="p-1 bg-white border border-slate-300 rounded">
+              <span className="block font-semibold text-slate-600">3. Pelaporan Kinerja</span>
+              <span className="font-mono font-bold text-slate-900">{lkeData[2]?.nilai.toFixed(2)}</span> / {lkeData[2]?.bobot.toFixed(2)}
+            </div>
+            <div className="p-1 bg-white border border-slate-300 rounded">
+              <span className="block font-semibold text-slate-600">4. Evaluasi Internal</span>
+              <span className="font-mono font-bold text-slate-900">{lkeData[3]?.nilai.toFixed(2)}</span> / {lkeData[3]?.bobot.toFixed(2)}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Synchronized Connection Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-[#451212] to-slate-900 rounded-2xl p-5 md:p-6 text-white shadow-xl relative overflow-hidden border border-rose-900/30">
+      <div className="bg-gradient-to-r from-slate-900 via-[#451212] to-slate-900 rounded-2xl p-5 md:p-6 text-white shadow-xl relative overflow-hidden border border-rose-900/30 no-print print:hidden">
         <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
@@ -346,7 +459,7 @@ export const LKEEvaluasiView: React.FC<LKEEvaluasiViewProps> = ({
       </div>
 
       {/* Filter and Control Bar */}
-      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 no-print print:hidden">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative w-full sm:w-72">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -415,8 +528,9 @@ export const LKEEvaluasiView: React.FC<LKEEvaluasiViewProps> = ({
 
           <button
             type="button"
-            onClick={() => window.print()}
+            onClick={() => setIsPrintModalOpen(true)}
             className="px-3.5 py-2 rounded-lg bg-[#5c1818] hover:bg-[#4a1313] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs cursor-pointer"
+            title="Cetak LKE SAKIP Resmi atau Simpan PDF"
           >
             <Printer className="w-3.5 h-3.5" />
             <span>Cetak LKE</span>
@@ -425,8 +539,8 @@ export const LKEEvaluasiView: React.FC<LKEEvaluasiViewProps> = ({
       </div>
 
       {/* TABLE SESUAI GAMBAR PERMENPAN-RB DENGAN KONEKSI KE HASIL INPUT 1,2,3,4 */}
-      <div className="bg-white rounded-2xl border border-slate-300 shadow-md overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="bg-white rounded-2xl border border-slate-300 shadow-md overflow-hidden print:overflow-visible print:border-slate-800 print:shadow-none print:rounded-none print:m-0 print:p-0">
+        <div className="overflow-x-auto print:overflow-visible">
           <table className="w-full border-collapse text-xs">
             {/* Header Dark Maroon / Brown (Identik Format PermenPAN-RB) */}
             <thead>
@@ -530,7 +644,7 @@ export const LKEEvaluasiView: React.FC<LKEEvaluasiViewProps> = ({
                                 <button
                                   type="button"
                                   onClick={() => handleNavigateToSub(sub.kode)}
-                                  className={`px-2 py-0.5 rounded text-[10px] font-bold inline-flex items-center gap-1 shrink-0 cursor-pointer transition-colors shadow-2xs ${
+                                  className={`px-2 py-0.5 rounded text-[10px] font-bold inline-flex items-center gap-1 shrink-0 cursor-pointer transition-colors shadow-2xs no-print print:hidden ${
                                     sub.kode.startsWith('1.')
                                       ? 'bg-sky-100 hover:bg-sky-200 text-sky-800 border border-sky-300'
                                       : sub.kode.startsWith('2.')
@@ -551,25 +665,30 @@ export const LKEEvaluasiView: React.FC<LKEEvaluasiViewProps> = ({
                             </td>
                             <td className="px-2 py-2 text-center font-mono font-extrabold border-r border-slate-300 bg-white">
                               {canEdit ? (
-                                <select
-                                  value={sub.jawaban}
-                                  onChange={(e) =>
-                                    handleUpdateJawaban(
-                                      sub.kode as SubKomponenKode,
-                                      e.target.value as 'AA' | 'A' | 'BB' | 'B' | 'CC' | 'C' | 'D'
-                                    )
-                                  }
-                                  className="px-1.5 py-0.5 rounded bg-amber-50 border border-amber-300 text-slate-900 font-extrabold text-xs cursor-pointer hover:border-emerald-500 focus:ring-2 focus:ring-emerald-500 shadow-2xs"
-                                  title="Ubah Jawaban Evaluasi PermenPAN-RB (AA, A, BB, B, CC, C, D)"
-                                >
-                                  <option value="AA">AA (100%)</option>
-                                  <option value="A">A (90%)</option>
-                                  <option value="BB">BB (80%)</option>
-                                  <option value="B">B (70%)</option>
-                                  <option value="CC">CC (60%)</option>
-                                  <option value="C">C (50%)</option>
-                                  <option value="D">D (30%)</option>
-                                </select>
+                                <>
+                                  <select
+                                    value={sub.jawaban}
+                                    onChange={(e) =>
+                                      handleUpdateJawaban(
+                                        sub.kode as SubKomponenKode,
+                                        e.target.value as 'AA' | 'A' | 'BB' | 'B' | 'CC' | 'C' | 'D'
+                                      )
+                                    }
+                                    className="px-1.5 py-0.5 rounded bg-amber-50 border border-amber-300 text-slate-900 font-extrabold text-xs cursor-pointer hover:border-emerald-500 focus:ring-2 focus:ring-emerald-500 shadow-2xs no-print print:hidden"
+                                    title="Ubah Jawaban Evaluasi PermenPAN-RB (AA, A, BB, B, CC, C, D)"
+                                  >
+                                    <option value="AA">AA (100%)</option>
+                                    <option value="A">A (90%)</option>
+                                    <option value="BB">BB (80%)</option>
+                                    <option value="B">B (70%)</option>
+                                    <option value="CC">CC (60%)</option>
+                                    <option value="C">C (50%)</option>
+                                    <option value="D">D (30%)</option>
+                                  </select>
+                                  <span className="print-only font-mono font-black text-xs text-slate-950">
+                                    {sub.jawaban}
+                                  </span>
+                                </>
                               ) : (
                                 <span className="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-300 text-slate-900 font-bold">
                                   {sub.jawaban}
@@ -662,7 +781,7 @@ export const LKEEvaluasiView: React.FC<LKEEvaluasiViewProps> = ({
                                       </div>
 
                                       {/* Quick View Button */}
-                                      <div className="flex items-center gap-1 shrink-0">
+                                      <div className="flex items-center gap-1 shrink-0 no-print print:hidden">
                                         <button
                                           type="button"
                                           onClick={() =>
@@ -728,21 +847,26 @@ export const LKEEvaluasiView: React.FC<LKEEvaluasiViewProps> = ({
                                     }`}
                                   >
                                     {canEdit ? (
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          handleToggleKriteria(sub.kode, crit.id, crit.skor)
-                                        }
-                                        className={`w-full py-0.5 rounded font-mono font-bold text-xs flex items-center justify-center gap-1 cursor-pointer transition-all hover:ring-2 hover:ring-emerald-400 ${
-                                          crit.skor === 1
-                                            ? 'text-slate-900'
-                                            : 'text-rose-700 bg-rose-200'
-                                        }`}
-                                        title={`Klik untuk ubah skor (saat ini ${crit.skor})`}
-                                      >
-                                        <span>{crit.skor}</span>
-                                        <ChevronDown className="w-3 h-3 text-slate-400 opacity-60" />
-                                      </button>
+                                      <>
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            handleToggleKriteria(sub.kode, crit.id, crit.skor)
+                                          }
+                                          className={`w-full py-0.5 rounded font-mono font-bold text-xs flex items-center justify-center gap-1 cursor-pointer transition-all hover:ring-2 hover:ring-emerald-400 no-print print:hidden ${
+                                            crit.skor === 1
+                                              ? 'text-slate-900'
+                                              : 'text-rose-700 bg-rose-200'
+                                          }`}
+                                          title={`Klik untuk ubah skor (saat ini ${crit.skor})`}
+                                        >
+                                          <span>{crit.skor}</span>
+                                          <ChevronDown className="w-3 h-3 text-slate-400 opacity-60" />
+                                        </button>
+                                        <span className="print-only font-mono font-bold text-xs text-slate-950">
+                                          {crit.skor}
+                                        </span>
+                                      </>
                                     ) : (
                                       <span>{crit.skor}</span>
                                     )}
@@ -783,7 +907,7 @@ export const LKEEvaluasiView: React.FC<LKEEvaluasiViewProps> = ({
                                             <button
                                               type="button"
                                               onClick={() => handleNavigateToSub(sub.kode)}
-                                              className="text-[10px] font-bold text-sky-700 hover:text-sky-900 underline flex items-center gap-0.5 cursor-pointer"
+                                              className="text-[10px] font-bold text-sky-700 hover:text-sky-900 underline flex items-center gap-0.5 cursor-pointer no-print print:hidden"
                                             >
                                               <span>Edit di {sub.kode}</span>
                                               <ArrowRight className="w-2.5 h-2.5" />
@@ -808,16 +932,21 @@ export const LKEEvaluasiView: React.FC<LKEEvaluasiViewProps> = ({
                                           </div>
 
                                           {crit.linkDakung ? (
-                                            <a
-                                              href={crit.linkDakung}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                              className="inline-flex items-center gap-1 text-sky-700 hover:text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 px-2 py-1 rounded font-bold transition-colors shrink-0"
-                                            >
-                                              <LinkIcon className="w-3 h-3" />
-                                              <span>Buka Tautan Berkas Bukti</span>
-                                              <ExternalLink className="w-2.5 h-2.5" />
-                                            </a>
+                                            <>
+                                              <a
+                                                href={crit.linkDakung}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1 text-sky-700 hover:text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 px-2 py-1 rounded font-bold transition-colors shrink-0 no-print print:hidden"
+                                              >
+                                                <LinkIcon className="w-3 h-3" />
+                                                <span>Buka Tautan Berkas Bukti</span>
+                                                <ExternalLink className="w-2.5 h-2.5" />
+                                              </a>
+                                              <span className="print-only text-[9px] text-slate-700 font-mono">
+                                                <strong>URL Dokumen:</strong> {crit.linkDakung}
+                                              </span>
+                                            </>
                                           ) : (
                                             <span className="text-slate-400 italic">Tautan link berkas belum diisi</span>
                                           )}
@@ -935,8 +1064,67 @@ export const LKEEvaluasiView: React.FC<LKEEvaluasiViewProps> = ({
         </div>
       </div>
 
+      {/* LEMBAR PENGESAHAN / TANDA TANGAN TIM EVALUATOR & DIREKTUR (HANYA MUNCUL SAAT CETAK / PDF) */}
+      {includeSignatures && (
+        <div className="print-only print-avoid-break mt-6 pt-4 border-t-2 border-slate-900 font-sans text-[9.5px] text-slate-900">
+          <div className="flex justify-between items-start mb-2">
+            <div>
+              <p className="text-slate-700 italic font-medium">Dokumen Resmi Lembar Kerja Evaluasi (LKE) SAKIP</p>
+              <p className="text-[8.5px] text-slate-500">Dicetak melalui Sistem Akuntabilitas Kinerja Instansi Pemerintah (SAKElek PRO) • RSUP Dr. M. Djamil</p>
+            </div>
+            <div className="text-right">
+              <p className="font-semibold text-slate-800">Padang, {currentDateFormatted}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-6 text-center mt-5">
+            {/* Kolom 1: SPI */}
+            <div className="flex flex-col justify-between h-32">
+              <div>
+                <p className="font-bold text-slate-900 uppercase">Tim Asesor Evaluator SAKIP</p>
+                <p className="text-[8.5px] text-slate-600">Ketua Satuan Pengawas Internal (SPI)</p>
+              </div>
+              <div>
+                <p className="font-black text-slate-950 underline underline-offset-2">
+                  Ns. Nofriadi, S.Kep, M.Kep, Sp.Kep.An
+                </p>
+                <p className="text-[8.5px] text-slate-600 font-mono">NIP. 19781120 200501 1 002</p>
+              </div>
+            </div>
+
+            {/* Kolom 2: Verifikator Timker Perencanaan */}
+            <div className="flex flex-col justify-between h-32">
+              <div>
+                <p className="font-bold text-slate-900 uppercase">Tim Verifikator Dokumen</p>
+                <p className="text-[8.5px] text-slate-600">Tim Kerja Perencanaan & Evaluasi</p>
+              </div>
+              <div>
+                <p className="font-black text-slate-950 underline underline-offset-2">
+                  Adisti Pohan, S.E., M.M.
+                </p>
+                <p className="text-[8.5px] text-slate-600 font-mono">NIP. 19840215 200801 2 004</p>
+              </div>
+            </div>
+
+            {/* Kolom 3: Direktur Utama */}
+            <div className="flex flex-col justify-between h-32">
+              <div>
+                <p className="font-bold text-slate-900 uppercase">Mengetahui / Menyetujui,</p>
+                <p className="text-[8.5px] text-slate-600">Direktur Utama RSUP Dr. M. Djamil Padang</p>
+              </div>
+              <div>
+                <p className="font-black text-slate-950 underline underline-offset-2">
+                  Dr. dr. Dovy Djanas, Sp.OG, KFM, MARS
+                </p>
+                <p className="text-[8.5px] text-slate-600 font-mono">NIP. 19710815 200003 1 003</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* PANDUAN INDIKATOR WARNA CAPAIAN & KETENTUAN NORMALISASI 120% */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-3">
+      <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-3 no-print print:hidden">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
           <div className="flex items-center gap-2">
             <Info className="w-4 h-4 text-emerald-600" />
@@ -1019,7 +1207,7 @@ export const LKEEvaluasiView: React.FC<LKEEvaluasiViewProps> = ({
 
       {/* MODAL RINCIAN BUKTI DUKUNG TERHUBUNG */}
       {selectedCritModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 no-print print:hidden">
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
             <div className="p-5 bg-gradient-to-r from-slate-900 via-[#5c1818] to-slate-900 text-white flex items-center justify-between">
               <div>
@@ -1188,6 +1376,154 @@ export const LKEEvaluasiView: React.FC<LKEEvaluasiViewProps> = ({
                 className="px-4 py-2 rounded-xl bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold text-xs cursor-pointer"
               >
                 Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL PILIHAN CETAK LKE DOKUMEN RESMI */}
+      {isPrintModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4 no-print print:hidden animate-in fade-in">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-900 flex items-center justify-center">
+                  <Printer className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    Cetak Dokumen Resmi LKE SAKIP
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    Format PermenPAN-RB No. 88/2021 • RSUP Dr. M. Djamil
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPrintModalOpen(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Ringkasan Skor Dokumen */}
+            <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 grid grid-cols-3 gap-2 text-center text-xs">
+              <div>
+                <span className="text-[10px] text-slate-500 font-semibold block">Tahun Anggaran</span>
+                <strong className="text-slate-900 text-sm font-mono">{selectedYear}</strong>
+              </div>
+              <div className="border-x border-slate-200">
+                <span className="text-[10px] text-slate-500 font-semibold block">Nilai SAKIP</span>
+                <strong className="text-emerald-700 text-sm font-mono">{roundedTotal.toFixed(2)} / 100</strong>
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-500 font-semibold block">Predikat Akuntabilitas</span>
+                <strong className="text-slate-900 text-sm font-bold">{predikatObj.predikat} ({predikatObj.kategori})</strong>
+              </div>
+            </div>
+
+            {/* Opsi Format Cetak */}
+            <div className="space-y-3 text-xs">
+              <label className="font-bold text-slate-800 block">Pilihan Format Dokumen:</label>
+              <div className="grid grid-cols-1 gap-2.5">
+                <label
+                  onClick={() => setViewMode('lengkap')}
+                  className={`p-3 rounded-xl border flex items-start gap-3 cursor-pointer transition-all ${
+                    viewMode === 'lengkap'
+                      ? 'bg-rose-50/70 border-rose-300 ring-2 ring-rose-500/20'
+                      : 'bg-white border-slate-200 hover:bg-slate-50'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="print_format"
+                    checked={viewMode === 'lengkap'}
+                    onChange={() => setViewMode('lengkap')}
+                    className="mt-0.5 text-rose-800 focus:ring-rose-800 cursor-pointer"
+                  />
+                  <div className="space-y-0.5">
+                    <span className="font-bold text-slate-900 flex items-center gap-1.5">
+                      Format Lengkap Resmi (Direkomendasikan)
+                      <span className="text-[9px] bg-rose-200 text-rose-900 font-extrabold px-1.5 py-0.2 rounded">STANDAR SAKIP</span>
+                    </span>
+                    <p className="text-[11px] text-slate-600 leading-snug">
+                      Mencetak seluruh tabel LKE beserta rincian nomor SK/regulasi, dokumen bukti dukung, tautan berkas, dan catatan asesor evaluasi.
+                    </p>
+                  </div>
+                </label>
+
+                <label
+                  onClick={() => setViewMode('standar')}
+                  className={`p-3 rounded-xl border flex items-start gap-3 cursor-pointer transition-all ${
+                    viewMode === 'standar'
+                      ? 'bg-rose-50/70 border-rose-300 ring-2 ring-rose-500/20'
+                      : 'bg-white border-slate-200 hover:bg-slate-50'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="print_format"
+                    checked={viewMode === 'standar'}
+                    onChange={() => setViewMode('standar')}
+                    className="mt-0.5 text-rose-800 focus:ring-rose-800 cursor-pointer"
+                  />
+                  <div className="space-y-0.5">
+                    <span className="font-bold text-slate-900">
+                      Format Ringkas Matriks Nilai
+                    </span>
+                    <p className="text-[11px] text-slate-600 leading-snug">
+                      Hanya mencetak baris komponen, sub-komponen, bobot, jawaban, nilai capaian, dan skor pemenuhan (tanpa rincian bukti dukung).
+                    </p>
+                  </div>
+                </label>
+              </div>
+
+              {/* Checkbox Sertakan Tanda Tangan */}
+              <label className="flex items-center gap-2.5 pt-1 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={includeSignatures}
+                  onChange={(e) => setIncludeSignatures(e.target.checked)}
+                  className="rounded text-rose-800 focus:ring-rose-800 w-4 h-4 cursor-pointer"
+                />
+                <span className="text-slate-800 font-semibold text-xs">
+                  Sertakan Lembar Pengesahan Tanda Tangan (SPI, Tim Perencanaan, Direktur Utama)
+                </span>
+              </label>
+            </div>
+
+            {/* Petunjuk Cetak Browser */}
+            <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-[11px] text-amber-900 flex items-start gap-2">
+              <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <p className="leading-relaxed">
+                <strong>Tips Cetak PDF:</strong> Gunakan orientasi <strong>Landscape (Mendatar)</strong> dan centang opsi <strong>"Background graphics"</strong> (Grafik latar belakang) pada jendela browser agar warna tabel dan kop surat tercetak jelas.
+              </p>
+            </div>
+
+            {/* Footer Buttons */}
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setIsPrintModalOpen(false)}
+                className="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsPrintModalOpen(false);
+                  setTimeout(() => {
+                    window.print();
+                  }, 150);
+                }}
+                className="px-5 py-2 rounded-xl bg-[#5c1818] hover:bg-[#4a1313] text-white font-bold text-xs flex items-center gap-2 shadow-xs cursor-pointer"
+              >
+                <Printer className="w-4 h-4" />
+                <span>Buka Dialog Cetak / PDF</span>
               </button>
             </div>
           </div>
