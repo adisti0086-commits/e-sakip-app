@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -20,8 +20,9 @@ import {
   FileCheck2,
   CheckCheck,
 } from 'lucide-react';
-import { INITIAL_KRITERIA_4B, SakipKriteriaItem } from '../data/sakipKompData';
+import { INITIAL_KRITERIA_4B, SakipKriteriaItem } from '../../data/sakipKompData';
 import { OPD, User } from '../types';
+import { notifyLKESync, LKE_SYNC_EVENT } from '../utils/lkeSync';
 
 interface Evaluasi4bViewProps {
   opdList: OPD[];
@@ -38,6 +39,7 @@ export const Evaluasi4bView: React.FC<Evaluasi4bViewProps> = ({
   selectedOpdId,
   selectedYear,
   currentUser,
+  onNavigateTab,
 }) => {
   const [activeTabSub, setActiveTabSub] = useState<'kriteria' | 'kompetensi'>('kriteria');
 
@@ -69,13 +71,47 @@ export const Evaluasi4bView: React.FC<Evaluasi4bViewProps> = ({
     skor: 1,
   });
 
+  const isInitialMount = useRef(true);
+  const isExternalSync = useRef(false);
+
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY_4B, JSON.stringify(kriteriaList));
+      if (isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
+      }
+      if (isExternalSync.current) {
+        isExternalSync.current = false;
+        return;
+      }
+      notifyLKESync('4.b');
     } catch {
       // ignore
     }
   }, [kriteriaList]);
+
+  // Listen for sync updates triggered from LKE
+  useEffect(() => {
+    const handleSync = (e: Event) => {
+      const ce = e as CustomEvent<{ source?: string }>;
+      if (ce.detail?.source === '4.b') return;
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_4B);
+        if (saved) {
+          setKriteriaList((prev) => {
+            if (JSON.stringify(prev) === saved) return prev;
+            isExternalSync.current = true;
+            return JSON.parse(saved);
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    window.addEventListener(LKE_SYNC_EVENT, handleSync);
+    return () => window.removeEventListener(LKE_SYNC_EVENT, handleSync);
+  }, []);
 
   const bobot4b = 7.5;
   const totalKriteria = kriteriaList.length;
@@ -207,6 +243,21 @@ export const Evaluasi4bView: React.FC<Evaluasi4bViewProps> = ({
             <p className="text-xs text-slate-500 max-w-3xl leading-relaxed">
               Memastikan auditor SPI memiliki sertifikasi kompetensi evaluator SAKIP, metodologi evaluasi memenuhi PermenPAN-RB No. 88/2021, uji petik bukti dukung memadai, dan rekomendasi SMART bernilai tambah nyata.
             </p>
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-900 border border-indigo-300 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                Otomatis Terhubung ke LKE • Nilai: {nilai4b.toFixed(2)} / {bobot4b.toFixed(2)}
+              </span>
+              {onNavigateTab && (
+                <button
+                  type="button"
+                  onClick={() => onNavigateTab('lke')}
+                  className="text-xs text-indigo-800 hover:text-indigo-950 underline font-bold cursor-pointer"
+                >
+                  Buka Lembar Kerja Evaluasi (LKE) →
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Score Badge */}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -34,8 +34,9 @@ import {
   IndikatorSmartCheck,
   INITIAL_KRITERIA_1B,
   INITIAL_SMART_CHECKS,
-} from '../data/perencanaanData';
+} from '../../data/perencanaanData';
 import { IndikatorPK, OPD, RenstraSasaran, User } from '../types';
+import { notifyLKESync, LKE_SYNC_EVENT } from '../utils/lkeSync';
 
 interface Perencanaan1bViewProps {
   opdList: OPD[];
@@ -56,6 +57,7 @@ export const Perencanaan1bView: React.FC<Perencanaan1bViewProps> = ({
   selectedOpdId,
   selectedYear,
   currentUser,
+  onNavigateTab,
 }) => {
   const [activeTabSub, setActiveTabSub] = useState<'kriteria' | 'smart' | 'cascading' | 'crosscutting'>('kriteria');
 
@@ -100,6 +102,47 @@ export const Perencanaan1bView: React.FC<Perencanaan1bViewProps> = ({
     }, 3200);
   };
 
+  const isInitialMount = useRef(true);
+  const isExternalSync = useRef(false);
+
+  // Sync to localStorage and notify LKE whenever kriteriaList changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_KRITERIA_1B, JSON.stringify(kriteriaList));
+      if (isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
+      }
+      if (isExternalSync.current) {
+        isExternalSync.current = false;
+        return;
+      }
+      notifyLKESync('1.b');
+    } catch {}
+  }, [kriteriaList]);
+
+  // Listen for sync updates triggered from LKE
+  useEffect(() => {
+    const handleSync = (e: Event) => {
+      const ce = e as CustomEvent<{ source?: string }>;
+      if (ce.detail?.source === '1.b') return;
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_KRITERIA_1B);
+        if (saved) {
+          setKriteriaList((prev) => {
+            if (JSON.stringify(prev) === saved) return prev;
+            isExternalSync.current = true;
+            return JSON.parse(saved);
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    window.addEventListener(LKE_SYNC_EVENT, handleSync);
+    return () => window.removeEventListener(LKE_SYNC_EVENT, handleSync);
+  }, []);
+
   const bobot1b = 9.0;
   const totalKriteria = kriteriaList.length;
   const kriteriaTerpenuhi = kriteriaList.filter((k) => k.skor === 1).length;
@@ -115,18 +158,24 @@ export const Perencanaan1bView: React.FC<Perencanaan1bViewProps> = ({
   const handleToggleSkor = (id: string) => {
     if (!canEdit) return;
     setKriteriaList((prev) => {
-      const updated = prev.map((item) => {
+      const updated: Kriteria1bItem[] = prev.map((item): Kriteria1bItem => {
         if (item.id === id) {
           const nextSkor: 1 | 0 = item.skor === 1 ? 0 : 1;
+          const nextStatus: Kriteria1bItem['statusPemenuhan'] =
+            nextSkor === 1 ? 'Memenuhi Standar' : 'Belum Memenuhi';
           return {
             ...item,
             skor: nextSkor,
-            statusPemenuhan: nextSkor === 1 ? 'Memenuhi Standar' : ('Belum Memenuhi' as const),
+            statusPemenuhan: nextStatus,
           };
         }
         return item;
       });
-      localStorage.setItem(STORAGE_KEY_KRITERIA_1B, JSON.stringify(updated));
+      try {
+        localStorage.setItem(STORAGE_KEY_KRITERIA_1B, JSON.stringify(updated));
+      } catch (err) {
+        console.error('Failed to save to localStorage', err);
+      }
       return updated;
     });
     showToast('Skor kriteria berhasil diperbarui.');
@@ -249,6 +298,21 @@ export const Perencanaan1bView: React.FC<Perencanaan1bViewProps> = ({
             <p className="text-sm text-teal-100/90 max-w-3xl leading-relaxed">
               Kualitas rumusan sasaran outcome, pemenuhan kriteria <strong>SMART</strong> indikator kinerja, IKU berkelanjutan, target achievable & menantang, keselarasan <strong>Cascading</strong> berjenjang, hubungan <strong>Crosscutting</strong>, serta penetapan PK unit & SKP pegawai.
             </p>
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Otomatis Terhubung ke LKE • Nilai: {nilai1b.toFixed(2)} / {bobot1b.toFixed(2)}
+              </span>
+              {onNavigateTab && (
+                <button
+                  type="button"
+                  onClick={() => onNavigateTab('lke')}
+                  className="text-xs text-teal-200 hover:text-white underline font-bold cursor-pointer"
+                >
+                  Buka Lembar Kerja Evaluasi (LKE) →
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">

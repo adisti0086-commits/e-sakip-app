@@ -16,7 +16,6 @@ import {
   ChevronDown,
   LogIn,
   LogOut,
-  KeyRound,
   FileSpreadsheet,
   Layers,
   Activity,
@@ -25,6 +24,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { User, UserRole } from '../types';
+import { getSAKIPSummary, LKE_SYNC_EVENT } from '../utils/lkeSync';
 
 export type ActiveTab =
   | 'dashboard'
@@ -54,7 +54,7 @@ interface SidebarProps {
   activeTab: ActiveTab;
   setActiveTab: (tab: ActiveTab) => void;
   currentUser: User;
-  onSwitchUser: (role: UserRole) => void;
+  onSwitchUser?: (role: UserRole) => void;
   isOpenMobile: boolean;
   setIsOpenMobile: (open: boolean) => void;
   pendingValidationCount: number;
@@ -66,10 +66,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activeTab,
   setActiveTab,
   currentUser,
-  onSwitchUser,
   isOpenMobile,
   setIsOpenMobile,
-  pendingValidationCount,
+  pendingValidationCount: _pendingValidationCount,
   onOpenLoginModal,
   onOpenLogoutModal,
 }) => {
@@ -105,6 +104,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
     activeTab === 'capaian-triwulan' ||
     activeTab === 'pengaturan-kinerja'
   );
+
+  const [sakipSummary, setSakipSummary] = useState(() => getSAKIPSummary());
+
+  React.useEffect(() => {
+    const handleSync = () => {
+      const next = getSAKIPSummary();
+      setSakipSummary((prev) => {
+        if (
+          prev.totalNilai === next.totalNilai &&
+          prev.komp1Nilai === next.komp1Nilai &&
+          prev.komp2Nilai === next.komp2Nilai &&
+          prev.komp3Nilai === next.komp3Nilai &&
+          prev.komp4Nilai === next.komp4Nilai
+        ) {
+          return prev;
+        }
+        return next;
+      });
+    };
+    window.addEventListener(LKE_SYNC_EVENT, handleSync);
+    return () => window.removeEventListener(LKE_SYNC_EVENT, handleSync);
+  }, []);
 
   const getRoleBadge = (role: UserRole) => {
     switch (role) {
@@ -232,8 +253,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <span className="text-[10px] text-slate-400">Tabel Kriteria PermenPAN-RB</span>
               </div>
             </div>
-            <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-amber-500 text-slate-950">
-              100 Poin
+            <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-amber-500 text-slate-950 font-mono">
+              {sakipSummary.totalNilai.toFixed(1)} Poin
             </span>
           </button>
 
@@ -245,7 +266,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
 
-          {/* 1. PERENCANAAN KINERJA (BOBOT 30.00 | NILAI 24) */}
+          {/* 1. PERENCANAAN KINERJA */}
           <div className="space-y-1">
             <button
               type="button"
@@ -262,7 +283,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800">
-                  30 | 24
+                  30 | {sakipSummary.komp1Nilai.toFixed(1)}
                 </span>
                 {openKomp1 ? (
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
@@ -316,7 +337,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
           </div>
 
-          {/* 2. PENGUKURAN KINERJA (BOBOT 30.00 | NILAI 27.6) */}
+          {/* 2. PENGUKURAN KINERJA */}
           <div className="space-y-1">
             <button
               type="button"
@@ -333,7 +354,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">
-                  30 | 27.6
+                  30 | {sakipSummary.komp2Nilai.toFixed(1)}
                 </span>
                 {openKomp2 ? (
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
@@ -387,7 +408,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
           </div>
 
-          {/* 3. PELAPORAN KINERJA (BOBOT 15.00 | NILAI 13.5) */}
+          {/* 3. PELAPORAN KINERJA */}
           <div className="space-y-1">
             <button
               type="button"
@@ -404,7 +425,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800">
-                  15 | 13.5
+                  15 | {sakipSummary.komp3Nilai.toFixed(1)}
                 </span>
                 {openKomp3 ? (
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
@@ -458,7 +479,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
           </div>
 
-          {/* 4. EVALUASI AKUNTABILITAS KINERJA INTERNAL (BOBOT 25.00 | NILAI 23) */}
+          {/* 4. EVALUASI AKUNTABILITAS KINERJA INTERNAL */}
           <div className="space-y-1">
             <button
               type="button"
@@ -475,7 +496,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800">
-                  25 | 23
+                  25 | {sakipSummary.komp4Nilai.toFixed(1)}
                 </span>
                 {openKomp4 ? (
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
@@ -593,7 +614,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   }`}
                 >
                   <Building2 className="w-3.5 h-3.5" />
-                  <span>Master Unit Kerja (OPD)</span>
+                  <span>Master Unit Kerja</span>
                 </button>
 
                 <button
@@ -688,81 +709,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {/* Footer: User Role Switcher & Sign In/Out */}
-        <div className="p-3 border-t border-slate-800 bg-slate-950/80 space-y-2">
-          <div className="flex items-center justify-between text-[11px] text-slate-400 px-1">
-            <span className="flex items-center gap-1 font-medium">
-              <KeyRound className="w-3.5 h-3.5 text-emerald-400" />
-              Ganti Role Demo:
-            </span>
-          </div>
-          <div className="grid grid-cols-2 gap-1.5">
-            <button
-              type="button"
-              onClick={() => onSwitchUser('administrator')}
-              className={`px-2 py-1.5 rounded-lg text-[10px] font-bold border transition-colors ${
-                currentUser.role === 'administrator'
-                  ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
-                  : 'bg-slate-900 text-slate-400 border-slate-800 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              Admin
-            </button>
-            <button
-              type="button"
-              onClick={() => onSwitchUser('operator_unit')}
-              className={`px-2 py-1.5 rounded-lg text-[10px] font-bold border transition-colors ${
-                currentUser.role === 'operator_unit'
-                  ? 'bg-sky-500/20 text-sky-300 border-sky-500/40'
-                  : 'bg-slate-900 text-slate-400 border-slate-800 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              Operator
-            </button>
-            <button
-              type="button"
-              onClick={() => onSwitchUser('validator')}
-              className={`px-2 py-1.5 rounded-lg text-[10px] font-bold border transition-colors relative ${
-                currentUser.role === 'validator'
-                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                  : 'bg-slate-900 text-slate-400 border-slate-800 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              Validator
-              {pendingValidationCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-500 text-white text-[9px] flex items-center justify-center font-black">
-                  {pendingValidationCount}
-                </span>
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={() => onSwitchUser('verifikator')}
-              className={`px-2 py-1.5 rounded-lg text-[10px] font-bold border transition-colors ${
-                currentUser.role === 'verifikator'
-                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                  : 'bg-slate-900 text-slate-400 border-slate-800 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              Verifikator
-            </button>
-          </div>
-
-          <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between">
+        {/* Footer: Ganti Akun & Keluar */}
+        <div className="p-3 border-t border-slate-800 bg-slate-950/80">
+          <div className="flex items-center justify-between gap-2">
             <button
               type="button"
               onClick={onOpenLoginModal}
-              className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-800"
+              className="flex-1 text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-lg bg-slate-900/90 hover:bg-slate-800 border border-slate-800/90 transition-colors cursor-pointer"
             >
-              <LogIn className="w-3.5 h-3.5" />
+              <LogIn className="w-3.5 h-3.5 text-emerald-400" />
               <span>Ganti Akun</span>
             </button>
             <button
               type="button"
               onClick={onOpenLogoutModal}
-              className="text-[11px] font-semibold text-rose-400 hover:text-rose-300 flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-800"
+              className="flex-1 text-[11px] font-semibold text-rose-400 hover:text-rose-300 flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-lg bg-slate-900/90 hover:bg-slate-800 border border-slate-800/90 transition-colors cursor-pointer"
             >
-              <LogOut className="w-3.5 h-3.5" />
+              <LogOut className="w-3.5 h-3.5 text-rose-400" />
               <span>Keluar</span>
             </button>
           </div>

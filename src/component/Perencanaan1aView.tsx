@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -28,8 +28,9 @@ import {
   DokumenPerencanaan1a,
   INITIAL_KRITERIA_1A,
   INITIAL_DOKUMEN_1A,
-} from '../data/perencanaanData';
+} from '../../data/perencanaanData';
 import { OPD, User } from '../types';
+import { notifyLKESync, LKE_SYNC_EVENT } from '../utils/lkeSync';
 
 interface Perencanaan1aViewProps {
   opdList: OPD[];
@@ -47,6 +48,7 @@ export const Perencanaan1aView: React.FC<Perencanaan1aViewProps> = ({
   selectedOpdId,
   selectedYear,
   currentUser,
+  onNavigateTab,
 }) => {
   const [activeTabSub, setActiveTabSub] = useState<'kriteria' | 'dokumen' | 'legalitas' | 'siklus'>('kriteria');
 
@@ -92,14 +94,50 @@ export const Perencanaan1aView: React.FC<Perencanaan1aViewProps> = ({
     skor: 1,
   });
 
-  // Save to localStorage whenever kriteriaList or inventarisList changes
+  const isInitialMount = useRef(true);
+  const isExternalSync = useRef(false);
+
+  // Save to localStorage whenever kriteriaList changes
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY_KRITERIA, JSON.stringify(kriteriaList));
+      if (isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
+      }
+      if (isExternalSync.current) {
+        isExternalSync.current = false;
+        return;
+      }
+      notifyLKESync('1.a');
     } catch {
       // ignore
     }
   }, [kriteriaList]);
+
+  // Listen for sync updates triggered from LKE or other views
+  useEffect(() => {
+    const handleSync = (e: Event) => {
+      const ce = e as CustomEvent<{ source?: string }>;
+      if (ce.detail?.source === '1.a') return;
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_KRITERIA);
+        if (saved) {
+          setKriteriaList((prev) => {
+            if (JSON.stringify(prev) === saved) return prev;
+            isExternalSync.current = true;
+            return JSON.parse(saved);
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    window.addEventListener(LKE_SYNC_EVENT, handleSync);
+    return () => {
+      window.removeEventListener(LKE_SYNC_EVENT, handleSync);
+    };
+  }, []);
 
   useEffect(() => {
     try {
@@ -289,6 +327,21 @@ export const Perencanaan1aView: React.FC<Perencanaan1aViewProps> = ({
             <p className="text-sm text-sky-100/90 max-w-3xl leading-relaxed">
               Keberadaan dokumen perencanaan jangka panjang (<strong>RSB 2045</strong>), jangka menengah (<strong>Renstra 2025–2029</strong>), jangka pendek (<strong>RKT & PK</strong>), rencana aktivitas pendukung (<strong>RBA & KAK</strong>), rencana anggaran (<strong>DIPA & Pagu Kinerja</strong>), serta formalisasi penetapan berjenjang di RSUP Dr. M. Djamil Padang.
             </p>
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Otomatis Terhubung ke LKE • Nilai: {nilai1a.toFixed(2)} / {bobot1a.toFixed(2)}
+              </span>
+              {onNavigateTab && (
+                <button
+                  type="button"
+                  onClick={() => onNavigateTab('lke')}
+                  className="text-xs text-sky-200 hover:text-white underline font-bold cursor-pointer"
+                >
+                  Buka Lembar Kerja Evaluasi (LKE) →
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">

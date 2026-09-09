@@ -135,7 +135,7 @@ export interface RealisasiTriwulan {
   target: number;
   realisasi: number;
   persenCapaian: number;
-  statusWarna: 'hijau' | 'kuning' | 'merah';
+  statusWarna: 'hijau' | 'biru' | 'kuning' | 'merah';
   faktorPendorong: string;
   faktorPenghambat: string;
   tindakLanjut: string;

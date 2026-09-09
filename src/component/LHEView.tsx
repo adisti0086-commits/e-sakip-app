@@ -282,7 +282,7 @@ export const LHEView: React.FC<LHEViewProps> = ({
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Cari nomor LHE atau OPD..."
+              placeholder="Cari nomor LHE atau Unit Kerja..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
@@ -297,7 +297,7 @@ export const LHEView: React.FC<LHEViewProps> = ({
                 onChange={(e) => setFilterOpd(e.target.value)}
                 className="bg-transparent font-medium text-slate-800 focus:outline-hidden text-xs cursor-pointer"
               >
-                <option value="all">Semua Unit Kerja (OPD)</option>
+                <option value="all">Semua Unit Kerja</option>
                 {opdList.map((o) => (
                   <option key={o.id} value={o.id}>
                     {o.nama}
@@ -333,7 +333,7 @@ export const LHEView: React.FC<LHEViewProps> = ({
 
           {filteredLheList.length === 0 ? (
             <div className="bg-white p-6 rounded-xl border border-slate-200 text-center text-slate-400 text-xs">
-              Belum ada Laporan Hasil Evaluasi (LHE) untuk OPD ini.
+              Belum ada Laporan Hasil Evaluasi (LHE) untuk Unit Kerja ini.
             </div>
           ) : (
             filteredLheList.map((lhe) => {
@@ -862,7 +862,7 @@ export const LHEView: React.FC<LHEViewProps> = ({
                 </div>
 
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-1">Unit Kerja (OPD)</label>
+                  <label className="font-semibold text-slate-700 block mb-1">Unit Kerja</label>
                   <select
                     value={lheForm.opdId}
                     onChange={(e) => setLheForm({ ...lheForm, opdId: e.target.value })}
@@ -1066,7 +1066,7 @@ export const LHEView: React.FC<LHEViewProps> = ({
 
             <form onSubmit={handleSaveUpload} className="mt-4 space-y-4 text-xs">
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                <span className="text-slate-500 block text-[11px]">OPD Penerima:</span>
+                <span className="text-slate-500 block text-[11px]">Unit Kerja Penerima:</span>
                 <span className="font-bold text-slate-900 text-xs">
                   {getOpdName(uploadTargetLhe.opdId)}
                 </span>

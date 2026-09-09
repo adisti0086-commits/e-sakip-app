@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { INITIAL_KRITERIA_2A, SakipKriteriaItem } from '../../data/sakipKompData';
 import { OPD, User } from '../types';
+import { notifyLKESync, LKE_SYNC_EVENT } from '../utils/lkeSync';
 
 interface Pengukuran2aViewProps {
   opdList: OPD[];
@@ -38,6 +39,7 @@ export const Pengukuran2aView: React.FC<Pengukuran2aViewProps> = ({
   selectedOpdId,
   selectedYear,
   currentUser,
+  onNavigateTab,
 }) => {
   const [activeTabSub, setActiveTabSub] = useState<'kriteria' | 'kamus'>('kriteria');
   const [usiaDokumen, setUsiaDokumen] = useState<number>(() => {
@@ -78,13 +80,47 @@ export const Pengukuran2aView: React.FC<Pengukuran2aViewProps> = ({
     skor: 1,
   });
 
+  const isInitialMount = useRef(true);
+  const isExternalSync = useRef(false);
+
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY_2A, JSON.stringify(kriteriaList));
+      if (isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
+      }
+      if (isExternalSync.current) {
+        isExternalSync.current = false;
+        return;
+      }
+      notifyLKESync('2.a');
     } catch {
       // ignore
     }
   }, [kriteriaList]);
+
+  // Listen for sync updates triggered from LKE
+  useEffect(() => {
+    const handleSync = (e: Event) => {
+      const ce = e as CustomEvent<{ source?: string }>;
+      if (ce.detail?.source === '2.a') return;
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_2A);
+        if (saved) {
+          setKriteriaList((prev) => {
+            if (JSON.stringify(prev) === saved) return prev;
+            isExternalSync.current = true;
+            return JSON.parse(saved);
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    window.addEventListener(LKE_SYNC_EVENT, handleSync);
+    return () => window.removeEventListener(LKE_SYNC_EVENT, handleSync);
+  }, []);
 
   const bobot2a = 6.0;
   const totalKriteria = kriteriaList.length;
@@ -216,6 +252,21 @@ export const Pengukuran2aView: React.FC<Pengukuran2aViewProps> = ({
             <p className="text-xs text-slate-500 max-w-3xl leading-relaxed">
               Memastikan ketersediaan pedoman teknis pengukuran, buku kamus indikator dengan definisi operasional yang jelas, serta mekanisme pengumpulan data yang andal dan terverifikasi.
             </p>
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-300 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Otomatis Terhubung ke LKE • Nilai: {nilai2a.toFixed(2)} / {bobot2a.toFixed(2)}
+              </span>
+              {onNavigateTab && (
+                <button
+                  type="button"
+                  onClick={() => onNavigateTab('lke')}
+                  className="text-xs text-emerald-700 hover:text-emerald-900 underline font-bold cursor-pointer"
+                >
+                  Buka Lembar Kerja Evaluasi (LKE) →
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Score Badge */}

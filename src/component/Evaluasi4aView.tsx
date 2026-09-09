@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -20,8 +20,9 @@ import {
   FileCheck2,
   CalendarDays,
 } from 'lucide-react';
-import { INITIAL_KRITERIA_4A, SakipKriteriaItem } from '../data/sakipKompData';
+import { INITIAL_KRITERIA_4A, SakipKriteriaItem } from '../../data/sakipKompData';
 import { OPD, User } from '../types';
+import { notifyLKESync, LKE_SYNC_EVENT } from '../utils/lkeSync';
 
 interface Evaluasi4aViewProps {
   opdList: OPD[];
@@ -38,6 +39,7 @@ export const Evaluasi4aView: React.FC<Evaluasi4aViewProps> = ({
   selectedOpdId,
   selectedYear,
   currentUser,
+  onNavigateTab,
 }) => {
   const [activeTabSub, setActiveTabSub] = useState<'kriteria' | 'jadwal'>('kriteria');
 
@@ -69,13 +71,47 @@ export const Evaluasi4aView: React.FC<Evaluasi4aViewProps> = ({
     skor: 1,
   });
 
+  const isInitialMount = useRef(true);
+  const isExternalSync = useRef(false);
+
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY_4A, JSON.stringify(kriteriaList));
+      if (isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
+      }
+      if (isExternalSync.current) {
+        isExternalSync.current = false;
+        return;
+      }
+      notifyLKESync('4.a');
     } catch {
       // ignore
     }
   }, [kriteriaList]);
+
+  // Listen for sync updates triggered from LKE
+  useEffect(() => {
+    const handleSync = (e: Event) => {
+      const ce = e as CustomEvent<{ source?: string }>;
+      if (ce.detail?.source === '4.a') return;
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_4A);
+        if (saved) {
+          setKriteriaList((prev) => {
+            if (JSON.stringify(prev) === saved) return prev;
+            isExternalSync.current = true;
+            return JSON.parse(saved);
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    window.addEventListener(LKE_SYNC_EVENT, handleSync);
+    return () => window.removeEventListener(LKE_SYNC_EVENT, handleSync);
+  }, []);
 
   const bobot4a = 5.0;
   const totalKriteria = kriteriaList.length;
@@ -207,6 +243,21 @@ export const Evaluasi4aView: React.FC<Evaluasi4aViewProps> = ({
             <p className="text-xs text-slate-500 max-w-3xl leading-relaxed">
               Memastikan Satuan Pengawas Internal (SPI) memiliki Program Kerja Pengawasan Tahunan (PKPT) evaluasi SAKIP, seluruh unit kerja tercover, pemantauan berkala tindak lanjut, dan pelaporan tertib ke Direktur Utama.
             </p>
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-900 border border-indigo-300 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                Otomatis Terhubung ke LKE • Nilai: {nilai4a.toFixed(2)} / {bobot4a.toFixed(2)}
+              </span>
+              {onNavigateTab && (
+                <button
+                  type="button"
+                  onClick={() => onNavigateTab('lke')}
+                  className="text-xs text-indigo-800 hover:text-indigo-950 underline font-bold cursor-pointer"
+                >
+                  Buka Lembar Kerja Evaluasi (LKE) →
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Score Badge */}

@@ -329,7 +329,7 @@ export const PrintLHEModal: React.FC<PrintLHEModalProps> = ({
 
             <div className="text-right">
               <p className="text-slate-600">Ditetapkan pada: {lhe.tanggalEvaluasi}</p>
-              <p className="font-bold text-slate-900">Tim Evaluator SAKIP Inspektorat Jenderal Kemenkes</p>
+              <p className="font-bold text-slate-900">Tim Evaluator SAKIP (Timker Perencanaan & Evaluasi Program)</p>
               <div className="h-16" />
               <p className="font-bold text-slate-900 underline">{lhe.evaluatorNama}</p>
               <p className="text-[10px] text-slate-500">NIP. 19840215 200801 1 004</p>

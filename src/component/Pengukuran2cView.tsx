@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { INITIAL_KRITERIA_2C, SakipKriteriaItem } from '../../data/sakipKompData';
 import { OPD, User } from '../types';
+import { notifyLKESync, LKE_SYNC_EVENT } from '../utils/lkeSync';
 
 interface Pengukuran2cViewProps {
   opdList: OPD[];
@@ -39,6 +40,7 @@ export const Pengukuran2cView: React.FC<Pengukuran2cViewProps> = ({
   selectedOpdId,
   selectedYear,
   currentUser,
+  onNavigateTab,
 }) => {
   const [activeTabSub, setActiveTabSub] = useState<'kriteria' | 'reward-efisiensi'>('kriteria');
   const [upayaInovatif2c, setUpayaInovatif2c] = useState<'Dapat' | 'Tidak Dapat'>(() => {
@@ -79,13 +81,47 @@ export const Pengukuran2cView: React.FC<Pengukuran2cViewProps> = ({
     skor: 1,
   });
 
+  const isInitialMount = useRef(true);
+  const isExternalSync = useRef(false);
+
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY_2C, JSON.stringify(kriteriaList));
+      if (isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
+      }
+      if (isExternalSync.current) {
+        isExternalSync.current = false;
+        return;
+      }
+      notifyLKESync('2.c');
     } catch {
       // ignore
     }
   }, [kriteriaList]);
+
+  // Listen for sync updates triggered from LKE
+  useEffect(() => {
+    const handleSync = (e: Event) => {
+      const ce = e as CustomEvent<{ source?: string }>;
+      if (ce.detail?.source === '2.c') return;
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_2C);
+        if (saved) {
+          setKriteriaList((prev) => {
+            if (JSON.stringify(prev) === saved) return prev;
+            isExternalSync.current = true;
+            return JSON.parse(saved);
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    window.addEventListener(LKE_SYNC_EVENT, handleSync);
+    return () => window.removeEventListener(LKE_SYNC_EVENT, handleSync);
+  }, []);
 
   const bobot2c = 15.0;
   const totalKriteria = kriteriaList.length;
@@ -217,6 +253,21 @@ export const Pengukuran2cView: React.FC<Pengukuran2cViewProps> = ({
             <p className="text-xs text-slate-500 max-w-3xl leading-relaxed">
               Memastikan hasil pengukuran kinerja dijadikan dasar reward/punishment remunerasi, pola karier, refocusing organisasi, penyesuaian strategi/kebijakan/aktivitas, efisiensi anggaran, dan komitmen seluruh pegawai.
             </p>
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-300 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Otomatis Terhubung ke LKE • Nilai: {nilai2c.toFixed(2)} / {bobot2c.toFixed(2)}
+              </span>
+              {onNavigateTab && (
+                <button
+                  type="button"
+                  onClick={() => onNavigateTab('lke')}
+                  className="text-xs text-emerald-700 hover:text-emerald-900 underline font-bold cursor-pointer"
+                >
+                  Buka Lembar Kerja Evaluasi (LKE) →
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Score Badge */}

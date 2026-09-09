@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   INITIAL_USERS,
   INITIAL_OPD,
@@ -55,7 +55,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
   const [userList, setUserList] = useState<User[]>(INITIAL_USERS);
   const [currentUser, setCurrentUser] = useState<User>(INITIAL_USERS[0]); // Default: Administrator
-  const [selectedYear, setSelectedYear] = useState<number>(2025);
+  const [selectedYear, setSelectedYear] = useState<number>(2026);
   const [selectedOpdId, setSelectedOpdId] = useState<string>('all');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -66,20 +66,69 @@ export default function App() {
   const [tujuanList, setTujuanList] = useState<RenstraTujuan[]>(INITIAL_RENSTRA_TUJUAN);
   const [renstraList, setRenstraList] = useState<RenstraSasaran[]>(INITIAL_RENSTRA_SASARAN);
   const [bobotSakip, setBobotSakip] = useState<BobotSakip>(INITIAL_BOBOT_SAKIP);
-  const [indikatorList, setIndikatorList] = useState<IndikatorPK[]>(INITIAL_INDIKATOR_PK);
-  const [capaianBulanList, setCapaianBulanList] = useState<CapaianIndikatorBulan[]>(INITIAL_CAPAIAN_BULAN);
-  const [capaianTriwulanList, setCapaianTriwulanList] = useState<CapaianIndikatorTriwulan[]>(INITIAL_CAPAIAN_TRIWULAN);
+  const [indikatorList, setIndikatorList] = useState<IndikatorPK[]>(() => {
+    try {
+      const saved = localStorage.getItem('sakip_indikator_pk_data');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error('Error loading indikator list from localStorage', e);
+    }
+    return INITIAL_INDIKATOR_PK;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('sakip_indikator_pk_data', JSON.stringify(indikatorList));
+    } catch (e) {
+      console.error('Error saving indikator list to localStorage', e);
+    }
+  }, [indikatorList]);
+
+  const [capaianBulanList, setCapaianBulanList] = useState<CapaianIndikatorBulan[]>(() => {
+    try {
+      const saved = localStorage.getItem('sakip_capaian_bulan_data');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error('Error loading capaian bulan from localStorage', e);
+    }
+    return INITIAL_CAPAIAN_BULAN;
+  });
+
+  const [capaianTriwulanList, setCapaianTriwulanList] = useState<CapaianIndikatorTriwulan[]>(() => {
+    try {
+      const saved = localStorage.getItem('sakip_capaian_triwulan_data');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error('Error loading capaian triwulan from localStorage', e);
+    }
+    return INITIAL_CAPAIAN_TRIWULAN;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('sakip_capaian_bulan_data', JSON.stringify(capaianBulanList));
+    } catch (e) {
+      console.error('Error saving capaian bulan to localStorage', e);
+    }
+  }, [capaianBulanList]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('sakip_capaian_triwulan_data', JSON.stringify(capaianTriwulanList));
+    } catch (e) {
+      console.error('Error saving capaian triwulan to localStorage', e);
+    }
+  }, [capaianTriwulanList]);
+
   const [lheList, setLheList] = useState<LHEEvaluation[]>(INITIAL_LHE);
 
   // Count pending validation for validator
-  const pendingValidationCount = capaianBulanList.reduce(
-  (total, capaian) =>
-    total +
-    capaian.realisasiPerBulan.filter(
+  const pendingValidationCount = capaianBulanList.filter(
+  (capaian) =>
+    capaian.realisasiPerBulan.some(
       (bulan) => bulan.statusValidasi === 'Menunggu Validasi'
-    ).length,
-  0
-);
+    )
+).length;
 
   // Authentication Handlers
   const handleLoginSuccess = (user: User, year: number) => {
@@ -353,6 +402,8 @@ export default function App() {
                 selectedOpdId={selectedOpdId}
                 selectedYear={selectedYear}
                 currentUser={currentUser}
+                capaianTriwulanList={capaianTriwulanList}
+                setCapaianTriwulanList={setCapaianTriwulanList}
               />
             )}
 
@@ -361,6 +412,8 @@ export default function App() {
                 indikatorList={indikatorList}
                 capaianBulanList={capaianBulanList}
                 setCapaianBulanList={setCapaianBulanList}
+                capaianTriwulanList={capaianTriwulanList}
+                setCapaianTriwulanList={setCapaianTriwulanList}
                 opdList={opdList}
                 selectedOpdId={selectedOpdId}
                 selectedYear={selectedYear}

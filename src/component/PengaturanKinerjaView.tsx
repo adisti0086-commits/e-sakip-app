@@ -286,7 +286,7 @@ export const PengaturanKinerjaView: React.FC<PengaturanKinerjaViewProps> = ({
               3. Jadwal Batas Waktu (Deadline) Penginputan Capaian Triwulan
             </h4>
             <p className="text-[11px] text-slate-500">
-              Pengaturan batas waktu penguncian penginputan realisasi bagi Operator OPD.
+              Pengaturan batas waktu penguncian penginputan realisasi bagi Operator Unit Kerja.
             </p>
           </div>
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   TrendingUp,
   CheckCircle2,
@@ -32,6 +32,7 @@ import {
   INITIAL_PEMANFAATAN_ANGGARAN,
 } from '../../data/perencanaanData';
 import { OPD, User } from '../types';
+import { notifyLKESync, LKE_SYNC_EVENT } from '../utils/lkeSync';
 
 interface Perencanaan1cViewProps {
   opdList: OPD[];
@@ -48,67 +49,43 @@ export const Perencanaan1cView: React.FC<Perencanaan1cViewProps> = ({
   selectedOpdId,
   selectedYear,
   currentUser,
+  onNavigateTab,
 }) => {
-   const [activeTabSub, setActiveTabSub] = useState<
-    'kriteria' | 'anggaran' | 'pemantauan' | 'komitmen'
-  >('kriteria');
+  const [activeTabSub, setActiveTabSub] = useState<'kriteria' | 'anggaran' | 'pemantauan' | 'komitmen'>('kriteria');
 
+  // Kriteria state with local storage persistence
   const [kriteriaList, setKriteriaList] = useState<Kriteria1cItem[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_KRITERIA_1C);
-
       if (saved) {
         return JSON.parse(saved);
       }
     } catch (e) {
       console.error('Error loading stored 1c criteria', e);
     }
-
     return INITIAL_KRITERIA_1C;
   });
 
-  const [anggaranList] = useState<PemanfaatanAnggaranSasaran[]>(
-    INITIAL_PEMANFAATAN_ANGGARAN
-  );
-
+  const [anggaranList] = useState<PemanfaatanAnggaranSasaran[]>(INITIAL_PEMANFAATAN_ANGGARAN);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'memenuhi' | 'belum'>('all');
 
-  const [filterStatus, setFilterStatus] = useState<
-    'all' | 'memenuhi' | 'belum'
-  >('all');
-
-  // Modal State
+  // Modal State for Inputting / Editing Bukti Dukung
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const [editingKriteriaId, setEditingKriteriaId] =
-    useState<string>('k-1c-1');
-
-  const [formData, setFormData] = useState<{
-    bentukPemanfaatan: string;
-    dokumenEvidens: string;
-    nomorDokumen: string;
-    tanggalPenetapan: string;
-    unitPenyusun: string;
-    linkDakung: string;
-    statusPemanfaatan:
-      | 'Dimanfaatkan Penuh'
-      | 'Sebagian Dimanfaatkan'
-      | 'Belum Optimal';
-    skor: 1 | 0;
-    catatanEvaluasi: string;
-  }>({
+  const [editingKriteriaId, setEditingKriteriaId] = useState<string>('k-1c-1');
+  const [formData, setFormData] = useState({
     bentukPemanfaatan: '',
     dokumenEvidens: '',
     nomorDokumen: '',
     tanggalPenetapan: '',
     unitPenyusun: '',
     linkDakung: '',
-    statusPemanfaatan: 'Dimanfaatkan Penuh',
-    skor: 1,
+    statusPemanfaatan: 'Dimanfaatkan Penuh' as 'Dimanfaatkan Penuh' | 'Sebagian Dimanfaatkan' | 'Belum Optimal',
+    skor: 1 as 1 | 0,
     catatanEvaluasi: '',
   });
 
-  // Toast
+  // Toast Notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -118,20 +95,52 @@ export const Perencanaan1cView: React.FC<Perencanaan1cViewProps> = ({
     }, 3200);
   };
 
+  const isInitialMount = useRef(true);
+  const isExternalSync = useRef(false);
+
+  // Sync to localStorage and notify LKE whenever kriteriaList changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_KRITERIA_1C, JSON.stringify(kriteriaList));
+      if (isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
+      }
+      if (isExternalSync.current) {
+        isExternalSync.current = false;
+        return;
+      }
+      notifyLKESync('1.c');
+    } catch {}
+  }, [kriteriaList]);
+
+  // Listen for sync updates triggered from LKE
+  useEffect(() => {
+    const handleSync = (e: Event) => {
+      const ce = e as CustomEvent<{ source?: string }>;
+      if (ce.detail?.source === '1.c') return;
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_KRITERIA_1C);
+        if (saved) {
+          setKriteriaList((prev) => {
+            if (JSON.stringify(prev) === saved) return prev;
+            isExternalSync.current = true;
+            return JSON.parse(saved);
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    window.addEventListener(LKE_SYNC_EVENT, handleSync);
+    return () => window.removeEventListener(LKE_SYNC_EVENT, handleSync);
+  }, []);
+
   const bobot1c = 15.0;
   const totalKriteria = kriteriaList.length;
-  const kriteriaTerpenuhi =
-    kriteriaList.filter((k) => k.skor === 1).length;
-  const persenPemenuhan =
-    totalKriteria > 0
-      ? Math.round(
-          (kriteriaTerpenuhi / totalKriteria) * 100
-        )
-      : 0;
-  const nilai1c =
-    Math.round(
-      ((persenPemenuhan / 100) * bobot1c) * 100
-    ) / 100;
+  const kriteriaTerpenuhi = kriteriaList.filter((k) => k.skor === 1).length;
+  const persenPemenuhan = totalKriteria > 0 ? Math.round((kriteriaTerpenuhi / totalKriteria) * 100) : 0;
+  const nilai1c = Math.round(((persenPemenuhan / 100) * bobot1c) * 100) / 100;
 
   // Verifikator, Admin, or Unit Operator can input / edit evidence
   const canEdit =
@@ -141,43 +150,29 @@ export const Perencanaan1cView: React.FC<Perencanaan1cViewProps> = ({
 
   const handleToggleSkor = (id: string) => {
     if (!canEdit) return;
-
-  setKriteriaList((prev): Kriteria1cItem[] => {
-      const updated: Kriteria1cItem[] = prev.map(
-        (item): Kriteria1cItem => {
-          if (item.id !== id) {
-            return item;
-          }
-
-          const nextSkor: 1 | 0 =
-            item.skor === 1 ? 0 : 1;
-
-          const nextStatus:
-            Kriteria1cItem['statusPemanfaatan'] =
-            nextSkor === 1
-              ? 'Dimanfaatkan Penuh'
-              : 'Belum Optimal';
-
-        return {
-          ...item,
-          skor: nextSkor,
-          statusPemanfaatan: nextStatus,
-        };
+    setKriteriaList((prev) => {
+      const updated: Kriteria1cItem[] = prev.map((item): Kriteria1cItem => {
+        if (item.id === id) {
+          const nextSkor: 1 | 0 = item.skor === 1 ? 0 : 1;
+          const nextStatus: Kriteria1cItem['statusPemanfaatan'] =
+            nextSkor === 1 ? 'Dimanfaatkan Penuh' : 'Belum Optimal';
+          return {
+            ...item,
+            skor: nextSkor,
+            statusPemanfaatan: nextStatus,
+          };
+        }
+        return item;
+      });
+      try {
+        localStorage.setItem(STORAGE_KEY_KRITERIA_1C, JSON.stringify(updated));
+      } catch (err) {
+        console.error('Failed to save to localStorage', err);
       }
-    );
-
-    localStorage.setItem(
-      STORAGE_KEY_KRITERIA_1C,
-      JSON.stringify(updated)
-    );
-
-    return updated;
-  });
-
-  showToast('Skor pemanfaatan kriteria berhasil diperbarui.');
-};
-
-  
+      return updated;
+    });
+    showToast('Skor pemanfaatan kriteria berhasil diperbarui.');
+  };
 
   const handleOpenModal = (kriteria: Kriteria1cItem) => {
     setEditingKriteriaId(kriteria.id);
@@ -307,6 +302,21 @@ export const Perencanaan1cView: React.FC<Perencanaan1cViewProps> = ({
             <p className="text-sm text-amber-100/90 max-w-3xl leading-relaxed">
               Pemanfaatan perencanaan kinerja dalam penganggaran berbasis kinerja (<strong>Money Follows Program</strong>), keselarasan aktivitas belanja, pemantauan rencana aksi secara berkala, penyempurnaan dokumen dari hasil evaluasi, serta komitmen pimpinan, satker, dan pegawai.
             </p>
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Otomatis Terhubung ke LKE • Nilai: {nilai1c.toFixed(2)} / {bobot1c.toFixed(2)}
+              </span>
+              {onNavigateTab && (
+                <button
+                  type="button"
+                  onClick={() => onNavigateTab('lke')}
+                  className="text-xs text-amber-200 hover:text-white underline font-bold cursor-pointer"
+                >
+                  Buka Lembar Kerja Evaluasi (LKE) →
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">

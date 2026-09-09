@@ -233,7 +233,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
               <thead className="bg-slate-100/80 border-b border-slate-200 text-slate-700 font-bold uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="px-3 py-3">Kode & Level</th>
-                  <th className="px-3 py-3">Unit Kerja (OPD)</th>
+                  <th className="px-3 py-3">Unit Kerja</th>
                   <th className="px-3 py-3">Sasaran Strategis</th>
                   <th className="px-3 py-3">Indikator Kinerja & Satuan</th>
                   <th className="px-3 py-3 text-center bg-slate-200/60 text-slate-800">Target</th>
@@ -472,7 +472,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
                     }
                     className="w-full p-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                   >
-                    <option value="Eselon II">Eselon II (Kepala OPD / Ultimate Outcome)</option>
+                    <option value="Eselon II">Eselon II (Pimpinan Unit / Ultimate Outcome)</option>
                     <option value="Eselon III">Eselon III (Kabid / Intermediate Outcome)</option>
                     <option value="Eselon IV">Eselon IV (Kasubag / Output Kinerja)</option>
                     <option value="Staf/Pelaksana">Staf / Pelaksana (Aktivitas Kinerja)</option>
@@ -481,7 +481,7 @@ export const MasterRenstraView: React.FC<MasterRenstraViewProps> = ({
               </div>
 
               <div>
-                <label className="font-semibold text-slate-700 block mb-1">Unit Kerja (OPD)</label>
+                <label className="font-semibold text-slate-700 block mb-1">Unit Kerja</label>
                 <select
                   value={formData.opdId}
                   onChange={(e) => {

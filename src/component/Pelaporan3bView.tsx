@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -20,8 +20,9 @@ import {
   FileCheck2,
   GitBranch,
 } from 'lucide-react';
-import { INITIAL_KRITERIA_3B, SakipKriteriaItem } from '../data/sakipKompData';
+import { INITIAL_KRITERIA_3B, SakipKriteriaItem } from '../../data/sakipKompData';
 import { OPD, User } from '../types';
+import { notifyLKESync, LKE_SYNC_EVENT } from '../utils/lkeSync';
 
 interface Pelaporan3bViewProps {
   opdList: OPD[];
@@ -38,6 +39,7 @@ export const Pelaporan3bView: React.FC<Pelaporan3bViewProps> = ({
   selectedOpdId,
   selectedYear,
   currentUser,
+  onNavigateTab,
 }) => {
   const [activeTabSub, setActiveTabSub] = useState<'kriteria' | 'kualitas'>('kriteria');
 
@@ -69,13 +71,47 @@ export const Pelaporan3bView: React.FC<Pelaporan3bViewProps> = ({
     skor: 1,
   });
 
+  const isInitialMount = useRef(true);
+  const isExternalSync = useRef(false);
+
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY_3B, JSON.stringify(kriteriaList));
+      if (isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
+      }
+      if (isExternalSync.current) {
+        isExternalSync.current = false;
+        return;
+      }
+      notifyLKESync('3.b');
     } catch {
       // ignore
     }
   }, [kriteriaList]);
+
+  // Listen for sync updates triggered from LKE
+  useEffect(() => {
+    const handleSync = (e: Event) => {
+      const ce = e as CustomEvent<{ source?: string }>;
+      if (ce.detail?.source === '3.b') return;
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_3B);
+        if (saved) {
+          setKriteriaList((prev) => {
+            if (JSON.stringify(prev) === saved) return prev;
+            isExternalSync.current = true;
+            return JSON.parse(saved);
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    window.addEventListener(LKE_SYNC_EVENT, handleSync);
+    return () => window.removeEventListener(LKE_SYNC_EVENT, handleSync);
+  }, []);
 
   const bobot3b = 4.5;
   const totalKriteria = kriteriaList.length;
@@ -207,6 +243,21 @@ export const Pelaporan3bView: React.FC<Pelaporan3bViewProps> = ({
             <p className="text-xs text-slate-500 max-w-3xl leading-relaxed">
               Memastikan isi LKjIP menyajikan perbandingan target tahunan, target akhir Renstra, tren multi-tahun (3-5 tahun), benchmark standar nasional rumah sakit, efisiensi sumber daya belanja, dan analisis akar masalah (fishbone/5-why).
             </p>
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 text-amber-900 border border-amber-300 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                Otomatis Terhubung ke LKE • Nilai: {nilai3b.toFixed(2)} / {bobot3b.toFixed(2)}
+              </span>
+              {onNavigateTab && (
+                <button
+                  type="button"
+                  onClick={() => onNavigateTab('lke')}
+                  className="text-xs text-amber-800 hover:text-amber-950 underline font-bold cursor-pointer"
+                >
+                  Buka Lembar Kerja Evaluasi (LKE) →
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Score Badge */}

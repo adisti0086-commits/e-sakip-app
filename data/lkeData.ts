@@ -3,6 +3,12 @@ export interface LKECriteriaItem {
   no: number;
   pernyataan: string;
   skor: number; // 1 or 0
+  buktiPendukung?: string;
+  catatanAsesor?: string;
+  linkDakung?: string;
+  nomorDokumen?: string;
+  tanggalPenetapan?: string;
+  statusPemenuhan?: string;
 }
 
 export interface LKESubKomponen {

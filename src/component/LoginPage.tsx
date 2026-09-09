@@ -33,7 +33,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   onLoginSuccess,
   users,
   opdList,
-  defaultYear = 2025,
+  defaultYear = 2026,
 }) => {
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('password123');
@@ -62,18 +62,18 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
       activeBorder: 'border-rose-500 bg-rose-950/30 ring-2 ring-rose-500/40',
       iconColor: 'text-rose-400',
-      description: 'Pengelola Master Renstra, Bobot SAKIP, Master OPD & seluruh data.',
-      responsibilities: ['Master OPD & 4 User', 'Cascading Renstra', 'Bobot PermenPAN-RB 88/2021'],
+      description: 'Pengelola Master Renstra, Bobot SAKIP, Master Unit Kerja & seluruh data.',
+      responsibilities: ['Master Unit Kerja & 4 User', 'Cascading Renstra', 'Bobot PermenPAN-RB 88/2021'],
     },
     {
       role: 'operator_unit',
       username: 'operator',
-      label: '2. Operator',
+      label: '2. Operator Unit',
       badgeColor: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
       activeBorder: 'border-sky-500 bg-sky-950/30 ring-2 ring-sky-500/40',
       iconColor: 'text-sky-400',
-      description: 'Penanggung jawab Perjanjian Kinerja, Target Triwulan & Realisasi Bulanan.',
-      responsibilities: ['Input 18 Indikator PK', 'Target T1 - T4', 'Upload Evidens Dukung'],
+      description: 'Penanggung jawab Perjanjian Kinerja & Realisasi berdasarkan Unit Kerja masing-masing.',
+      responsibilities: ['Input 18 Indikator PK Unit', 'Target Triwulan T1 - T4', 'Upload Evidens Dukung Unit'],
     },
     {
       role: 'validator',
@@ -82,8 +82,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
       activeBorder: 'border-amber-500 bg-amber-950/30 ring-2 ring-amber-500/40',
       iconColor: 'text-amber-400',
-      description: 'Verifikator dokumen evidens dan penilai kepatuhan realisasi capaian.',
-      responsibilities: ['Verifikasi Evidens', 'Validasi Status Capaian', 'Matriks Hijau/Kuning/Merah'],
+      description: 'Satuan Pengawas Internal (SPI) - verifikator dokumen evidens dan kepatuhan realisasi capaian.',
+      responsibilities: ['Verifikasi Evidens SPI', 'Validasi Status Capaian', 'Matriks Hijau/Kuning/Merah'],
     },
     {
       role: 'verifikator',
@@ -92,7 +92,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
       activeBorder: 'border-emerald-500 bg-emerald-950/30 ring-2 ring-emerald-500/40',
       iconColor: 'text-emerald-400',
-      description: 'Tim Evaluator pengisi LKE AKIP, penerbit LHE, dan nilai predikat SAKIP.',
+      description: 'Timker Perencanaan dan Evaluasi Program - evaluator LKE AKIP, penerbit LHE, dan predikat SAKIP.',
       responsibilities: ['Evaluasi LHE Skor 1/0', 'Kalkulasi 4 Komponen', 'Cetak LHE & Predikat'],
     },
   ];
@@ -301,9 +301,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                       onChange={(e) => setSelectedYear(Number(e.target.value))}
                       className="w-full pl-9 pr-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
                     >
+                      <option value={2026}>TA 2026 (Aktif)</option>
+                      <option value={2025}>TA 2025</option>
                       <option value={2024}>TA 2024</option>
-                      <option value={2025}>TA 2025 (Aktif)</option>
-                      <option value={2026}>TA 2026 (Perencanaan)</option>
                     </select>
                   </div>
                 </div>

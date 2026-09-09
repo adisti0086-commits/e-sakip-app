@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -20,8 +20,9 @@ import {
   FileCheck2,
   PieChart,
 } from 'lucide-react';
-import { INITIAL_KRITERIA_3C, SakipKriteriaItem } from '../data/sakipKompData';
+import { INITIAL_KRITERIA_3C, SakipKriteriaItem } from '../../data/sakipKompData';
 import { OPD, User } from '../types';
+import { notifyLKESync, LKE_SYNC_EVENT } from '../utils/lkeSync';
 
 interface Pelaporan3cViewProps {
   opdList: OPD[];
@@ -38,6 +39,7 @@ export const Pelaporan3cView: React.FC<Pelaporan3cViewProps> = ({
   selectedOpdId,
   selectedYear,
   currentUser,
+  onNavigateTab,
 }) => {
   const [activeTabSub, setActiveTabSub] = useState<'kriteria' | 'dampak'>('kriteria');
 
@@ -69,13 +71,47 @@ export const Pelaporan3cView: React.FC<Pelaporan3cViewProps> = ({
     skor: 1,
   });
 
+  const isInitialMount = useRef(true);
+  const isExternalSync = useRef(false);
+
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY_3C, JSON.stringify(kriteriaList));
+      if (isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
+      }
+      if (isExternalSync.current) {
+        isExternalSync.current = false;
+        return;
+      }
+      notifyLKESync('3.c');
     } catch {
       // ignore
     }
   }, [kriteriaList]);
+
+  // Listen for sync updates triggered from LKE
+  useEffect(() => {
+    const handleSync = (e: Event) => {
+      const ce = e as CustomEvent<{ source?: string }>;
+      if (ce.detail?.source === '3.c') return;
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_3C);
+        if (saved) {
+          setKriteriaList((prev) => {
+            if (JSON.stringify(prev) === saved) return prev;
+            isExternalSync.current = true;
+            return JSON.parse(saved);
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    window.addEventListener(LKE_SYNC_EVENT, handleSync);
+    return () => window.removeEventListener(LKE_SYNC_EVENT, handleSync);
+  }, []);
 
   const bobot3c = 7.5;
   const totalKriteria = kriteriaList.length;
@@ -207,6 +243,21 @@ export const Pelaporan3cView: React.FC<Pelaporan3cViewProps> = ({
             <p className="text-xs text-slate-500 max-w-3xl leading-relaxed">
               Memastikan laporan kinerja tidak sekadar formalitas, namun menghasilkan lembar disposisi pimpinan konkrit, koreksi perencanaan tahun berikutnya, realokasi anggaran, desiminasi townhall, dan perbaikan alur pelayanan.
             </p>
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 text-amber-900 border border-amber-300 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                Otomatis Terhubung ke LKE • Nilai: {nilai3c.toFixed(2)} / {bobot3c.toFixed(2)}
+              </span>
+              {onNavigateTab && (
+                <button
+                  type="button"
+                  onClick={() => onNavigateTab('lke')}
+                  className="text-xs text-amber-800 hover:text-amber-950 underline font-bold cursor-pointer"
+                >
+                  Buka Lembar Kerja Evaluasi (LKE) →
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Score Badge */}

@@ -43,7 +43,6 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
     nama: '',
     kepala: '',
     nipKepala: '',
-    kategori: 'Dinas Teknis',
     email: '',
     telepon: '',
   });
@@ -77,7 +76,6 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
         nama: opdForm.nama || '',
         kepala: opdForm.kepala || '-',
         nipKepala: opdForm.nipKepala || '-',
-        kategori: opdForm.kategori || 'Dinas Teknis',
         email: opdForm.email || '-',
         telepon: opdForm.telepon || '-',
       };
@@ -88,7 +86,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
   };
 
   const handleDeleteOpd = (id: string) => {
-    if (confirm('Apakah Anda yakin ingin menghapus OPD ini?')) {
+    if (confirm('Apakah Anda yakin ingin menghapus Unit Kerja ini?')) {
       setOpdList((prev) => prev.filter((o) => o.id !== id));
     }
   };
@@ -105,11 +103,11 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
         case 'administrator':
           return 'Administrator Utama SAKIP';
         case 'operator_unit':
-          return 'Operator Unit / Perencana OPD';
+          return 'Operator Unit Kerja';
         case 'validator':
-          return 'Tim Validator Kinerja Organisasi';
+          return 'Validator SPI';
         case 'verifikator':
-          return 'Auditor Madya / Tim Evaluator LHE';
+          return 'Timker Perencanaan dan Evaluasi Program';
       }
     };
 
@@ -157,7 +155,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder={viewType === 'opd' ? 'Cari nama OPD atau kode...' : 'Cari nama pengguna atau NIP...'}
+            placeholder={viewType === 'opd' ? 'Cari nama Unit Kerja atau kode...' : 'Cari nama pengguna atau NIP...'}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
@@ -175,7 +173,6 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                   nama: '',
                   kepala: '',
                   nipKepala: '',
-                  kategori: 'Dinas Teknis',
                   email: '',
                   telepon: '',
                 });
@@ -194,7 +191,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
             className="w-full sm:w-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors"
           >
             <Plus className="w-4 h-4" />
-            <span>{viewType === 'opd' ? 'Tambah OPD Baru' : 'Tambah Pengguna Baru'}</span>
+            <span>{viewType === 'opd' ? 'Tambah Unit Kerja Baru' : 'Tambah Pengguna Baru'}</span>
           </button>
         )}
       </div>
@@ -206,10 +203,9 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider">
                 <tr>
-                  <th className="px-4 py-3">Kode OPD</th>
-                  <th className="px-4 py-3">Nama Unit Kerja (OPD)</th>
-                  <th className="px-4 py-3">Kepala OPD & NIP</th>
-                  <th className="px-4 py-3">Kategori</th>
+                  <th className="px-4 py-3">Kode Unit Kerja</th>
+                  <th className="px-4 py-3">Nama Unit Kerja</th>
+                  <th className="px-4 py-3">Pimpinan Unit & NIP</th>
                   <th className="px-4 py-3">Kontak & Email</th>
                   {canModify && <th className="px-4 py-3 text-right">Aksi</th>}
                 </tr>
@@ -236,11 +232,6 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                         <p className="font-semibold">{opd.kepala}</p>
                         <p className="text-[11px] text-slate-400 font-mono">NIP. {opd.nipKepala}</p>
                       </td>
-                      <td className="px-4 py-3.5">
-                        <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-medium">
-                          {opd.kategori}
-                        </span>
-                      </td>
                       <td className="px-4 py-3.5 text-slate-600">
                         <div className="flex items-center gap-1.5 text-[11px]">
                           <Mail className="w-3 h-3 text-slate-400" />
@@ -262,7 +253,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                                 setIsAddModalOpen(true);
                               }}
                               className="p-1.5 text-slate-600 hover:text-emerald-600 hover:bg-slate-100 rounded-md transition-colors"
-                              title="Edit OPD"
+                              title="Edit Unit Kerja"
                             >
                               <Edit2 className="w-3.5 h-3.5" />
                             </button>
@@ -270,7 +261,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                               type="button"
                               onClick={() => handleDeleteOpd(opd.id)}
                               className="p-1.5 text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
-                              title="Hapus OPD"
+                              title="Hapus Unit Kerja"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -304,7 +295,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                 <tr>
                   <th className="px-4 py-3">Nama Pegawai & NIP</th>
                   <th className="px-4 py-3">Role / Peran SAKIP</th>
-                  <th className="px-4 py-3">Unit Kerja (OPD)</th>
+                  <th className="px-4 py-3">Unit Kerja</th>
                   <th className="px-4 py-3">Email Akun</th>
                   {canModify && <th className="px-4 py-3 text-right">Aksi</th>}
                 </tr>
@@ -413,7 +404,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h3 className="font-bold text-slate-900 text-base">
                 {editingItem ? 'Edit Data' : 'Tambah Data Baru'}{' '}
-                {viewType === 'opd' ? 'OPD / Unit Kerja' : 'Pengguna SAKIP'}
+                {viewType === 'opd' ? 'Unit Kerja' : 'Pengguna SAKIP'}
               </h3>
               <button
                 type="button"
@@ -427,7 +418,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
             {viewType === 'opd' ? (
               <form onSubmit={handleSaveOpd} className="mt-4 space-y-3.5 text-xs">
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-1">Kode OPD</label>
+                  <label className="font-semibold text-slate-700 block mb-1">Kode Unit Kerja</label>
                   <input
                     type="text"
                     required
@@ -439,12 +430,12 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                 </div>
                 <div>
                   <label className="font-semibold text-slate-700 block mb-1">
-                    Nama Unit Kerja (OPD)
+                    Nama Unit Kerja
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="misal: Dinas Pendidikan"
+                    placeholder="misal: Direktorat Layanan Operasional"
                     value={opdForm.nama}
                     onChange={(e) => setOpdForm({ ...opdForm, nama: e.target.value })}
                     className="w-full p-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
@@ -452,7 +443,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="font-semibold text-slate-700 block mb-1">Nama Kepala OPD</label>
+                    <label className="font-semibold text-slate-700 block mb-1">Nama Pimpinan Unit</label>
                     <input
                       type="text"
                       placeholder="Nama lengkap & gelar"
@@ -462,7 +453,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                     />
                   </div>
                   <div>
-                    <label className="font-semibold text-slate-700 block mb-1">NIP Kepala</label>
+                    <label className="font-semibold text-slate-700 block mb-1">NIP Pimpinan</label>
                     <input
                       type="text"
                       placeholder="1980xxxx..."
@@ -555,7 +546,21 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                     <label className="font-semibold text-slate-700 block mb-1">Peran / Role</label>
                     <select
                       value={userForm.role}
-                      onChange={(e) => setUserForm({ ...userForm, role: e.target.value as UserRole })}
+                      onChange={(e) => {
+                        const newRole = e.target.value as UserRole;
+                        let targetOpdId = userForm.opdId;
+                        if (newRole === 'validator') {
+                          const spi = opdList.find((o) => o.id === 'opd-spi');
+                          if (spi) targetOpdId = spi.id;
+                        } else if (newRole === 'verifikator') {
+                          const timker = opdList.find((o) => o.id === 'opd-timker-ren-eval');
+                          if (timker) targetOpdId = timker.id;
+                        } else if (newRole === 'operator_unit') {
+                          const berdasar = opdList.find((o) => o.id === 'opd-berdasarkan-unit');
+                          if (berdasar) targetOpdId = berdasar.id;
+                        }
+                        setUserForm({ ...userForm, role: newRole, opdId: targetOpdId });
+                      }}
                       className="w-full p-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-medium"
                     >
                       <option value="administrator">1. Administrator</option>
@@ -565,7 +570,7 @@ export const MasterDataView: React.FC<MasterDataViewProps> = ({
                     </select>
                   </div>
                   <div>
-                    <label className="font-semibold text-slate-700 block mb-1">Unit Kerja (OPD)</label>
+                    <label className="font-semibold text-slate-700 block mb-1">Unit Kerja</label>
                     <select
                       value={userForm.opdId}
                       onChange={(e) => setUserForm({ ...userForm, opdId: e.target.value })}

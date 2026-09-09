@@ -37,6 +37,7 @@ import {
   BobotSakip,
 } from '../types';
 import { ActiveTab } from './Sidebar';
+import { getSAKIPSummary, LKE_SYNC_EVENT } from '../utils/lkeSync';
 
 interface DashboardViewProps {
   currentUser: User;
@@ -69,6 +70,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const [selectedSasaranFilter, setSelectedSasaranFilter] = useState('all');
   const [selectedPeriodView, setSelectedPeriodView] = useState<'sem1' | 't1' | 't2' | 't3' | 't4'>('sem1');
 
+  // Real-time SAKIP LKE score derived dynamically from LKE evaluations
+  const [sakipSummary, setSakipSummary] = useState(() => getSAKIPSummary());
+
+  React.useEffect(() => {
+    const handleSync = () => {
+      setSakipSummary(getSAKIPSummary());
+    };
+    window.addEventListener(LKE_SYNC_EVENT, handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener(LKE_SYNC_EVENT, handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }, []);
+
   // Filter Indicators by selected OPD & Year
   const filteredIndikator = useMemo(() => {
     return (indikatorList || []).filter(
@@ -94,15 +110,58 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       const t3 = cap?.realisasiPerTriwulan?.find((t) => t.triwulan === 3);
       const t4 = cap?.realisasiPerTriwulan?.find((t) => t.triwulan === 4);
 
-      // Default values from PK / Triwulan
-      const rawSem1Persen = parseFloat(ind.capaianSem1Text?.replace('%', '').replace(',', '.') || '0');
-      const capaianSem1Val = t2?.persenCapaian ?? (rawSem1Persen > 0 ? rawSem1Persen : 100);
-      const realisasiSem1Val = t2?.realisasi ?? (parseFloat(ind.realisasiSem1Text?.replace('%', '').replace(',', '.') || '0'));
+      // Prioritize the values directly inputted in Pengukuran Kinerja (Input PK)
+      let capaianSem1Val = 0;
+      if (ind.capaianSem1Text && ind.capaianSem1Text.trim() !== '' && ind.capaianSem1Text !== '-') {
+        const parsed = parseFloat(ind.capaianSem1Text.replace('%', '').replace(',', '.').trim());
+        if (!isNaN(parsed)) {
+          capaianSem1Val = parsed;
+        }
+      }
+
+      // If ind.capaianSem1Text is missing or zero, check if realisasiSem1Text and targetPKText can compute it
+      if (capaianSem1Val === 0) {
+        const realNum = parseFloat((ind.realisasiSem1Text || '').replace('%', '').replace(',', '.').trim());
+        const tgtNum =
+          parseFloat((ind.targetPKText || '').replace('%', '').replace(',', '.').trim()) ||
+          ind.targetTahunan ||
+          0;
+        if (!isNaN(realNum) && tgtNum > 0) {
+          if (ind.polarisasi === 'Minimize') {
+            capaianSem1Val = (tgtNum / realNum) * 100;
+          } else {
+            capaianSem1Val = (realNum / tgtNum) * 100;
+          }
+        }
+      }
+
+      // If still 0, fallback to triwulan 2 if present
+      if (capaianSem1Val === 0 && t2?.persenCapaian !== undefined && t2.persenCapaian > 0) {
+        capaianSem1Val = t2.persenCapaian;
+      }
+
+      capaianSem1Val = Math.round(capaianSem1Val * 100) / 100;
 
       let statusWarna: 'hijau' | 'kuning' | 'merah' = 'merah';
       if (capaianSem1Val >= 100) statusWarna = 'hijau';
       else if (capaianSem1Val >= 50) statusWarna = 'kuning';
       else statusWarna = 'merah';
+
+      // Realisasi text
+      const realisasiSem1Display =
+        ind.realisasiSem1Text && ind.realisasiSem1Text !== '-'
+          ? ind.realisasiSem1Text
+          : t2?.realisasi !== undefined
+          ? `${t2.realisasi} ${ind.satuan}`
+          : '-';
+
+      // Target text
+      const targetPKDisplay =
+        ind.targetPKText && ind.targetPKText !== '-'
+          ? ind.targetPKText
+          : ind.targetTahunan
+          ? `${ind.targetTahunan} ${ind.satuan}`
+          : '-';
 
       return {
         ...ind,
@@ -112,7 +171,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         t3,
         t4,
         capaianSem1Val,
-        realisasiSem1Val,
+        realisasiSem1Display,
+        targetPKDisplay,
         statusWarna,
       };
     });
@@ -205,7 +265,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             Selamat Datang, {currentUser.name}
           </h2>
           <p className="text-slate-300 text-xs lg:text-sm leading-relaxed">
-            Anda terautentikasi sebagai <strong className="text-emerald-300 capitalize">{currentUser.roleTitle}</strong> ({currentUser.opdName}). Dashboard ini menyajikan langsung <strong className="text-white">Hasil Pengukuran Capaian Kinerja (18 Indikator & 11 Sasaran Strategis Kemenkes RI)</strong>, status deviasi warna, serta evaluasi LHE SAKIP.
+            Anda terautentikasi sebagai <strong className="text-emerald-300 capitalize">{currentUser.roleTitle}</strong> ({currentUser.opdName}). Dashboard ini menyajikan langsung <strong className="text-white">Hasil Pengukuran Capaian Kinerja ({totalEvaluated} Indikator & {sasaranList.length} Sasaran Strategis Kemenkes RI)</strong> yang terhubung otomatis dari Pengukuran Kinerja (Input PK), status deviasi warna, serta evaluasi LHE SAKIP.
           </p>
 
           <div className="mt-5 flex flex-wrap gap-2.5">
@@ -279,19 +339,25 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
       {/* Main KPI Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Rata-Rata Capaian Kinerja */}
-        <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs flex flex-col justify-between hover:border-emerald-300 transition-colors">
+        {/* Card 1: Rata-Rata Capaian Kinerja (Derived from 18 Indikator PK) */}
+        <div
+          onClick={() => onNavigate('input-kinerja')}
+          className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs flex flex-col justify-between hover:border-emerald-400 hover:shadow-sm transition-all cursor-pointer group"
+          title="Klik untuk melihat atau mengisi Pengukuran Kinerja (Input PK)"
+        >
           <div>
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Rata-Rata Capaian Kinerja
               </span>
-              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700">
+              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 group-hover:bg-emerald-100 transition-colors">
                 <Percent className="w-4 h-4" />
               </div>
             </div>
             <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-3xl font-extrabold text-emerald-700">{avgCapaian}%</span>
+              <span className="text-3xl font-extrabold text-emerald-700">
+                {avgCapaian.toFixed(2)}%
+              </span>
               <span className="text-xs text-slate-500 font-medium">Semester I / TA {selectedYear}</span>
             </div>
           </div>
@@ -299,29 +365,41 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <span className="text-slate-600 font-medium flex items-center gap-1">
               <Activity className="w-3.5 h-3.5 text-emerald-600" /> Kinerja Efektif
             </span>
-            <span className="text-emerald-700 font-bold">18 Indikator PK</span>
+            <span className="text-emerald-700 font-bold inline-flex items-center gap-1 group-hover:underline">
+              <span>{filteredIndikator.length || 18} Indikator PK</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </span>
           </div>
         </div>
 
-        {/* Card 2: Nilai Akuntabilitas SAKIP */}
-        <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs flex flex-col justify-between hover:border-emerald-300 transition-colors">
+        {/* Card 2: Nilai Akuntabilitas SAKIP (Derived directly from dynamic LKE data) */}
+        <div
+          onClick={() => onNavigate('lke')}
+          className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs flex flex-col justify-between hover:border-emerald-400 hover:shadow-sm transition-all cursor-pointer group"
+          title="Klik untuk membuka Lembar Kerja Evaluasi (LKE) SAKIP"
+        >
           <div>
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Nilai Akuntabilitas (SAKIP)
               </span>
-              <span className={`text-xs font-extrabold px-2 py-0.5 rounded-full ${currentPredikat.color}`}>
-                {currentPredikat.predikat}
+              <span className={`text-xs font-extrabold px-2.5 py-0.5 rounded-full ${sakipSummary.predikatBg} shadow-2xs`}>
+                {sakipSummary.predikat}
               </span>
             </div>
             <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-3xl font-extrabold text-slate-900">{avgSakipScore}</span>
+              <span className="text-3xl font-extrabold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                {sakipSummary.totalNilai.toFixed(1)}
+              </span>
               <span className="text-xs text-slate-500 font-medium">/ 100 Poin</span>
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-medium">{currentPredikat.label}</span>
-            <span className="text-emerald-700 font-bold">PermenPAN-RB No. 88</span>
+            <span className="text-slate-600 font-medium">{sakipSummary.kategori}</span>
+            <span className="text-emerald-700 font-bold inline-flex items-center gap-1 group-hover:underline">
+              <span>Hasil LKE</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </span>
           </div>
         </div>
 
@@ -581,13 +659,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                             {ind.targetRenstra || '-'}
                           </td>
                           <td className="py-3 px-3 text-center font-bold text-slate-900 font-mono">
-                            {ind.targetPKText || `${ind.targetTahunan} ${ind.satuan}`}
+                            {ind.targetPKDisplay}
                           </td>
                           <td className="py-3 px-3 text-center text-slate-600 font-mono">
                             {ind.realisasi2025Text || '-'}
                           </td>
                           <td className="py-3 px-3 text-center font-bold text-slate-900 font-mono">
-                            {ind.realisasiSem1Text || (ind.realisasiSem1Val ? `${ind.realisasiSem1Val} ${ind.satuan}` : '-')}
+                            {ind.realisasiSem1Display}
                           </td>
                           <td className="py-3 px-4 text-center">
                             <div className="flex flex-col items-center gap-1">
@@ -632,14 +710,24 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                             </span>
                           </td>
                           <td className="py-3 px-3 text-center">
-                            <button
-                              type="button"
-                              onClick={() => onNavigate('capaian-triwulan')}
-                              title="Buka Detail Triwulan"
-                              className="p-1.5 rounded-lg bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-800 transition-colors cursor-pointer"
-                            >
-                              <ArrowUpRight className="w-4 h-4" />
-                            </button>
+                            <div className="flex items-center justify-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() => onNavigate('input-kinerja')}
+                                title="Edit / Input di Pengukuran Kinerja (Input PK)"
+                                className="p-1.5 rounded-lg bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-800 transition-colors cursor-pointer"
+                              >
+                                <TrendingUp className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => onNavigate('capaian-triwulan')}
+                                title="Buka Detail Triwulan"
+                                className="p-1.5 rounded-lg bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-800 transition-colors cursor-pointer"
+                              >
+                                <ArrowUpRight className="w-4 h-4" />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -803,6 +891,73 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     Realisasi di bawah 50%, membutuhkan percepatan program dan perhatian khusus pimpinan unit kerja.
                   </p>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* LKE Component Breakdown Widget */}
+          <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h3 className="font-bold text-slate-900 text-sm">Rincian Komponen SAKIP (LKE)</h3>
+                <p className="text-[11px] text-slate-500">Hasil perhitungan otomatis LKE (PermenPAN-RB No. 88)</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onNavigate('lke')}
+                className="text-xs font-bold text-emerald-700 hover:text-emerald-800 cursor-pointer inline-flex items-center gap-1 hover:underline"
+              >
+                <span>Buka LKE</span>
+                <ArrowRight className="w-3 h-3" />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              <div className="p-2 rounded-lg border border-slate-100 bg-slate-50/80 flex items-center justify-between text-xs">
+                <div>
+                  <span className="font-semibold text-slate-800">1. Perencanaan Kinerja</span>
+                  <span className="text-slate-400 text-[11px] ml-1">(Bobot 30)</span>
+                </div>
+                <span className="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200">
+                  {sakipSummary.komp1Nilai.toFixed(2)}
+                </span>
+              </div>
+
+              <div className="p-2 rounded-lg border border-slate-100 bg-slate-50/80 flex items-center justify-between text-xs">
+                <div>
+                  <span className="font-semibold text-slate-800">2. Pengukuran Kinerja</span>
+                  <span className="text-slate-400 text-[11px] ml-1">(Bobot 30)</span>
+                </div>
+                <span className="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200">
+                  {sakipSummary.komp2Nilai.toFixed(2)}
+                </span>
+              </div>
+
+              <div className="p-2 rounded-lg border border-slate-100 bg-slate-50/80 flex items-center justify-between text-xs">
+                <div>
+                  <span className="font-semibold text-slate-800">3. Pelaporan Kinerja</span>
+                  <span className="text-slate-400 text-[11px] ml-1">(Bobot 15)</span>
+                </div>
+                <span className="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200">
+                  {sakipSummary.komp3Nilai.toFixed(2)}
+                </span>
+              </div>
+
+              <div className="p-2 rounded-lg border border-slate-100 bg-slate-50/80 flex items-center justify-between text-xs">
+                <div>
+                  <span className="font-semibold text-slate-800">4. Evaluasi Internal</span>
+                  <span className="text-slate-400 text-[11px] ml-1">(Bobot 25)</span>
+                </div>
+                <span className="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200">
+                  {sakipSummary.komp4Nilai.toFixed(2)}
+                </span>
+              </div>
+
+              <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-xs font-bold">
+                <span className="text-slate-800">Nilai Akuntabilitas SAKIP</span>
+                <span className="text-emerald-700 font-extrabold text-sm font-mono">
+                  {sakipSummary.totalNilai.toFixed(2)} ({sakipSummary.predikat})
+                </span>
               </div>
             </div>
           </div>

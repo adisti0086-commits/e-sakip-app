@@ -58,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
         };
       case 'master-opd':
         return {
-          title: 'Master OPD / Unit Kerja',
+          title: 'Master Unit Kerja',
           subtitle: 'Daftar Satuan Kerja / Unit Organisasi dan Pimpinan Unit',
         };
       case 'master-users':
@@ -111,20 +111,68 @@ export const Header: React.FC<HeaderProps> = ({
           title: '1.c Pemanfaatan Perencanaan Mewujudkan Hasil',
           subtitle: 'Pemenuhan 8 Kriteria Penganggaran Berbasis Kinerja, Monitoring Rencana Aksi, Evaluasi & Komitmen (Bobot 15.00)',
         };
+      case 'pengukuran-2a':
+        return {
+          title: '2.a Pengukuran Kinerja Telah Dilakukan',
+          subtitle: 'Pemenuhan 3 Kriteria Pedoman Teknis, Definisi Operasional & Mekanisme Pengumpulan Data (Bobot 6.00)',
+        };
+      case 'pengukuran-2b':
+        return {
+          title: '2.b Kebutuhan dalam Pengelolaan Kinerja',
+          subtitle: 'Pemenuhan 7 Kriteria Decision Maker, Relevansi Data, Monitoring Berjenjang & Pemanfaatan IT (Bobot 9.00)',
+        };
+      case 'pengukuran-2c':
+        return {
+          title: '2.c Dasar Pemberian Reward / Penyesuaian',
+          subtitle: 'Pemenuhan 10 Kriteria Penyesuaian Remunerasi, Pola Karier, Refocusing & Efisiensi Anggaran (Bobot 15.00)',
+        };
+      case 'pelaporan-3a':
+        return {
+          title: '3.a Laporan Kinerja Telah Disusun',
+          subtitle: 'Pemenuhan 4 Kriteria Ketersediaan Laporan Triwulanan, Tahunan & Inventarisasi (Bobot 3.00)',
+        };
+      case 'pelaporan-3b':
+        return {
+          title: '3.b Kualitas Pelaporan Kinerja',
+          subtitle: 'Pemenuhan 8 Kriteria Analisis Efisiensi, Benchmarking, Evaluasi Strategi & Kualitas Penyajian (Bobot 4.50)',
+        };
+      case 'pelaporan-3c':
+        return {
+          title: '3.c Pemanfaatan Pelaporan Mewujudkan Hasil',
+          subtitle: 'Pemenuhan 6 Kriteria Perbaikan Layanan Medik, Kebijakan Direksi & Akuntabilitas Publik (Bobot 7.50)',
+        };
+      case 'evaluasi-4a':
+        return {
+          title: '4.a Evaluasi Akuntabilitas Telah Dilaksanakan',
+          subtitle: 'Pemenuhan 4 Kriteria Tim Evaluator Internal SPI, Piagam Pengawasan & Jadwal Evaluasi (Bobot 2.00)',
+        };
+      case 'evaluasi-4b':
+        return {
+          title: '4.b Kualitas Evaluasi Akuntabilitas Kinerja',
+          subtitle: 'Pemenuhan 7 Kriteria Ruang Lingkup Evaluasi, Kertas Kerja LKE & Kompetensi Auditor (Bobot 3.00)',
+        };
+      case 'evaluasi-4c':
+        return {
+          title: '4.c Pemanfaatan Hasil Evaluasi Internal',
+          subtitle: 'Pemenuhan 5 Kriteria Tindak Lanjut Rekomendasi SPI, Monitoring TLR & Perbaikan Akuntabilitas (Bobot 5.00)',
+        };
       case 'lhe':
         return {
           title: 'Laporan Hasil Evaluasi (LHE) SAKIP',
           subtitle: 'Modul Evaluasi AKIP, Penilaian Lembar Kerja 1/0, Catatan & Rekomendasi',
         };
-        default:
+      default:
         return {
-          title: 'Sistem Akuntabilitas Kinerja',
-          subtitle: 'Sistem Informasi Akuntabilitas Kinerja Instansi Pemerintah',
-    };
-  }
+          title: 'Sistem Akuntabilitas Kinerja Instansi Pemerintah (SAKIP)',
+          subtitle: 'RSUP Dr. M. Djamil Padang - Terintegrasi Kemenkes & PermenPAN-RB No. 88/2021',
+        };
+    }
   };
 
-  const pageInfo = getPageTitle(activeTab);
+  const pageInfo = getPageTitle(activeTab) || {
+    title: 'Sistem Akuntabilitas Kinerja Instansi Pemerintah (SAKIP)',
+    subtitle: 'RSUP Dr. M. Djamil Padang',
+  };
 
   const isOpdFilterDisabled = currentUser.role === 'operator_unit';
 
@@ -162,9 +210,9 @@ export const Header: React.FC<HeaderProps> = ({
               onChange={(e) => setSelectedYear(Number(e.target.value))}
               className="bg-transparent text-slate-800 font-semibold focus:outline-hidden pr-2 cursor-pointer text-xs"
             >
-              <option value={2024}>TA 2024</option>
-              <option value={2025}>TA 2025</option>
               <option value={2026}>TA 2026</option>
+              <option value={2025}>TA 2025</option>
+              <option value={2024}>TA 2024</option>
             </select>
           </div>
 
@@ -178,10 +226,10 @@ export const Header: React.FC<HeaderProps> = ({
               className={`bg-transparent text-slate-800 font-medium focus:outline-hidden pr-2 truncate cursor-pointer text-xs ${
                 isOpdFilterDisabled ? 'opacity-80 cursor-not-allowed font-semibold' : ''
               }`}
-              title={isOpdFilterDisabled ? 'Terkunci sesuai OPD Operator' : 'Pilih Unit Kerja / OPD'}
+              title={isOpdFilterDisabled ? 'Terkunci sesuai Unit Kerja Operator' : 'Pilih Unit Kerja'}
             >
               {currentUser.role !== 'operator_unit' && (
-                <option value="all">Semua Unit Kerja / Seluruh Satker</option>
+                <option value="all">Semua Unit Kerja</option>
               )}
               {opdList.map((opd) => (
                 <option key={opd.id} value={opd.id}>
@@ -237,7 +285,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <div className="p-2 rounded-lg bg-emerald-50 border border-emerald-200/60 flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-semibold text-emerald-900">LHE BAPPEDA 2025 Selesai</p>
+                      <p className="font-semibold text-emerald-900">LHE Evaluasi 2026 Selesai</p>
                       <p className="text-[11px] text-emerald-700">
                         Predikat AA (Nilai 92.5) telah diterbitkan oleh Tim Evaluator.
                       </p>

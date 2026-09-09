@@ -64,9 +64,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       color: 'border-rose-500/40 bg-rose-950/20 hover:border-rose-500',
       activeColor: 'ring-2 ring-rose-500 border-rose-500 bg-rose-950/40',
       badgeBg: 'bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-900/60 dark:text-rose-200 dark:border-rose-700',
-      desc: 'Pengelola utama sistem, master data OPD, master user, renstra, dan konfigurasi bobot evaluasi.',
+      desc: 'Pengelola utama sistem, master data Unit Kerja, master user, renstra, dan konfigurasi bobot evaluasi.',
       permissions: [
-        'Kelola Master OPD & 4 Role Pengguna',
+        'Kelola Master Unit Kerja & 4 Role Pengguna',
         'Pohon Kinerja Cascading & Renstra 5 Tahun',
         'Konfigurasi Bobot SAKIP (PermenPAN-RB 88/2021)',
         'Monitor Seluruh Capaian & Ekspor Data',
@@ -74,16 +74,16 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     },
     operator_unit: {
       username: 'operator',
-      roleName: '2. Operator',
+      roleName: '2. Operator Unit',
       color: 'border-sky-500/40 bg-sky-950/20 hover:border-sky-500',
       activeColor: 'ring-2 ring-sky-500 border-sky-500 bg-sky-950/40',
       badgeBg: 'bg-sky-100 text-sky-800 border-sky-300 dark:bg-sky-900/60 dark:text-sky-200 dark:border-sky-700',
-      desc: 'Penanggung jawab input perjanjian kinerja, target triwulan, dan realisasi bulanan OPD.',
+      desc: 'Penanggung jawab input perjanjian kinerja, target triwulan, dan realisasi bulanan berdasarkan Unit Kerja masing-masing.',
       permissions: [
-        'Input Perjanjian Kinerja & Indikator IKU/IKP',
+        'Input Perjanjian Kinerja & Indikator IKU/IKP Unit',
         'Set Target Triwulan 1 s/d 4 (Polarisasi & Formula)',
         'Entri Realisasi Bulanan & Upload Evidens Link/File',
-        'Pantau Progres Capaian OPD Sendiri',
+        'Pantau Progres Capaian Unit Kerja Sendiri',
       ],
     },
     validator: {
@@ -92,9 +92,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       color: 'border-amber-500/40 bg-amber-950/20 hover:border-amber-500',
       activeColor: 'ring-2 ring-amber-500 border-amber-500 bg-amber-950/40',
       badgeBg: 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900/60 dark:text-amber-200 dark:border-amber-700',
-      desc: 'Verifikator dokumen evidens dan penilai kepatuhan capaian bulanan/triwulan unit kerja.',
+      desc: 'Satuan Pengawas Internal (SPI) - verifikator dokumen evidens dan penilai kepatuhan capaian bulanan/triwulan unit kerja.',
       permissions: [
-        'Verifikasi Kelayakan Evidens Dukung Capaian',
+        'Verifikasi Kelayakan Evidens Dukung SPI',
         'Validasi Status Realisasi (Draft → Verified / Reject)',
         'Beri Catatan Rekomendasi Perbaikan Capaian',
         'Analisis Matriks Triwulan (Hijau/Kuning/Merah)',
@@ -106,7 +106,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       color: 'border-emerald-500/40 bg-emerald-950/20 hover:border-emerald-500',
       activeColor: 'ring-2 ring-emerald-500 border-emerald-500 bg-emerald-950/40',
       badgeBg: 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/60 dark:text-emerald-200 dark:border-emerald-700',
-      desc: 'Tim Inspektorat pengisi LKE AKIP, penerbit LHE, rekomendasi tindak lanjut, dan cetak laporan.',
+      desc: 'Timker Perencanaan dan Evaluasi Program - evaluator LKE AKIP, penerbit LHE, rekomendasi tindak lanjut, dan predikat SAKIP.',
       permissions: [
         'Pengisian Lembar Kerja Evaluasi AKIP (Skor 1/0)',
         'Kalkulasi Otomatis 5 Komponen PermenPAN-RB 88/2021',
@@ -227,7 +227,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                  Daftar 4 Akun Pengguna Tersedia:
+                  Daftar Akun Pengguna Tersedia:
                 </span>
                 <span className="text-[11px] text-slate-400">Klik kartu di bawah untuk login instan</span>
               </div>
@@ -408,7 +408,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                   </thead>
                   <tbody className="divide-y divide-slate-800 text-slate-300">
                     <tr className="hover:bg-slate-800/40">
-                      <td className="p-3 font-medium">Master Data OPD & 4 Role Pengguna</td>
+                      <td className="p-3 font-medium">Master Data Unit Kerja & 4 Role Pengguna</td>
                       <td className="p-3 text-center text-emerald-400 font-bold">Full Akses</td>
                       <td className="p-3 text-center text-slate-500">-</td>
                       <td className="p-3 text-center text-slate-500">-</td>
@@ -431,14 +431,14 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                     <tr className="hover:bg-slate-800/40">
                       <td className="p-3 font-medium">Input Perjanjian Kinerja (PK) & Target TW</td>
                       <td className="p-3 text-center text-emerald-400 font-bold">Full Akses</td>
-                      <td className="p-3 text-center text-emerald-400 font-bold">Input OPD</td>
+                      <td className="p-3 text-center text-emerald-400 font-bold">Input Unit</td>
                       <td className="p-3 text-center text-slate-300">Lihat</td>
                       <td className="p-3 text-center text-slate-300">Lihat</td>
                     </tr>
                     <tr className="hover:bg-slate-800/40">
                       <td className="p-3 font-medium">Entri Capaian Bulanan & Upload Evidens</td>
                       <td className="p-3 text-center text-emerald-400 font-bold">Full Akses</td>
-                      <td className="p-3 text-center text-emerald-400 font-bold">Entri OPD</td>
+                      <td className="p-3 text-center text-emerald-400 font-bold">Entri Unit</td>
                       <td className="p-3 text-center text-slate-300">Lihat</td>
                       <td className="p-3 text-center text-slate-300">Lihat</td>
                     </tr>
